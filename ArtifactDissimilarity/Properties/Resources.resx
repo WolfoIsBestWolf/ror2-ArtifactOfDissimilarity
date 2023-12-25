@@ -154,6 +154,12 @@
   <data name="Transpose_on" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Transpose_on.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Unison_Off" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Unison_Off.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Unison_On" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Unison_On.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Wander_off" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Wander_off.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

@@ -1,0 +1,195 @@
+using BepInEx;
+using BepInEx.Configuration;
+
+namespace ArtifactDissimilarity
+{
+    public class WConfig
+    {
+
+        public static ConfigEntry<bool> EnableDissim;
+        public static ConfigEntry<bool> EnableKith;
+        public static ConfigEntry<bool> EnableWanderArtifact;
+        public static ConfigEntry<bool> EnableRemodelArtifact;
+        public static ConfigEntry<bool> EnableSpiritualArtifact;
+        public static ConfigEntry<bool> EnableBrigadeArtifact;
+        public static ConfigEntry<bool> EnableTransposeArtifact;
+        public static ConfigEntry<bool> EnableUnisonArtifact;
+
+        public static ConfigEntry<bool> DebugPrint;
+        //public static ConfigEntry<bool> EnableCustomIneractables;
+        //public static ConfigEntry<bool> ChangeBazaarSeer;
+        public static ConfigEntry<bool> KithNoMinimumStageCompletion;
+
+        public static ConfigEntry<bool> RemodelRerollOutOfScrap;
+        public static ConfigEntry<bool> RemodelRerollMonsterItems;
+        public static ConfigEntry<bool> RemodelRerollEquipmentDrones;
+
+        public static ConfigEntry<float> SpiritMovement;
+        public static ConfigEntry<float> SpiritAttackSpeed;
+        public static ConfigEntry<float> SpiritJump;
+        public static ConfigEntry<float> SpiritCooldown;
+        public static ConfigEntry<float> SpiritDamage;
+        public static ConfigEntry<float> SpiritDamagePlayer;
+        public static ConfigEntry<float> SpiritProjectileSpeed;
+
+        public static ConfigEntry<bool> TransposeRerollHeresy;
+
+        public static ConfigEntry<bool> UnisonDisablePrinters;
+
+
+        internal static void InitConfig()
+        {
+            ConfigFile configFile = new ConfigFile(Paths.ConfigPath + "\\Wolfo.Wolfo_Artifacts.cfg", true);
+
+            EnableDissim = configFile.Bind(
+                ": Main :",
+                "Enable Artifact of Dissimilarity",
+                true,
+                "Artifact of Dissonance for Interactables"
+            );
+            EnableKith = configFile.Bind(
+                ": Main :",
+                "Enable Artifact of Kith",
+                true,
+                "Artifact of Kin for Interactables. One per interactable category"
+            );
+            EnableWanderArtifact = configFile.Bind(
+                ": Main :",
+                "Enable Artifact of Wander",
+                true,
+                "Stages progress in a random order."
+            );
+            EnableRemodelArtifact = configFile.Bind(
+                ": Main :",
+                "Enable Artifact of Remodelling",
+                true,
+                "Reroll all items and equipment on stage change"
+            );
+            EnableSpiritualArtifact = configFile.Bind(
+                ": Main :",
+                "Enable Artifact of Spiriting",
+                true,
+                "RoR1 Spirit inspired, affects more stats"
+            );
+            EnableBrigadeArtifact = configFile.Bind(
+                ": Main :",
+                "Enable Artifact of Brigade",
+                true,
+                "Artifact of Kin but for Elite Types"
+            );
+            EnableTransposeArtifact = configFile.Bind(
+                ": Main :",
+                "Enable Artifact of Transpose",
+                true,
+                "Get a random skill loadout every stage"
+            );
+            EnableUnisonArtifact = configFile.Bind(
+                ": Main :",
+                "Enable Artifact of Unison",
+                true,
+                "One item per tier"
+            );
+
+
+
+            /*ChangeBazaarSeer = configFile.Bind(
+                "1a - Dissimilarity",
+                "Should Bazaar Seers be randomized too",
+                false,
+                "If turned on, Lunar Seers in the Bazaar will go to random locations."
+            );*/
+
+            KithNoMinimumStageCompletion = configFile.Bind(
+                "Kith",
+                "Remove the minimum stage completion of vanilla interactables",
+                true,
+                "Normally certain interactables can only spawn after a certain stage, this doesn't prevent them from being chosen with Kith. Making it so they can always spawn might make the early game more varied."
+            );
+
+            TransposeRerollHeresy = configFile.Bind(
+                "Transpose",
+                "Reroll Heresy items",
+                false,
+                "Should Transpose reroll Heresy items into other heresy items"
+            );
+
+
+            RemodelRerollOutOfScrap = configFile.Bind(
+                "Remodeling",
+                "Reroll out of Scrap",
+                true,
+                "If enabled, Scrap will be rerolled into a regular items\nThis allows you to quickly get a high stack of something (ie Scrap all Reds if you want 1 high stack instead of multiple small stacks).\nBut makes it so you can't take Scrap to Bazaar/Moon Cauldrons."
+            );
+            RemodelRerollMonsterItems = configFile.Bind(
+                "Remodeling",
+                "Reroll Monster Teams Inventory",
+                true,
+                "Reroll the items that Artifact of Evolution gives."
+            );
+
+            RemodelRerollEquipmentDrones = configFile.Bind(
+                "Remodeling",
+                "Reroll Equipment Drone Equipments",
+                true,
+                "Whether or not their Equipment should also be rerolled"
+            );
+
+            SpiritMovement = configFile.Bind(
+                "Spiriting",
+                "Maximum Movement Speed Bonus",
+                3f,
+                "Maximum multiplier for Movement Speed."
+            );
+
+            SpiritAttackSpeed = configFile.Bind(
+                "Spiriting",
+                "Maximum Attack Speed Bonus",
+                2f,
+                "Maximum multiplier for Attack Speed."
+            );
+            SpiritJump = configFile.Bind(
+                "Spiriting",
+                "Maximum Jump Bonus",
+                1.25f,
+                "Maximum Multiplier for Jump height."
+            );
+            SpiritProjectileSpeed = configFile.Bind(
+                "Spiriting",
+                "Maximum Projectile Speed Bonus",
+                2f,
+                "Maximum Multiplier for Projectile Speed. Enemies gain half the bonus"
+            );
+
+            SpiritCooldown = configFile.Bind(
+                "Spiriting",
+                "Maximum Cooldown Reduction",
+                0.5f,
+                "Maximum Cooldown Reduction in percent (0.0 - 1.0). 1 means 100% reduction at 10 health and 0 means no Reduction."
+            );
+
+            SpiritDamage = configFile.Bind(
+                "Spiriting",
+                "Maximum Damage Reduction (Enemies)",
+                0f,
+                "Maximum Damage Reduction in percent (0.0 - 1.0). 1 means 100% reduction at 0 health and 0 means no Reduction."
+            );
+            SpiritDamagePlayer = configFile.Bind(
+                "Spiriting",
+                "Maximum Damage Reduction (Player)",
+                0.375f,
+                "Maximum Damage Reduction in percent (0.0 - 1.0). 1 means 100% reduction at 0 health and 0 means no Reduction."
+            );
+
+
+            DebugPrint = configFile.Bind(
+                ": Main :",
+                "Print Debug Info in console",
+                false,
+                "Full list of interactables possible on current stage Dissim/Kith"
+            );
+
+        }
+
+
+    }
+}

@@ -183,6 +183,26 @@ namespace ArtifactDissimilarity.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        public static byte[] Unison_Off {
+            get {
+                object obj = ResourceManager.GetObject("Unison_Off", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        public static byte[] Unison_On {
+            get {
+                object obj = ResourceManager.GetObject("Unison_On", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         public static byte[] Wander_off {
             get {
                 object obj = ResourceManager.GetObject("Wander_off", resourceCulture);

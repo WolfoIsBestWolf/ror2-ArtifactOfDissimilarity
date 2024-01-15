@@ -175,8 +175,8 @@ namespace ArtifactDissimilarity
             );
             SpiritDamagePlayer = configFile.Bind(
                 "Spiriting",
-                "Maximum Damage Reduction (Player)",
-                0.375f,
+                "Maximum Damage Reduction (Players)",
+                0.4f,
                 "Maximum Damage Reduction in percent (0.0 - 1.0). 1 means 100% reduction at 0 health and 0 means no Reduction."
             );
 

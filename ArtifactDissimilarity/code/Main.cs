@@ -646,13 +646,17 @@ namespace ArtifactDissimilarity
             else if (artifactDef == Transpose_Def)
             {
                 On.RoR2.CharacterMaster.Respawn += Transpose.RandomizeLoadoutRespawnMethod;
+                On.RoR2.CharacterMaster.PickRandomSurvivorBodyPrefab += Transpose.Transpose_Metamorphosis;
                 if (WConfig.TransposeRerollHeresy.Value == true)
                 {
                     On.RoR2.SceneDirector.Start += Transpose.RandomizeHeresyItems;
                 }
-                foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
+                if (NetworkServer.active)
                 {
-                    playerCharacterMasterController.StartCoroutine(DelayedRespawn(playerCharacterMasterController, 0.25f));
+                    foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
+                    {
+                        playerCharacterMasterController.StartCoroutine(DelayedRespawn(playerCharacterMasterController, 0.25f));
+                    }
                 }
                 Debug.Log("Added Transpose");
             }
@@ -726,22 +730,20 @@ namespace ArtifactDissimilarity
             else if (artifactDef == Transpose_Def)
             {
                 On.RoR2.CharacterMaster.Respawn -= Transpose.RandomizeLoadoutRespawnMethod;
+                On.RoR2.CharacterMaster.PickRandomSurvivorBodyPrefab -= Transpose.Transpose_Metamorphosis;
                 if (WConfig.TransposeRerollHeresy.Value == true)
                 {
                     On.RoR2.SceneDirector.Start -= Transpose.RandomizeHeresyItems;
                 }
-
-                //Not a good idea to add and then remove hooks
-                On.RoR2.CharacterMaster.Respawn += Transpose.UnRandomizeLoadoutRespawnMethod;
                 foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
                 {
+                    playerCharacterMasterController.networkUser.CopyLoadoutToMaster();
                     CharacterBody temp = playerCharacterMasterController.master.GetBody();
                     if (temp)
                     {
                         playerCharacterMasterController.master.Respawn(temp.footPosition, temp.transform.rotation);
                     }
                 };
-                On.RoR2.CharacterMaster.Respawn -= Transpose.UnRandomizeLoadoutRespawnMethod;
             }
             else if (artifactDef == Remodeling_Def)
             {
@@ -779,16 +781,27 @@ namespace ArtifactDissimilarity
         {
             if (self.teleporterSpawnCard != null)
             {
-                if (RunArtifactManager.instance.IsArtifactEnabled(Wander_Def) || RunArtifactManager.instance.IsArtifactEnabled(Dissimilarity_Def))
-                {    
-                    if (Run.instance.NetworkstageClearCount % Run.stagesPerLoop == Run.stagesPerLoop - 1)
+                if (RunArtifactManager.instance.IsArtifactEnabled(Wander_Def))
+                {
+                    if (Run.instance.NetworkstageClearCount >= 2)
                     {
-                        self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter"); ;
+                        self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
+                    }
+                }
+                else if (RunArtifactManager.instance.IsArtifactEnabled(Dissimilarity_Def))
+                {
+                    if (Run.instance.NetworkstageClearCount >= 3 && random.Next(2) == 1)
+                    {
+                        self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
+                    }
+                    else if (Run.instance.NetworkstageClearCount % Run.stagesPerLoop == Run.stagesPerLoop - 1)
+                    {
+                        self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
                         //Debug.LogWarning("End of Loop Primordial");
                     }
                     else if (SceneInfo.instance.sceneDef.baseSceneName == "skymeadow")
                     {
-                        self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter"); ;
+                        self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
                         //Debug.LogWarning("SkyMeadow Primordial");
                     }
                 }

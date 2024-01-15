@@ -35,7 +35,6 @@ namespace ArtifactDissimilarity
                 }
                 if (WConfig.RemodelRerollMonsterItems.Value == true)
                 {
-                    //This was before orig self for some reason check that
                     RandomizeItemsMonster();
                 }
             }

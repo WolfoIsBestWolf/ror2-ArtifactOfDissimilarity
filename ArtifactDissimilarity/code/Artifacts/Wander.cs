@@ -41,32 +41,8 @@ namespace ArtifactDissimilarity
 
 
 
-        private static readonly SceneDef Roost = LegacyResourcesAPI.Load<SceneDef>("scenedefs/blackbeach");
-        private static readonly SceneDef Plains = LegacyResourcesAPI.Load<SceneDef>("scenedefs/golemplains");
-        private static readonly SceneDef Sand = LegacyResourcesAPI.Load<SceneDef>("scenedefs/goolake");
-        private static readonly SceneDef Swamp = LegacyResourcesAPI.Load<SceneDef>("scenedefs/foggyswamp");
-        private static readonly SceneDef Acres = LegacyResourcesAPI.Load<SceneDef>("scenedefs/wispgraveyard");
-        private static readonly SceneDef Snow = LegacyResourcesAPI.Load<SceneDef>("scenedefs/frozenwall");
-        private static readonly SceneDef Depths = LegacyResourcesAPI.Load<SceneDef>("scenedefs/dampcavesimple");
-        private static readonly SceneDef Grove = LegacyResourcesAPI.Load<SceneDef>("scenedefs/rootjungle");
-        private static readonly SceneDef Siren = LegacyResourcesAPI.Load<SceneDef>("scenedefs/shipgraveyard");
-        private static readonly SceneDef SkyMeadow = LegacyResourcesAPI.Load<SceneDef>("scenedefs/skymeadow");
-        private static readonly SceneDef Moon2 = LegacyResourcesAPI.Load<SceneDef>("scenedefs/moon2");
-        private static readonly SceneDef Gold = LegacyResourcesAPI.Load<SceneDef>("scenedefs/goldshores");
 
-        private static readonly SceneDef Arena = LegacyResourcesAPI.Load<SceneDef>("scenedefs/arena");
-        private static readonly SceneDef ArtifactWorld = LegacyResourcesAPI.Load<SceneDef>("scenedefs/artifactworld");
-        private static readonly SceneDef Bazaar = LegacyResourcesAPI.Load<SceneDef>("scenedefs/bazaar");
-        private static readonly SceneDef Limbo = LegacyResourcesAPI.Load<SceneDef>("scenedefs/limbo");
-        private static readonly SceneDef MysterySpace = LegacyResourcesAPI.Load<SceneDef>("scenedefs/mysteryspace");
-        private static readonly SceneDef MenuLobby = LegacyResourcesAPI.Load<SceneDef>("scenedefs/lobby");
-
-
-        private static readonly SceneDef SnowyForest = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/snowyforest/snowyforest.asset").WaitForCompletion();
-        private static readonly SceneDef AncientLoft = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/ancientloft/ancientloft.asset").WaitForCompletion();
-        private static readonly SceneDef SulfurPools = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/sulfurpools/sulfurpools.asset").WaitForCompletion();
-        private static readonly SceneDef VoidStage = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/voidstage/voidstage.asset").WaitForCompletion();
-        private static readonly SceneDef VoidRaid = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/voidraid/voidraid.asset").WaitForCompletion();
+        public static List<SceneDef> scenesSeerDestinations;
 
         /*private static readonly Material PortalMaterialArena = Instantiate(Plains.portalMaterial);
         private static readonly Material PortalMaterialArtifactWorld = Instantiate(Plains.portalMaterial);
@@ -84,7 +60,6 @@ namespace ArtifactDissimilarity
         private static readonly Material PortalMaterialITSkyMeadow = Instantiate(SkyMeadow.portalMaterial);
         private static readonly Material PortalMaterialITMoon = Instantiate(Moon2.portalMaterial);*/
 
-        public static readonly List<SceneDef> scenesSeerDestinations = new List<SceneDef> { Roost, Plains, Sand, Swamp, Acres, Snow, Depths, Grove, Siren, SkyMeadow, Moon2, Gold, Arena, MysterySpace, ArtifactWorld, SnowyForest, AncientLoft, SulfurPools, VoidStage };
         //static List<SceneDef> tempsceneNames = new List<SceneDef>(sceneNames);
         //static readonly List<SceneDef> sceneNamesForWanderList = new List<SceneDef> { Roost, Plains, Sand, Swamp, Acres, Snow, Depths, Grove, Siren, SkyMeadow, SnowyForest, AncientLoft, SulfurPools };
         //private static SceneDef[] sceneNamesForWander = new SceneDef[10];
@@ -108,6 +83,33 @@ namespace ArtifactDissimilarity
 
         public static void MakeSeerMaterials()
         {
+            SceneDef Roost = LegacyResourcesAPI.Load<SceneDef>("scenedefs/blackbeach");
+            SceneDef Plains = LegacyResourcesAPI.Load<SceneDef>("scenedefs/golemplains");
+            SceneDef Sand = LegacyResourcesAPI.Load<SceneDef>("scenedefs/goolake");
+            SceneDef Swamp = LegacyResourcesAPI.Load<SceneDef>("scenedefs/foggyswamp");
+            SceneDef Acres = LegacyResourcesAPI.Load<SceneDef>("scenedefs/wispgraveyard");
+            SceneDef Snow = LegacyResourcesAPI.Load<SceneDef>("scenedefs/frozenwall");
+            SceneDef Depths = LegacyResourcesAPI.Load<SceneDef>("scenedefs/dampcavesimple");
+            SceneDef Grove = LegacyResourcesAPI.Load<SceneDef>("scenedefs/rootjungle");
+            SceneDef Siren = LegacyResourcesAPI.Load<SceneDef>("scenedefs/shipgraveyard");
+            SceneDef SkyMeadow = LegacyResourcesAPI.Load<SceneDef>("scenedefs/skymeadow");
+            SceneDef Moon2 = LegacyResourcesAPI.Load<SceneDef>("scenedefs/moon2");
+            SceneDef Gold = LegacyResourcesAPI.Load<SceneDef>("scenedefs/goldshores");
+
+            SceneDef Arena = LegacyResourcesAPI.Load<SceneDef>("scenedefs/arena");
+            SceneDef ArtifactWorld = LegacyResourcesAPI.Load<SceneDef>("scenedefs/artifactworld");
+            SceneDef Bazaar = LegacyResourcesAPI.Load<SceneDef>("scenedefs/bazaar");
+            SceneDef Limbo = LegacyResourcesAPI.Load<SceneDef>("scenedefs/limbo");
+            SceneDef MysterySpace = LegacyResourcesAPI.Load<SceneDef>("scenedefs/mysteryspace");
+            SceneDef MenuLobby = LegacyResourcesAPI.Load<SceneDef>("scenedefs/lobby");
+
+
+            SceneDef SnowyForest = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/snowyforest/snowyforest.asset").WaitForCompletion();
+            SceneDef AncientLoft = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/ancientloft/ancientloft.asset").WaitForCompletion();
+            SceneDef SulfurPools = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/sulfurpools/sulfurpools.asset").WaitForCompletion();
+            SceneDef VoidStage = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/voidstage/voidstage.asset").WaitForCompletion();
+            SceneDef VoidRaid = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/voidraid/voidraid.asset").WaitForCompletion();
+            scenesSeerDestinations = new List<SceneDef> { Roost, Plains, Sand, Swamp, Acres, Snow, Depths, Grove, Siren, SkyMeadow, Moon2, Gold, Arena, MysterySpace, ArtifactWorld, SnowyForest, AncientLoft, SulfurPools, VoidStage };
 
             //LegacyResourcesAPI.Load<SceneDef>("scenedefs/moon").portalSelectionMessageString = "<style=cWorldEvent>You are having a nightmare</style>";
 

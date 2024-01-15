@@ -12,64 +12,56 @@ namespace ArtifactDissimilarity
         {
             if (self.playerCharacterMasterController)
             {
-                //self.playerCharacterMasterController.networkUser.CopyLoadoutToMaster();
-                CharacterBody tempbod = orig(self, footPosition, rotation);
-
-                Loadout newloadout = new Loadout();
-                newloadout.Copy(self.loadout);
-                int globalrepeat = 0;
-                int repeat = 0;
-                do
+                if (!RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.randomSurvivorOnRespawnArtifactDef))
                 {
-                    if (repeat == tempbod.skillLocator.skillSlotCount)
-                    {
-                        globalrepeat++;
-                        Debug.Log("Repeat Loadout " + globalrepeat + ", rerolling again");
-                    }
-                    repeat = 0;
-                    for (int i = 0; i < tempbod.skillLocator.skillSlotCount; i++)
-                    {
-                        var tempgenericskill = tempbod.skillLocator.GetSkillAtIndex(i);
-                        uint skillVariant = (uint)UnityEngine.Random.Range(0, tempgenericskill.skillFamily.variants.Length);
-                        newloadout.bodyLoadoutManager.SetSkillVariant(tempbod.bodyIndex, i, skillVariant);
-
-                        string tempSkillOldName = tempgenericskill.skillDef.ToString();
-                        string tempSkillOldType = tempgenericskill.skillDef.GetType().ToString();
-                        tempSkillOldName = tempSkillOldName.Replace(" (" + tempSkillOldType + ")", "");
-                        var tempSkillindexOld = tempgenericskill.skillFamily.GetVariantIndex(tempSkillOldName);
-                        var tempSkillindexNew = newloadout.bodyLoadoutManager.GetSkillVariant(tempbod.bodyIndex, i);
-
-                        if (tempSkillindexNew == tempSkillindexOld)
-                        {
-                            repeat++;
-                        }
-                        self.loadout.bodyLoadoutManager.SetSkillVariant(tempbod.bodyIndex, i, skillVariant);
-
-
-                        //Debug.LogWarning(tempgenericskill.skillFamily + " " + tempgenericskill.skillFamily.variants.Length + " different variants");
-                        //Debug.LogWarning("slot " + i + ": variant " + skillVariant);
-                        //Debug.LogWarning("Old Index " + tempSkillindexOld);
-                        //Debug.LogWarning("New Index " + tempSkillindexNew);
-                        //Debug.LogWarning("Repeats "+ repeat);
-                        //Debug.LogWarning(tempbod.skillLocator.skillSlotCount);
-                    }
-
-                } while (repeat == tempbod.skillLocator.skillSlotCount && globalrepeat < 2);
-                self.loadout.bodyLoadoutManager.SetSkinIndex(tempbod.bodyIndex, (uint)Main.random.Next(0, RoR2.SkinCatalog.GetBodySkinCount(tempbod.bodyIndex)));
-                tempbod.SetLoadoutServer(newloadout);
-                Debug.Log("Rerolled " + tempbod.name + "'s Loadout ");
-                return tempbod;
+                    RerollLoadout(self.bodyPrefab, self);
+                }
             }
             return orig(self, footPosition, rotation);
         }
 
-        public static CharacterBody UnRandomizeLoadoutRespawnMethod(On.RoR2.CharacterMaster.orig_Respawn orig, CharacterMaster self, Vector3 footPosition, Quaternion rotation)
+        private static void RerollLoadout(GameObject bodyPrefab, CharacterMaster master)
         {
-            if (self.playerCharacterMasterController)
+            CharacterBody characterBody = bodyPrefab.GetComponent<CharacterBody>();
+            Loadout newloadout = new Loadout();
+            master.loadout.Copy(newloadout);
+
+            GenericSkill[] skills = bodyPrefab.GetComponents<GenericSkill>();
+
+            int repeatSkills = 0;
+            //bool inRepeat = false;
+            for (int i = 0; i < skills.Length; i++)
             {
-                self.playerCharacterMasterController.networkUser.CopyLoadoutToMaster();
+                if (skills[i] != null)
+                {
+                    uint oldSkillVariant = master.loadout.bodyLoadoutManager.GetSkillVariant(characterBody.bodyIndex, i);
+                    uint skillVariant = (uint)UnityEngine.Random.Range(0, skills[i].skillFamily.variants.Length);
+                    newloadout.bodyLoadoutManager.SetSkillVariant(characterBody.bodyIndex, i, skillVariant);
+                    if (oldSkillVariant == skillVariant)
+                    {
+                        repeatSkills++;
+                    }
+                    if (repeatSkills == 4)
+                    {
+                        i = 0;
+                        repeatSkills++;
+                        Debug.Log("Rerolling too similiar loadout");
+                    }
+                }
             }
-            return orig(self, footPosition, rotation);
+            newloadout.bodyLoadoutManager.SetSkinIndex(characterBody.bodyIndex, (uint)Main.random.Next(0, RoR2.SkinCatalog.GetBodySkinCount(characterBody.bodyIndex)));
+            master.SetLoadoutServer(newloadout);
+            Debug.Log("Rerolled " + bodyPrefab + "'s Loadout ");
+        }
+
+        public static GameObject Transpose_Metamorphosis(On.RoR2.CharacterMaster.orig_PickRandomSurvivorBodyPrefab orig, Xoroshiro128Plus rng, NetworkUser networkUser, bool allowHidden)
+        {
+            GameObject bodyPrefab = orig(rng, networkUser, allowHidden);
+            if (networkUser.master)
+            {
+                RerollLoadout(bodyPrefab, networkUser.master);
+            }
+            return bodyPrefab;
         }
 
         public static void RandomizeHeresyItems(On.RoR2.SceneDirector.orig_Start orig, SceneDirector self)
@@ -106,66 +98,6 @@ namespace ArtifactDissimilarity
                 }
             }
 
-        }
-
-
-        //Obsolete
-        public static void RandomizeLoadoutRespawn(On.RoR2.Stage.orig_RespawnCharacter orig, global::RoR2.Stage self, global::RoR2.CharacterMaster characterMaster)
-        {
-            orig(self, characterMaster);
-
-            if (NetworkServer.active)
-            {
-                if (RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(Main.Transpose_Def))
-                {
-                    var tempbod = characterMaster.GetBody();
-                    Loadout newloadout = new Loadout();
-                    newloadout.Copy(characterMaster.loadout);
-                    int globalrepeat = 0;
-                    int repeat = 0;
-                    do
-                    {
-                        if (repeat == tempbod.skillLocator.skillSlotCount)
-                        {
-                            globalrepeat++;
-                            Debug.Log("Repeat Loadout " + globalrepeat + ", rerolling again");
-                        }
-                        repeat = 0;
-                        for (int i = 0; i < tempbod.skillLocator.skillSlotCount; i++)
-                        {
-                            var tempgenericskill = tempbod.skillLocator.GetSkillAtIndex(i);
-                            uint skillVariant = (uint)UnityEngine.Random.Range(0, tempgenericskill.skillFamily.variants.Length);
-                            newloadout.bodyLoadoutManager.SetSkillVariant(tempbod.bodyIndex, i, skillVariant);
-
-                            string tempSkillOldName = tempgenericskill.skillDef.ToString();
-                            string tempSkillOldType = tempgenericskill.skillDef.GetType().ToString();
-                            tempSkillOldName = tempSkillOldName.Replace(" (" + tempSkillOldType + ")", "");
-                            var tempSkillindexOld = tempgenericskill.skillFamily.GetVariantIndex(tempSkillOldName);
-                            var tempSkillindexNew = newloadout.bodyLoadoutManager.GetSkillVariant(tempbod.bodyIndex, i);
-
-                            if (tempSkillindexNew == tempSkillindexOld)
-                            {
-                                repeat++;
-                            }
-                            characterMaster.loadout.bodyLoadoutManager.SetSkillVariant(tempbod.bodyIndex, i, skillVariant);
-
-
-                            //Debug.LogWarning(tempgenericskill.skillFamily + " " + tempgenericskill.skillFamily.variants.Length + " different variants");
-                            //Debug.LogWarning("slot " + i + ": variant " + skillVariant);
-                            //Debug.LogWarning("Old Index " + tempSkillindexOld);
-                            //Debug.LogWarning("New Index " + tempSkillindexNew);
-                            //Debug.LogWarning("Repeats "+ repeat);
-                            //Debug.LogWarning(tempbod.skillLocator.skillSlotCount);
-                        }
-
-                    } while (repeat == tempbod.skillLocator.skillSlotCount && globalrepeat < 2);
-
-                    tempbod.SetLoadoutServer(newloadout);
-
-                    characterMaster.loadout.bodyLoadoutManager.SetSkinIndex(tempbod.bodyIndex, (uint)UnityEngine.Random.Range(0, RoR2.SkinCatalog.GetBodySkinCount(tempbod.bodyIndex)));
-                    Debug.Log("Rerolled " + tempbod.name + "'s Loadout ");
-                }
-            }
         }
     }
 }

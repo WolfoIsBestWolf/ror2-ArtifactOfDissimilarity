@@ -93,7 +93,19 @@ Having only large stacks of items is fun but important to still give enough cont
 Report bugs to @Wolfo.wolfo in the Risk of Rain 2 discord or RoR2 Modding discord.\
 If you're reporting a bug that isn't something obvious include the log file.
 
+Every played needs this mod installed.
+
 ### Changelog:
+```
+v2.5.1
+-Transpose
+--Clients should no longer be 1 behind, so being rerolled if enabled by Augment of Tranpose or Stage 1 should work.
+-Dissimilarity
+--50% of stages will have a primordial teleporter starting stage 4
+--Fixed issue with Lunar Seers being blank
+-Wander : All stages will have primordial teleporters starting stage 3
+-Spiriting : Reduced full boost default player damage setting value a bit more.
+
 v2.5.0 - Cleanup & Renaming  
 -New Artifact : Artifact of Unison  
 --All item tiers only have one item  

@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 namespace ArtifactDissimilarity
 {
     [BepInDependency("com.bepis.r2api")]
-    [BepInPlugin("com.Wolfo.WolfoArtifacts", "WolfoArtifacts", "2.5.0")]
+    [BepInPlugin("com.Wolfo.WolfoArtifacts", "WolfoArtifacts", "2.5.2")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
 
     public class Main : BaseUnityPlugin
@@ -118,18 +118,15 @@ namespace ArtifactDissimilarity
             ScrapGreenSuppressed.descriptionToken = "ITEM_SCRAPGREEN_DESC";
             ScrapRedSuppressed.descriptionToken = "ITEM_SCRAPRED_DESC";
 
+            ScrapWhiteSuppressed.deprecatedTier = ItemTier.Tier1;
+            ScrapGreenSuppressed.deprecatedTier = ItemTier.Tier2;
+            ScrapRedSuppressed.deprecatedTier = ItemTier.Tier3;
             On.RoR2.UI.LogBook.LogBookController.BuildStaticData += (orig) =>
             {
                 ScrapWhiteSuppressed.deprecatedTier = ItemTier.NoTier;
                 ScrapGreenSuppressed.deprecatedTier = ItemTier.NoTier;
                 ScrapRedSuppressed.deprecatedTier = ItemTier.NoTier;
-                ScrapWhiteSuppressed.tier = ItemTier.NoTier;
-                ScrapGreenSuppressed.tier = ItemTier.NoTier;
-                ScrapRedSuppressed.tier = ItemTier.NoTier;
                 orig();
-                ScrapWhiteSuppressed.tier = ItemTier.Tier1;
-                ScrapGreenSuppressed.tier = ItemTier.Tier2;
-                ScrapRedSuppressed.tier = ItemTier.Tier3;
                 ScrapWhiteSuppressed.deprecatedTier = ItemTier.Tier1;
                 ScrapGreenSuppressed.deprecatedTier = ItemTier.Tier2;
                 ScrapRedSuppressed.deprecatedTier = ItemTier.Tier3;
@@ -175,7 +172,8 @@ namespace ArtifactDissimilarity
             CharacterBody temp = playerCharacterMasterController.master.GetBody();
             if (temp)
             {
-                playerCharacterMasterController.master.Respawn(temp.footPosition, temp.transform.rotation);
+                Vector3 vector = temp.footPosition;
+                playerCharacterMasterController.master.Respawn(vector, Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f));
             }
             yield break;
         }
@@ -655,7 +653,9 @@ namespace ArtifactDissimilarity
                 {
                     foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
                     {
-                        playerCharacterMasterController.StartCoroutine(DelayedRespawn(playerCharacterMasterController, 0.25f));
+                        playerCharacterMasterController.StopAllCoroutines();
+                        playerCharacterMasterController.StartCoroutine(DelayedRespawn(playerCharacterMasterController, 0.35f));
+                        //Transpose.RerollLoadout(playerCharacterMasterController.master.GetBodyObject(), playerCharacterMasterController.master);
                     }
                 }
                 Debug.Log("Added Transpose");
@@ -706,7 +706,14 @@ namespace ArtifactDissimilarity
                 //Because we fuck up the base stats just respawning seems the easiest way to fix it
                 foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
                 {
-                    playerCharacterMasterController.StartCoroutine(DelayedRespawn(playerCharacterMasterController, 0.25f));
+                    playerCharacterMasterController.StopAllCoroutines();
+                    playerCharacterMasterController.StartCoroutine(DelayedRespawn(playerCharacterMasterController, 0.1f));
+                    CharacterBody body = playerCharacterMasterController.master.GetBody();
+                    if (body)
+                    {
+                        //Spiriting.RemoveSpiritBuffsMethod(body, playerCharacterMasterController.master.bodyPrefab.GetComponent<CharacterBody>());
+                    }
+                    
                 }
             }
             else if (artifactDef == Brigade_Def)
@@ -738,11 +745,18 @@ namespace ArtifactDissimilarity
                 foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
                 {
                     playerCharacterMasterController.networkUser.CopyLoadoutToMaster();
-                    CharacterBody temp = playerCharacterMasterController.master.GetBody();
-                    if (temp)
+                    playerCharacterMasterController.StopAllCoroutines();
+                    playerCharacterMasterController.StartCoroutine(DelayedRespawn(playerCharacterMasterController, 0.1f));
+                    /*CharacterBody body = playerCharacterMasterController.master.GetBody();
+                    if (body)
                     {
-                        playerCharacterMasterController.master.Respawn(temp.footPosition, temp.transform.rotation);
-                    }
+                        body.SetLoadoutServer(playerCharacterMasterController.master.loadout);
+                        ModelSkinController model = body.modelLocator.modelTransform.gameObject.GetComponent<ModelSkinController>();
+                        if (model)
+                        {
+                            model.ApplySkin((int)playerCharacterMasterController.master.loadout.bodyLoadoutManager.GetSkinIndex(playerCharacterMasterController.master.backupBodyIndex));
+                        }
+                    }*/
                 };
             }
             else if (artifactDef == Remodeling_Def)
@@ -850,7 +864,6 @@ namespace ArtifactDissimilarity
         }
 
 
-
         private void SceneDirector_onGenerateInteractableCardSelection(SceneDirector sceneDirector, DirectorCardCategorySelection dccs)
         {
             if (RunArtifactManager.instance)
@@ -862,10 +875,6 @@ namespace ArtifactDissimilarity
                 }
             }
         }
-
-
-
-
 
         public static string DreamPrimordial(On.RoR2.Language.orig_GetString_string orig, string token)
         {

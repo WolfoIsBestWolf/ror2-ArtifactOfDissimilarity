@@ -20,7 +20,7 @@ namespace ArtifactDissimilarity
             return orig(self, footPosition, rotation);
         }
 
-        private static void RerollLoadout(GameObject bodyPrefab, CharacterMaster master)
+        public static void RerollLoadout(GameObject bodyPrefab, CharacterMaster master)
         {
             CharacterBody characterBody = bodyPrefab.GetComponent<CharacterBody>();
             Loadout newloadout = new Loadout();
@@ -49,8 +49,20 @@ namespace ArtifactDissimilarity
                     }
                 }
             }
-            newloadout.bodyLoadoutManager.SetSkinIndex(characterBody.bodyIndex, (uint)Main.random.Next(0, RoR2.SkinCatalog.GetBodySkinCount(characterBody.bodyIndex)));
+            int skinIndex = Main.random.Next(0, RoR2.SkinCatalog.GetBodySkinCount(characterBody.bodyIndex));
+            newloadout.bodyLoadoutManager.SetSkinIndex(characterBody.bodyIndex, (uint)skinIndex);
             master.SetLoadoutServer(newloadout);
+
+            CharacterBody body = master.GetBody();
+            if (body)
+            {
+                body.SetLoadoutServer(newloadout);
+                ModelSkinController model = body.modelLocator.modelTransform.gameObject.GetComponent<ModelSkinController>();
+                if (model)
+                {
+                    model.ApplySkin(skinIndex);
+                }
+            }
             Debug.Log("Rerolled " + bodyPrefab + "'s Loadout ");
         }
 

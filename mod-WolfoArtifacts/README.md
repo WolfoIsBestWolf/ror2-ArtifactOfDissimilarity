@@ -24,8 +24,8 @@ This Artifact doesn't try to be balanced but is meant to still be fun.
 
 Keep in mind things such as Cloaked Chests are "Rare" and Void Cradles are "Void Stuff", and not "Chests".
 
-Interactables can spawn before the normally would.
-
+Interactables can spawn before the normally would.\
+Half the stages starting at 4 will spawn a Primordial Teleporter.
 
 ## Artifact of Wander
 An Artifact that enables the gamerule Stage Meander that makes stages progress in a random order.\
@@ -33,7 +33,7 @@ When using it in Simulacrum, the stages will progress in order instead of random
 
 Bazaar Lunar Seers will be entirely random as opposed to showing the two upcoming stages for this Artifact.\
 (Shows different hidden realms and Commencement too)\
-Every 5th stage will spawn a Primordial Teleporter.
+Every stage starting at 3 will spawn a Primordial Teleporter.
 
 ## Artifact of Remodeling
 An Artifact that will reroll all your items and equipment upon going to a new stage.
@@ -86,17 +86,21 @@ Having only large stacks of items is fun but important to still give enough cont
 
 #
 ### Codes
-![](https://cdn.discordapp.com/attachments/743886063738683413/921675680092143616/WolfoArtifactCodes.png) 
+![Image of Artifact Codes](https://cdn.discordapp.com/attachments/743886063738683413/921675680092143616/WolfoArtifactCodes.png) 
 
 
 ##
 Report bugs to @Wolfo.wolfo in the Risk of Rain 2 discord or RoR2 Modding discord.\
 If you're reporting a bug that isn't something obvious include the log file.
 
-Every played needs this mod installed.
+Every player needs this mod installed.
 
 ### Changelog:
 ```
+v2.5.3
+v2.5.2
+-Fixed bug where getting two Augments of Tranpose/Spiriting in a row could somehow just destroy a run.
+
 v2.5.1
 -Transpose
 --Clients should no longer be 1 behind, so being rerolled if enabled by Augment of Tranpose or Stage 1 should work.

@@ -210,5 +210,15 @@ namespace ArtifactDissimilarity
             orig(self, duration * 0.5f);
         }
 
+
+        public static void RemoveSpiritBuffsMethod(CharacterBody body, CharacterBody originalBody)
+        {
+            body.baseMoveSpeed = originalBody.baseMoveSpeed;
+            body.baseAcceleration = originalBody.baseAcceleration;
+            body.baseJumpPower = originalBody.baseJumpPower;
+            body.baseDamage = originalBody.baseDamage;
+            body.levelDamage = originalBody.levelDamage;
+            body.baseAttackSpeed = originalBody.baseAttackSpeed;
+        }
     }
 }

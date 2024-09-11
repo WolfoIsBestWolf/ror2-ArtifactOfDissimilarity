@@ -379,6 +379,11 @@ namespace ArtifactDissimilarity
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscShrineCleanse"),
                 selectionWeight = 100,
             };
+            DirectorCard ADShrineShaping = new DirectorCard
+            {
+                spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineColossusAccess.asset").WaitForCompletion(),
+                selectionWeight = 50,
+            };
             //ShrinesEnd
             //Drones
             DirectorCard ADBrokenDrone1 = new DirectorCard
@@ -448,9 +453,16 @@ namespace ArtifactDissimilarity
                 spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidSuppressor/iscVoidSuppressor.asset").WaitForCompletion(),
                 selectionWeight = 20,
             };
+            DirectorCard AdShrineHalcyonite = new DirectorCard
+            {
+                spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineHalcyonite.asset").WaitForCompletion(),
+                selectionWeight = 20,
+                minimumStageCompletions = 1
+            };
+
             //RareEnd
             //Duplicators
-            DirectorCard ADDuplicator = new DirectorCard
+                DirectorCard ADDuplicator = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscDuplicator"),
                 selectionWeight = 300,
@@ -536,6 +548,8 @@ namespace ArtifactDissimilarity
             mixInteractablesCards.AddCard(2, ADShrineCombat);  //20
             mixInteractablesCards.AddCard(2, ADShrineHealing);  //15
             mixInteractablesCards.AddCard(2, ADShrineRestack);  //30
+            mixInteractablesCards.AddCard(2, ADShrineShaping);  //30
+            
             //Cut to 3?
             mixInteractablesCards.AddCard(3, ADBrokenDrone1);  //15
             mixInteractablesCards.AddCard(3, ADBrokenDrone2);  //15
@@ -554,6 +568,7 @@ namespace ArtifactDissimilarity
             mixInteractablesCards.AddCard(5, ADShrineGoldshoresAccess);  //1
             mixInteractablesCards.AddCard(5, ADVoidSuppressor);  //1
             mixInteractablesCards.AddCard(5, ADLunarSeer);  //1
+            mixInteractablesCards.AddCard(5, AdShrineHalcyonite);  //1
 
             //Cut to 4?
             mixInteractablesCards.AddCard(6, ADScrapper);  //5
@@ -593,9 +608,19 @@ namespace ArtifactDissimilarity
             if (RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(Main.Dissimilarity_Def))
             {
                 Filters.ApplyCardRemovingFilters(TrimmedmixInteractablesCards);
+                Filters.MixInteractableTrimmer3(TrimmedmixInteractablesCards);
                 Filters.ApplySandSnow(TrimmedmixInteractablesCards);
 
-                Filters.MixInteractableTrimmer3(TrimmedmixInteractablesCards);
+
+                if (Run.instance && Run.instance.stageClearCount == 0)
+                {
+                    DirectorCard AltPathAccess = new DirectorCard
+                    {
+                        spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineHalcyoniteTier1.asset").WaitForCompletion(),
+                        selectionWeight = 200,
+                    };
+                    TrimmedmixInteractablesCards.AddCard(2, AltPathAccess);
+                }
 
                 DissimilarityDirectorCards = TrimmedmixInteractablesCards.GenerateDirectorCardWeightedSelection();
                 Debug.Log("Artifact of Dissimilarity: Generated Trimmed mixInteractables selection");

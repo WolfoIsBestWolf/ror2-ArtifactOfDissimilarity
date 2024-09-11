@@ -1,4 +1,38 @@
+
 ### Changelog:
+```
+v3.0.0 - Sots Fix
+-Added Sots interactables to Dissimilarity
+--Stage 1 can always have Halc Shrine with it.
+
+v.2.5.2
+-Fixed bug where getting two Augments of Tranpose/Spiriting in a row could somehow just destroy a run.
+
+v2.5.1
+-Transpose
+--Clients should no longer be 1 behind, so being rerolled if enabled by Augment of Tranpose or Stage 1 should work.
+-Dissimilarity
+--50% of stages will have a primordial teleporter starting stage 4
+--Fixed issue with Lunar Seers being blank
+-Wander : All stages will have primordial teleporters starting stage 3
+-Spiriting : Reduced full boost default player damage setting value a bit more.
+
+v2.5.0 - Cleanup & Renaming  
+-New Artifact : Artifact of Unison  
+--All item tiers only have one item  
+--Printers unaffected  
+-Spiriting Updates  
+--Spiriting now works on clients.  
+--Augment of Spiriting  
+--Stat Adjustments  
+---Full boost at 10% health instead of 0%  
+---Removed Enemy Damage Reduction  
+---Adjusted stats that enemies gain  
+---Default Cooldown Reduction set to 50%  
+---Player max Damage Reduction set to 37.5%  
+---Around a 25% DPS increase at max boost (2x attack speed at 62.5% damage)  
+-Transpose no longer rerolls Heresy items by default  
+
 v2.0.2 - Fixed for v1.2.3.0\
 v2.0.1 - Bug fixes\
 v2.0.0

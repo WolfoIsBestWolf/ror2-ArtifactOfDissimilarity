@@ -1,6 +1,6 @@
 {
     "name": "WolfoArtifacts",
-    "version_number": "2.5.3",
+    "version_number": "3.0.0",
     "website_url": "https://github.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity",
     "description": "Adds 8 Artifacts, many in the spirit of Dissonance, Kin and Metamorphosis.  Adds a updated Artifact of Spirit from RoR1.  3 of the new Artifacts are available as Simulacrum Augments.",
     "dependencies": [

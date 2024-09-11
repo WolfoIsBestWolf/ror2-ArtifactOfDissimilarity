@@ -147,7 +147,7 @@ namespace ArtifactDissimilarity
             //Debug.LogWarning(self);
         }
 
-        public static void RecalcOnShield(On.RoR2.HealthComponent.orig_ServerFixedUpdate orig, global::RoR2.HealthComponent self)
+        /*public static void RecalcOnShield(On.RoR2.HealthComponent.orig_ServerFixedUpdate orig, global::RoR2.HealthComponent self)
         {
             orig(self);
             if (!NetworkServer.active) { return; }
@@ -155,7 +155,7 @@ namespace ArtifactDissimilarity
             {
                 self.body.RecalculateStats();
             }
-        }
+        }*/
 
         public static void RecalcOnLand(On.RoR2.CharacterMotor.orig_OnLanded orig, global::RoR2.CharacterMotor self)
         {

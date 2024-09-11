@@ -8,7 +8,7 @@ namespace ArtifactDissimilarity
 {
     public class Transpose
     {
-        public static CharacterBody RandomizeLoadoutRespawnMethod(On.RoR2.CharacterMaster.orig_Respawn orig, CharacterMaster self, Vector3 footPosition, Quaternion rotation)
+        public static CharacterBody RandomizeLoadoutRespawnMethod(On.RoR2.CharacterMaster.orig_Respawn orig, CharacterMaster self, Vector3 footPosition, Quaternion rotation, bool midStageRevive)
         {
             if (self.playerCharacterMasterController)
             {
@@ -17,7 +17,7 @@ namespace ArtifactDissimilarity
                     RerollLoadout(self.bodyPrefab, self);
                 }
             }
-            return orig(self, footPosition, rotation);
+            return orig(self, footPosition, rotation, midStageRevive);
         }
 
         public static void RerollLoadout(GameObject bodyPrefab, CharacterMaster master)

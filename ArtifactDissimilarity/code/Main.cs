@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 namespace ArtifactDissimilarity
 {
     [BepInDependency("com.bepis.r2api")]
-    [BepInPlugin("com.Wolfo.WolfoArtifacts", "WolfoArtifacts", "2.5.2")]
+    [BepInPlugin("com.Wolfo.WolfoArtifacts", "WolfoArtifacts", "3.0.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
 
     public class Main : BaseUnityPlugin
@@ -187,21 +187,23 @@ namespace ArtifactDissimilarity
             orig(self);
         }
 
-        public static void StageStartMethod(On.RoR2.Stage.orig_Start orig, RoR2.Stage self)
+        public static System.Collections.IEnumerator StageStartMethod(On.RoR2.Stage.orig_Start orig, RoR2.Stage self)
         {
             //Wander.WanderStageStart();
 
-            orig(self);
+            var RETURNTHIS = orig(self);
+
             if (NetworkServer.active)
             {
                 if (RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(Brigade_Def))
                 {
-                    if (!SceneInfo.instance) { return; }
+                    if (!SceneInfo.instance) { return RETURNTHIS; }
                     self.StartCoroutine(DelayedChatMessage(Brigade.SendBrigadeMessage(), 1.5f));
                 }
                 RoR2.ArtifactTrialMissionController.trialArtifact = ArtifactCatalog.GetArtifactDef((ArtifactIndex)random.Next(ArtifactCatalog.artifactCount));
             }
 
+            return RETURNTHIS;
         }
 
         public static void OneTimeSceneDic(On.RoR2.SceneDirector.orig_Start orig, SceneDirector self)

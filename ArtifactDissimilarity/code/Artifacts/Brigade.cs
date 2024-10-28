@@ -12,7 +12,7 @@ namespace ArtifactDissimilarity
         private static List<EliteDef> EliteDefsTier1 = new List<EliteDef>();
         private static List<EliteDef> EliteDefsTier2 = new List<EliteDef>();
         public static List<EliteDef> ForUsageEliteDefList = new List<EliteDef>();
-        private static EliteDef TempForUsageEliteDef;
+        public static EliteDef TempForUsageEliteDef;
         //private static EliteDef NoRepeatForUsageEliteDef;
         // public static EquipmentIndex[] brigadedAffixes = Array.Empty<EquipmentIndex>();
 
@@ -59,13 +59,37 @@ namespace ArtifactDissimilarity
             ForUsageEliteDefList.AddRange(EliteDefsTier1);
         }
 
-        public static string SendBrigadeMessage()
+        /*public static string SendBrigadeMessage()
         {
-            string token = "<style=cWorldEvent>All elite combatants will be ";
-            string token2 = Language.GetString(TempForUsageEliteDef.modifierToken);
-            token2 = token2.Replace("{0}", "");
-            token += token2 + "</style>";
-            return token;
+            string token = Language.GetString("ANNOUNCE_BRIGADE_ELITE");
+            string token2 = string.Format(Language.GetString(TempForUsageEliteDef.modifierToken),"");
+  
+            return string.Format(token, token2);
+        }*/
+
+        public class BrigadeMessage : RoR2.ChatMessageBase
+        {
+            public override string ConstructChatString()
+            {
+                string token = Language.GetString("ANNOUNCE_BRIGADE_ELITE");
+                string token2 = string.Format(Language.GetString(eliteNameToken), "");
+
+                return string.Format(token, token2);
+            }
+
+            public string eliteNameToken;
+
+            public override void Serialize(NetworkWriter writer)
+            {
+                base.Serialize(writer);
+                writer.Write(eliteNameToken);
+            }
+
+            public override void Deserialize(NetworkReader reader)
+            {
+                base.Deserialize(reader);
+                eliteNameToken = reader.ReadString();
+            }
         }
 
         public static void EliteKinAsMethod()
@@ -131,7 +155,7 @@ namespace ArtifactDissimilarity
                 float CostMultiplier = 6;
                 if (TempForUsageEliteDef.healthBoostCoefficient > 10)
                 {
-                    CostMultiplier = 36;
+                    CostMultiplier = 30;
                 }
  
 

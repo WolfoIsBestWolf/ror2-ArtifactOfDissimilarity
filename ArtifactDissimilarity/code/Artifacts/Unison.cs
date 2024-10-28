@@ -77,7 +77,7 @@ namespace ArtifactDissimilarity
             {
                 if(self.interactableCredit > 0)
                 {
-                    self.interactableCredit += 34; //10+10+10+15
+                    self.interactableCredit += 25; //5+10+15+15
                 }
                 int Index = ClassicStageInfo.instance.interactableCategories.FindCategoryIndexByName("Duplicator");
                 if (Index != -1)
@@ -133,7 +133,7 @@ namespace ArtifactDissimilarity
             SetupNew1TierOnly(0, Run.instance.availableTier1DropList, LegacyResourcesAPI.Load<BasicPickupDropTable>("DropTables/dtDuplicatorTier1"));
             Chat.SendBroadcastChat(new Chat.SimpleChatMessage
             {
-                baseToken = "<style=cWorldEvent>[WARNING] Simulating new Unison <color=#FFFFFF>common</color> item.</style>",
+                baseToken = "ITREROLL_UNISON_WHITE",
             });
 
             //If the player for some reason gets like 5 greens in 5 waves they should probably get a different green
@@ -144,7 +144,7 @@ namespace ArtifactDissimilarity
                 Chat.SendBroadcastChat(new Chat.SimpleChatMessage
                 {
                     //baseToken = "<style=cWorldEvent>[WARNING] Item amount exceeded, simulating new Unison <color=#77FF17>uncommon</color> item.</style>",
-                    baseToken = "<style=cWorldEvent>[WARNING] Simulating new Unison <color=#77FF17>uncommon</color> item.</style>",
+                    baseToken = "ITREROLL_UNISON_GREEN",
                 });
             }
             //<color=#FF8000> 

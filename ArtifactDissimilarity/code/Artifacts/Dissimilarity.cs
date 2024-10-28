@@ -21,9 +21,8 @@ namespace ArtifactDissimilarity
         {
             mixInteractablesCards.name = "dccsMixInteractableMaster";
             TrimmedmixInteractablesCards.name = "dccsMixInteractableTrimmed";
-            DCCSmaker();
+            DCCSmaker();   
         }
-
 
         public static void ModSupport()
         {
@@ -197,7 +196,7 @@ namespace ArtifactDissimilarity
                 {
                     Chat.SendBroadcastChat(new Chat.SimpleChatMessage
                     {
-                        baseToken = "<style=cWorldEvent>The Primordial Teleporter aligns with your new dream..</style>"
+                        baseToken = "LUNAR_TELEPORTER_ALIGN_DREAM"
                     });
                     if (Main.DreamPrimordialBool == false)
                     {
@@ -333,7 +332,7 @@ namespace ArtifactDissimilarity
             DirectorCard ADVoidCamp = new DirectorCard
             {
                 spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidCamp/iscVoidCamp.asset").WaitForCompletion(),
-                selectionWeight = 10,
+                selectionWeight = 15,
             };
 
 
@@ -505,13 +504,15 @@ namespace ArtifactDissimilarity
             //DuplicatorsEnd
 
 
-            mixInteractablesCards.AddCategory("Chests", 48); //0
+            mixInteractablesCards.AddCategory("Chests", 45); //0
             mixInteractablesCards.AddCategory("Barrels", 10); //1
-            mixInteractablesCards.AddCategory("Shrines", 11); //2
-            mixInteractablesCards.AddCategory("Drones", 11); //3
-            mixInteractablesCards.AddCategory("Misc", 0); //4
-            mixInteractablesCards.AddCategory("Rare", 0.7f); //5
-            mixInteractablesCards.AddCategory("Duplicator", 9f); //6
+            mixInteractablesCards.AddCategory("Shrines", 10); //2
+            mixInteractablesCards.AddCategory("Drones", 14); //3
+            mixInteractablesCards.AddCategory("Misc", 2); //4
+            mixInteractablesCards.AddCategory("Rare", 0.4f); //5
+            mixInteractablesCards.AddCategory("Duplicator", 8f); //6
+            mixInteractablesCards.AddCategory("Void Stuff", 1f); //7
+            mixInteractablesCards.AddCategory("Storm Stuff", 1f); //8
 
 
             //Cut to 6?
@@ -591,7 +592,7 @@ namespace ArtifactDissimilarity
             //Debug.Log("Artifact of Dissimilarity: MixInteractableApplier");
             if (self.interactableCredit != 0)
             {
-                self.interactableCredit += 24;
+                self.interactableCredit += 4;
             }
             WeightedSelection<DirectorCard> DissimilarityDirectorCards = new WeightedSelection<DirectorCard>();
             TrimmedmixInteractablesCards.Clear();

@@ -13,6 +13,8 @@ The game overall shouldn't feel too different however.
 While the Artifact is on, Lunar Seers will randomly spawn across the stages and show a random stage as opposed to a upcoming one.\
 If you find one leading to Bulwarks Ambry it will be a random Artifact Trial.
 
+Primordial Teleporter might spawn on random stages post loop.
+
 ## Artifact of Kith
 An Artifact that imitates Artifact of Kin but for interactables.
 
@@ -24,8 +26,9 @@ This Artifact doesn't try to be balanced but is meant to still be fun.
 
 Keep in mind things such as Cloaked Chests are "Rare" and Void Cradles are "Void Stuff", and not "Chests".
 
-Interactables can spawn before the normally would.\
-Half the stages starting at 4 will spawn a Primordial Teleporter.
+Interactables can spawn before the normally would.
+
+About 1 more chest will spawn per stage to help with loot (16 Credits).
 
 ## Artifact of Wander
 An Artifact that enables the gamerule Stage Meander that makes stages progress in a random order.\
@@ -33,7 +36,7 @@ When using it in Simulacrum, the stages will progress in order instead of random
 
 Bazaar Lunar Seers will be entirely random as opposed to showing the two upcoming stages for this Artifact.\
 (Shows different hidden realms and Commencement too)\
-Every stage starting at 3 will spawn a Primordial Teleporter.
+Every stage after looping will spawn a Primordial Teleporter.
 
 ## Artifact of Remodeling
 An Artifact that will reroll all your items and equipment upon going to a new stage.
@@ -79,11 +82,14 @@ All item tiers will only contain one item per stage.
 
 Can't get the same category of item twice in a row.\
 Printers are unaffected. Lunar Recycler and Recycler Equipment still work.\
-Most specific item drops (Boss Drops, Pearls) will be overwritten.\
-Simualcrum will roll a new common item when the Focus moves. A new uncommon will also be rolled if you already have a lot of that one.
+Most specific item drops (Boss Drops, Pearls) will be overwritten.
+
+Simualcrum will roll a new common item when the Focus moves.\
+A new uncommon will also be rolled if you already have a lot of that one.
 
 Having only large stacks of items is fun but important to still give enough control to not end up with only bad items.
 
+More printers will spawn when using this artifact and the director is given slightly more interactable credits. (25 Credits)
 #
 ### Codes
 ![Image of Artifact Codes](https://cdn.discordapp.com/attachments/743886063738683413/921675680092143616/WolfoArtifactCodes.png) 

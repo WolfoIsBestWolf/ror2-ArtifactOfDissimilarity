@@ -1,6 +1,16 @@
 
 ### Changelog:
 ```
+v3.1.0
+Now uses translate-able language tokens.
+
+Allowed Treeborn and Helminth on Wander.
+Added new Hidden Realms to random Seers.
+Reduced the amount of Primordial Teleporters.
+-Dismiliariy 1/4 after stage 5. Wander every other stage Starting at stage 5)
+Reduced bonus credits of Dissimiliarity, Kith and Unison. (4, 16, 25)
+
+
 v3.0.0 - Sots Fix
 -Added Sots interactables to Dissimilarity
 --Stage 1 can always have Halc Shrine with it.

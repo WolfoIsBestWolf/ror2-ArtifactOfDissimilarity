@@ -78,20 +78,42 @@ namespace ArtifactDissimilarity
             sgInfiniteTowerStageXMoonWander._sceneEntries = sgInfiniteTowerStageXMoonWander._sceneEntries.Add(sgInfiniteTowerStage1._sceneEntries[3]);
 
             MakeSeerMaterials();
+
+
+            SceneDef scene = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC2/habitat/habitat.asset").WaitForCompletion();
+            scene.validForRandomSelection = true;
+            scene = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC2/helminthroost/helminthroost.asset").WaitForCompletion();
+            scene.validForRandomSelection = true;
+
+            // On.RoR2.PortalSpawner.isValidStage += AlwaysValidGreensOnLunarTP;
         }
 
+        private static bool AlwaysValidGreensOnLunarTP(On.RoR2.PortalSpawner.orig_isValidStage orig, PortalSpawner self)
+        {
+            if (self.portalSpawnCard)
+            {
+                if (self.gameObject.name.StartsWith("LunarT"))
+                {
+                    if (self.portalSpawnCard.name.StartsWith("iscColo"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return orig(self);
+        }
 
         public static void MakeSeerMaterials()
         {
-            SceneDef Roost = LegacyResourcesAPI.Load<SceneDef>("scenedefs/blackbeach");
+            //SceneDef Roost = LegacyResourcesAPI.Load<SceneDef>("scenedefs/blackbeach");
             SceneDef Plains = LegacyResourcesAPI.Load<SceneDef>("scenedefs/golemplains");
             SceneDef Sand = LegacyResourcesAPI.Load<SceneDef>("scenedefs/goolake");
-            SceneDef Swamp = LegacyResourcesAPI.Load<SceneDef>("scenedefs/foggyswamp");
-            SceneDef Acres = LegacyResourcesAPI.Load<SceneDef>("scenedefs/wispgraveyard");
+            //SceneDef Swamp = LegacyResourcesAPI.Load<SceneDef>("scenedefs/foggyswamp");
+            //SceneDef Acres = LegacyResourcesAPI.Load<SceneDef>("scenedefs/wispgraveyard");
             SceneDef Snow = LegacyResourcesAPI.Load<SceneDef>("scenedefs/frozenwall");
             SceneDef Depths = LegacyResourcesAPI.Load<SceneDef>("scenedefs/dampcavesimple");
-            SceneDef Grove = LegacyResourcesAPI.Load<SceneDef>("scenedefs/rootjungle");
-            SceneDef Siren = LegacyResourcesAPI.Load<SceneDef>("scenedefs/shipgraveyard");
+            //SceneDef Grove = LegacyResourcesAPI.Load<SceneDef>("scenedefs/rootjungle");
+            //SceneDef Siren = LegacyResourcesAPI.Load<SceneDef>("scenedefs/shipgraveyard");
             SceneDef SkyMeadow = LegacyResourcesAPI.Load<SceneDef>("scenedefs/skymeadow");
             SceneDef Moon2 = LegacyResourcesAPI.Load<SceneDef>("scenedefs/moon2");
             SceneDef Gold = LegacyResourcesAPI.Load<SceneDef>("scenedefs/goldshores");
@@ -104,12 +126,18 @@ namespace ArtifactDissimilarity
             SceneDef MenuLobby = LegacyResourcesAPI.Load<SceneDef>("scenedefs/lobby");
 
 
-            SceneDef SnowyForest = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/snowyforest/snowyforest.asset").WaitForCompletion();
+            //SceneDef SnowyForest = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/snowyforest/snowyforest.asset").WaitForCompletion();
             SceneDef AncientLoft = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/ancientloft/ancientloft.asset").WaitForCompletion();
-            SceneDef SulfurPools = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/sulfurpools/sulfurpools.asset").WaitForCompletion();
+            //SceneDef SulfurPools = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/sulfurpools/sulfurpools.asset").WaitForCompletion();
             SceneDef VoidStage = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/voidstage/voidstage.asset").WaitForCompletion();
             SceneDef VoidRaid = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/voidraid/voidraid.asset").WaitForCompletion();
-            scenesSeerDestinations = new List<SceneDef> { Roost, Plains, Sand, Swamp, Acres, Snow, Depths, Grove, Siren, SkyMeadow, Moon2, Gold, Arena, MysterySpace, ArtifactWorld, SnowyForest, AncientLoft, SulfurPools, VoidStage };
+
+            SceneDef meridian = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC2/meridian/meridian.asset").WaitForCompletion();
+            SceneDef artifactworld01 = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC2/artifactworld01/artifactworld01.asset").WaitForCompletion();
+            SceneDef artifactworld02 = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC2/artifactworld02/artifactworld02.asset").WaitForCompletion();
+            SceneDef artifactworld03 = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC2/artifactworld03/artifactworld03.asset").WaitForCompletion();
+
+            scenesSeerDestinations = new List<SceneDef> { artifactworld01, artifactworld02, artifactworld03, Moon2, Gold, Arena, MysterySpace, ArtifactWorld, VoidStage, meridian };
 
             //LegacyResourcesAPI.Load<SceneDef>("scenedefs/moon").portalSelectionMessageString = "<style=cWorldEvent>You are having a nightmare</style>";
 
@@ -130,33 +158,40 @@ namespace ArtifactDissimilarity
             Material PortalMaterialITMoon = Object.Instantiate(Moon2.portalMaterial);
 
 
+            Moon2.portalMaterial.SetFloat("_Boost", 1);
+            Moon2.portalMaterial.mainTextureScale = new Vector2(1f, 0.5f);
+            meridian.portalMaterial.SetFloat("_Boost", 1);
+
+
+
             PortalMaterialArena.mainTexture = Arena.previewTexture;
             Arena.portalMaterial = PortalMaterialArena;
-            Arena.portalSelectionMessageString = "<style=cWorldEvent>You dream of imprisonment.</style>";
+            Arena.portalSelectionMessageString = "BAZAAR_SEER_ARENA";
 
             PortalMaterialArtifactWorld.mainTexture = ArtifactWorld.previewTexture;
             ArtifactWorld.portalMaterial = PortalMaterialArtifactWorld;
-            ArtifactWorld.portalSelectionMessageString = "<style=cWorldEvent>You dream of sacred treasures.</style>";
+            artifactworld01.portalSelectionMessageString = "BAZAAR_SEER_ARTIFACTWORLD";
+            artifactworld02.portalSelectionMessageString = "BAZAAR_SEER_ARTIFACTWORLD";
+            artifactworld03.portalSelectionMessageString = "BAZAAR_SEER_ARTIFACTWORLD";
+
+        
 
             PortalMaterialBazaar.mainTexture = Bazaar.previewTexture;
             Bazaar.portalMaterial = PortalMaterialBazaar;
-            Bazaar.portalSelectionMessageString = "<style=cWorldEvent>You dream of spending.</style>";
+            Bazaar.portalSelectionMessageString = "BAZAAR_SEER_SHOP";
 
             PortalMaterialLimbo.mainTexture = Limbo.previewTexture;
             Limbo.portalMaterial = PortalMaterialLimbo;
-            Limbo.portalSelectionMessageString = "<style=cWorldEvent>You dream of peace.</style>";
+            Limbo.portalSelectionMessageString = "BAZAAR_SEER_LIMBO";
 
             PortalMaterialMysterySpace.mainTexture = MysterySpace.previewTexture;
             MysterySpace.portalMaterial = PortalMaterialMysterySpace;
-            MysterySpace.portalSelectionMessageString = "<style=cWorldEvent>You dream of lost respite.</style>";
-
-            PortalMaterialMenuLobby.mainTexture = MenuLobby.previewTexture;
-            MenuLobby.portalMaterial = PortalMaterialMenuLobby;
-            MenuLobby.portalSelectionMessageString = "<style=cWorldEvent>You're having a nightmare about Commandos disapproval</style>";
+            MysterySpace.portalSelectionMessageString = "BAZAAR_SEER_MS";
 
             PortalMaterialVoidRaid.mainTexture = VoidRaid.previewTexture;
             VoidRaid.portalMaterial = PortalMaterialVoidRaid;
-            VoidRaid.portalSelectionMessageString = "<style=cWorldEvent>You dream of unfathomable depths.</style>";
+            VoidRaid.portalSelectionMessageString = "BAZAAR_SEER_VOIDLING";
+
 
             Color ITBazaarPreview = new Color(0.15f, 0.15f, 1f, 1f);
             Color ITBazaarPreviewBlue = new Color(0.5f, 0.5f, 1f, 1f);
@@ -219,6 +254,14 @@ namespace ArtifactDissimilarity
             }
         }
 
+        public static bool PickNextStageScene_ValidNextStage(SceneDef sceneDef)
+		{
+            if (sceneDef.requiredExpansion && !Run.instance.IsExpansionEnabled(sceneDef.requiredExpansion))
+            {
+                return false;
+            }
+			return (sceneDef.hasAnyDestinations && sceneDef.validForRandomSelection);
+        }
 
         public static void WanderNoRepeatStages(On.RoR2.Run.orig_PickNextStageScene orig, Run self, WeightedSelection<SceneDef> choices)
         {

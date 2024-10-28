@@ -26,7 +26,7 @@ namespace ArtifactDissimilarity
         {
             if (self.interactableCredit != 0)
             {
-                self.interactableCredit += 21;
+                self.interactableCredit += 16;
             }
             WeightedSelection<DirectorCard> KithDirectorCards = new WeightedSelection<DirectorCard>();
             if (ClassicStageInfo.instance != null)

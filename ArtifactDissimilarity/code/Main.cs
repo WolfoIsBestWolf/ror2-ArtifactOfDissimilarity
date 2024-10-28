@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 namespace ArtifactDissimilarity
 {
     [BepInDependency("com.bepis.r2api")]
-    [BepInPlugin("com.Wolfo.WolfoArtifacts", "WolfoArtifacts", "3.0.0")]
+    [BepInPlugin("com.Wolfo.WolfoArtifacts", "WolfoArtifacts", "3.1.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
 
     public class Main : BaseUnityPlugin
@@ -42,6 +42,7 @@ namespace ArtifactDissimilarity
 
         public void Awake()
         {
+            Assets.Init(Info);
             WConfig.InitConfig();
             ArtifactAdded();
 
@@ -61,6 +62,9 @@ namespace ArtifactDissimilarity
             On.RoR2.SceneDirector.Start += ArtifactCheckerOnStageAwake;
 
             FixVoidSuppresor();
+
+            ChatMessageBase.chatMessageTypeToIndex.Add(typeof(Brigade.BrigadeMessage), (byte)ChatMessageBase.chatMessageIndexToType.Count);
+            ChatMessageBase.chatMessageIndexToType.Add(typeof(Brigade.BrigadeMessage));
 
             LegacyResourcesAPI.Load<GameObject>("Prefabs/networkedobjects/LunarCauldron, WhiteToGreen").GetComponent<ShopTerminalBehavior>().dropTable = LegacyResourcesAPI.Load<BasicPickupDropTable>("DropTables/dtDuplicatorTier2");
             LegacyResourcesAPI.Load<GameObject>("Prefabs/networkedobjects/LunarCauldron, GreenToRed Variant").GetComponent<ShopTerminalBehavior>().dropTable = LegacyResourcesAPI.Load<BasicPickupDropTable>("DropTables/dtDuplicatorTier3");
@@ -164,6 +168,29 @@ namespace ArtifactDissimilarity
                 Kith.KithNoRepeat = null;
                 Brigade.SetupBrigade();
             }
+
+            if (Wander.scenesSeerDestinations.Count < 15)
+            {
+                for (int i = Wander.scenesSeerDestinations.Count-1; i < 0; i--)
+                {
+                    //Debug.Log(Wander.scenesSeerDestinations[i]);
+                    if (Wander.PickNextStageScene_ValidNextStage(Wander.scenesSeerDestinations[i]))
+                    {
+                        //Debug.Log(Wander.scenesSeerDestinations[i]);
+                        Wander.scenesSeerDestinations.Remove(Wander.scenesSeerDestinations[i]);
+                    }
+                }
+
+                for (int i = 0; i < SceneCatalog.allStageSceneDefs.Length; i++)
+                {
+                    //Debug.Log(Wander.scenesSeerDestinations[i]);
+                    if (Wander.PickNextStageScene_ValidNextStage(SceneCatalog.allStageSceneDefs[i]))
+                    {
+                        //Debug.Log(Wander.scenesSeerDestinations[i]);
+                        Wander.scenesSeerDestinations.Add(SceneCatalog.allStageSceneDefs[i]);
+                    }
+                }
+            }
         }
 
         public static IEnumerator DelayedRespawn(PlayerCharacterMasterController playerCharacterMasterController, float delay)
@@ -198,7 +225,7 @@ namespace ArtifactDissimilarity
                 if (RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(Brigade_Def))
                 {
                     if (!SceneInfo.instance) { return RETURNTHIS; }
-                    self.StartCoroutine(DelayedChatMessage(Brigade.SendBrigadeMessage(), 1.5f));
+                    self.StartCoroutine(DelayedBrigadeMessage(Brigade.TempForUsageEliteDef.modifierToken, 1.5f));
                 }
                 RoR2.ArtifactTrialMissionController.trialArtifact = ArtifactCatalog.GetArtifactDef((ArtifactIndex)random.Next(ArtifactCatalog.artifactCount));
             }
@@ -356,8 +383,8 @@ namespace ArtifactDissimilarity
             //
 
             //Debug.Log("Loading Artifact of Dissimilarity");
-            Dissimilarity_Def.nameToken = "Artifact of Dissimilarity";
-            Dissimilarity_Def.descriptionToken = "Interactables can appear outside their usual environments.";
+            Dissimilarity_Def.nameToken = "ARTIFACT_MIX_INTERACTABLE_NAME";
+            Dissimilarity_Def.descriptionToken = "ARTIFACT_MIX_INTERACTABLE_DESC";
             Dissimilarity_Def.smallIconSelectedSprite = DisimOn;
             Dissimilarity_Def.smallIconDeselectedSprite = DisimOff;
             Dissimilarity_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/MixEnemy").pickupModelPrefab;
@@ -376,8 +403,8 @@ namespace ArtifactDissimilarity
             }
 
             //Debug.Log("Loading Artifact of Kith");
-            Kith_Def.nameToken = "Artifact of Kith";
-            Kith_Def.descriptionToken = "Each Interactable category will only contain one entry per stage.";
+            Kith_Def.nameToken = "ARTIFACT_SINGLE_INTERACTABLE_NAME";
+            Kith_Def.descriptionToken = "ARTIFACT_SINGLE_INTERACTABLE_DESC";
             Kith_Def.smallIconSelectedSprite = KithOn;
             Kith_Def.smallIconDeselectedSprite = KithOff;
             Kith_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/SingleMonsterType").pickupModelPrefab;
@@ -396,11 +423,8 @@ namespace ArtifactDissimilarity
             }
 
             //Debug.Log("Loading Artifact of Wander");
-            Wander_Def.nameToken = "Artifact of Wander";
-            //Wander.descriptionToken = "Stages progress in a random order.";
-            //Wander.descriptionToken = "Stages progress in a random order.\nSimulacrum/Prismatic: Start in a random stage, normal stage order.";
-            //Wander.descriptionToken = "Stages progress in a random order.\nAlt Gamemodes: normal stage order.";
-            Wander_Def.descriptionToken = "Stages progress in a random order.\nSimulacrum: stages are in order.";
+            Wander_Def.nameToken = "ARTIFACT_RANDOM_STAGEORDER_NAME";
+            Wander_Def.descriptionToken = "ARTIFACT_RANDOM_STAGEORDER_DESC";
             Wander_Def.smallIconSelectedSprite = WanderOn;
             Wander_Def.smallIconDeselectedSprite = WanderOff;
             Wander_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/Enigma").pickupModelPrefab;
@@ -425,8 +449,8 @@ namespace ArtifactDissimilarity
             On.RoR2.SceneDirector.PlaceTeleporter += WanderLunarTeleporter;
 
             //Debug.Log("Loading Artifact of Remodeling");
-            Remodeling_Def.nameToken = "Artifact of Remodeling";
-            Remodeling_Def.descriptionToken = "Reroll all passive items and equipments each stage.";
+            Remodeling_Def.nameToken = "ARTIFACT_REROLL_ITEMS_NAME";
+            Remodeling_Def.descriptionToken = "ARTIFACT_REROLL_ITEMS_DESC";
             Remodeling_Def.smallIconSelectedSprite = RemodelingOn;
             Remodeling_Def.smallIconDeselectedSprite = RemodelingOff;
             Remodeling_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/RandomSurvivorOnRespawn").pickupModelPrefab;
@@ -449,8 +473,8 @@ namespace ArtifactDissimilarity
 
 
             //Debug.Log("Loading Artifact of Spiriting");
-            Spiriting_Def.nameToken = "Artifact of Spiriting";
-            Spiriting_Def.descriptionToken = "All characters move and attack faster the lower their health gets.";
+            Spiriting_Def.nameToken = "ARTIFACT_SPEED_ONLOWHEALTH_NAME";
+            Spiriting_Def.descriptionToken = "ARTIFACT_SPEED_ONLOWHEALTH_DESC";
             Spiriting_Def.smallIconSelectedSprite = SpiritingOn;
             Spiriting_Def.smallIconDeselectedSprite = SpiritingOff;
             Spiriting_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/TeamDeath").pickupModelPrefab;
@@ -470,8 +494,8 @@ namespace ArtifactDissimilarity
 
 
             //Debug.Log("Loading Artifact of Brigade");
-            Brigade_Def.nameToken = "Artifact of Brigade";
-            Brigade_Def.descriptionToken = "All elites will be the same type per stage.";
+            Brigade_Def.nameToken = "ARTIFACT_SINGLE_ELITE_NAME";
+            Brigade_Def.descriptionToken = "ARTIFACT_SINGLE_ELITE_DESC";
             Brigade_Def.smallIconSelectedSprite = BrigadeOn;
             Brigade_Def.smallIconDeselectedSprite = BrigadeOff;
             Brigade_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/MonsterTeamGainsItems").pickupModelPrefab;
@@ -487,8 +511,8 @@ namespace ArtifactDissimilarity
             }
 
             //Debug.Log("Loading Artifact of Transpose");
-            Transpose_Def.nameToken = "Artifact of Transpose";
-            Transpose_Def.descriptionToken = "Get a randomized skill loadout every stage.";
+            Transpose_Def.nameToken = "ARTIFACT_REROLL_SKILLS_NAME";
+            Transpose_Def.descriptionToken = "ARTIFACT_REROLL_SKILLS_DESC";
             Transpose_Def.smallIconSelectedSprite = TransposeOn;
             Transpose_Def.smallIconDeselectedSprite = TransposeOff;
             Transpose_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/RandomSurvivorOnRespawn").pickupModelPrefab;
@@ -499,8 +523,8 @@ namespace ArtifactDissimilarity
             }
 
 
-            Unison_Def.nameToken = "Artifact of Unison";
-            Unison_Def.descriptionToken = "All item tiers only contain one item per stage.\nPrinters are unaffected.";
+            Unison_Def.nameToken = "ARTIFACT_SINGLE_ITEM_NAME";
+            Unison_Def.descriptionToken = "ARTIFACT_SINGLE_ITEM_DESC";
             Unison_Def.smallIconSelectedSprite = UnisonArtifactOnS;
             Unison_Def.smallIconDeselectedSprite = UnisonArtifactOffS;
             Unison_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/SingleMonsterType").pickupModelPrefab;
@@ -522,11 +546,10 @@ namespace ArtifactDissimilarity
             InfiniteTowerWaveArtifactSingleEliteType.GetComponent<ArtifactEnabler>().artifactDef = Brigade_Def;
             InfiniteTowerWaveArtifactSingleEliteType.GetComponent<InfiniteTowerWaveController>().overlayEntries[1].prefab = InfiniteTowerCurrentArtifactSingleEliteTypeWaveUI;
             InfiniteTowerWaveArtifactSingleEliteType.GetComponent<CombatDirector>().eliteBias = 0.25f;
-            InfiniteTowerWaveArtifactSingleEliteType.GetComponent<InfiniteTowerWaveController>().baseCredits = 200;
 
             InfiniteTowerCurrentArtifactSingleEliteTypeWaveUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().sprite = Brigade_Def.smallIconSelectedSprite;
-            InfiniteTowerCurrentArtifactSingleEliteTypeWaveUI.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<RoR2.UI.InfiniteTowerWaveCounter>().token = "Wave {0} - Augment of Brigade";
-            InfiniteTowerCurrentArtifactSingleEliteTypeWaveUI.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<RoR2.UI.LanguageTextMeshController>().token = "All elites will be of the same type.";
+            InfiniteTowerCurrentArtifactSingleEliteTypeWaveUI.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<RoR2.UI.InfiniteTowerWaveCounter>().token = "ITWAVE_ARTIFACT_SINGLE_ELITE_NAME";
+            InfiniteTowerCurrentArtifactSingleEliteTypeWaveUI.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<RoR2.UI.LanguageTextMeshController>().token = "ITWAVE_ARTIFACT_SINGLE_ELITE_DESC";
 
             ArtifacSingleEliteTypeDisabledPrerequisite.bannedArtifact = Brigade_Def;
             ArtifacSingleEliteTypeDisabledPrerequisite.name = "ArtifacSingleEliteTypeDisabledPrerequisite";
@@ -542,11 +565,10 @@ namespace ArtifactDissimilarity
 
             InfiniteTowerWaveArtifactRandomLoadout.GetComponent<ArtifactEnabler>().artifactDef = Transpose_Def;
             InfiniteTowerWaveArtifactRandomLoadout.GetComponent<InfiniteTowerWaveController>().overlayEntries[1].prefab = InfiniteTowerCurrentArtifactRandomLoadoutWaveUI;
-            InfiniteTowerWaveArtifactRandomLoadout.GetComponent<InfiniteTowerWaveController>().baseCredits = 200;
 
             InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().sprite = Transpose_Def.smallIconSelectedSprite;
-            InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<RoR2.UI.InfiniteTowerWaveCounter>().token = "Wave {0} - Augment of Transpose";
-            InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<RoR2.UI.LanguageTextMeshController>().token = "Use a random loadout for this wave.";
+            InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<RoR2.UI.InfiniteTowerWaveCounter>().token = "ITWAVE_ARTIFACT_REROLL_SKILLS_NAME";
+            InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<RoR2.UI.LanguageTextMeshController>().token = "ITWAVE_ARTIFACT_REROLL_SKILLS_DESC";
 
             ArtifacRandomLoadoutDisabledPrerequisite.bannedArtifact = Transpose_Def;
             ArtifacRandomLoadoutDisabledPrerequisite.name = "ArtifacRandomLoadoutDisabledPrerequisite";
@@ -561,48 +583,29 @@ namespace ArtifactDissimilarity
 
             InfiniteTowerWaveArtifactStatsOnLowHealth.GetComponent<ArtifactEnabler>().artifactDef = Spiriting_Def;
             InfiniteTowerWaveArtifactStatsOnLowHealth.GetComponent<InfiniteTowerWaveController>().overlayEntries[1].prefab = InfiniteTowerCurrentArtifactStatsOnLowHealthWaveUI;
-            InfiniteTowerWaveArtifactStatsOnLowHealth.GetComponent<InfiniteTowerWaveController>().baseCredits = 200;
 
             InfiniteTowerCurrentArtifactStatsOnLowHealthWaveUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().sprite = Spiriting_Def.smallIconSelectedSprite;
-            InfiniteTowerCurrentArtifactStatsOnLowHealthWaveUI.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<RoR2.UI.InfiniteTowerWaveCounter>().token = "Wave {0} - Augment of Spiriting";
-            InfiniteTowerCurrentArtifactStatsOnLowHealthWaveUI.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<RoR2.UI.LanguageTextMeshController>().token = "Characters move and attack faster at lower health.";
+            InfiniteTowerCurrentArtifactStatsOnLowHealthWaveUI.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<RoR2.UI.InfiniteTowerWaveCounter>().token = "ITWAVE_ARTIFACT_SPEED_ONLOWHEALTH_NAME";
+            InfiniteTowerCurrentArtifactStatsOnLowHealthWaveUI.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<RoR2.UI.LanguageTextMeshController>().token = "ITWAVE_ARTIFACT_SPEED_ONLOWHEALTH_DESC";
 
             ArtifacStatsOnLowHealthDisabledPrerequisite.bannedArtifact = Spiriting_Def;
             ArtifacStatsOnLowHealthDisabledPrerequisite.name = "ArtifacStatsOnLowHealthDisabledPrerequisite";
 
             InfiniteTowerWaveCategory.WeightedWave ITBasicArtifactStatsOnLowHealth = new InfiniteTowerWaveCategory.WeightedWave { wavePrefab = InfiniteTowerWaveArtifactStatsOnLowHealth, weight = 1f, prerequisites = ArtifacStatsOnLowHealthDisabledPrerequisite };
             //
-            /*
-            GameObject InfiniteTowerWaveArtifact_Unison = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveArtifactBomb.prefab").WaitForCompletion(), "InfiniteTowerWaveArtifactSingleItemPerTier", true);
-            GameObject InfiniteTowerWaveArtifact_UnisonUI = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerCurrentArtifactBombWaveUI.prefab").WaitForCompletion(), "InfiniteTowerWaveArtifact_UnisonUI", false);
-            InfiniteTowerWaveArtifactPrerequisites ArtifacPreq_Unision = ScriptableObject.CreateInstance<RoR2.InfiniteTowerWaveArtifactPrerequisites>();
-
-            InfiniteTowerWaveArtifact_Unison.GetComponent<ArtifactEnabler>().artifactDef = Unison_Def;
-            InfiniteTowerWaveArtifact_Unison.GetComponent<InfiniteTowerWaveController>().overlayEntries[1].prefab = InfiniteTowerWaveArtifact_UnisonUI;
-            InfiniteTowerWaveArtifact_Unison.GetComponent<InfiniteTowerWaveController>().baseCredits *= 1.25f;
-
-            InfiniteTowerWaveArtifact_UnisonUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().sprite = Unison_Def.smallIconSelectedSprite;
-            InfiniteTowerWaveArtifact_UnisonUI.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<RoR2.UI.InfiniteTowerWaveCounter>().token = "Wave {0} - Augment of Unison";
-            InfiniteTowerWaveArtifact_UnisonUI.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<RoR2.UI.LanguageTextMeshController>().token = "All item tiers contain only one item.";
-
-            ArtifacPreq_Unision.bannedArtifact = Unison_Def;
-            ArtifacPreq_Unision.name = "ArtifacPreq_Unision";
-
-            InfiniteTowerWaveCategory.WeightedWave ITBasicArtifactUnison = new InfiniteTowerWaveCategory.WeightedWave { wavePrefab = InfiniteTowerWaveArtifact_Unison, weight = 1f, prerequisites = ArtifacPreq_Unision };
-            */
-
+            //
             RoR2.InfiniteTowerWaveCategory ITBasicWaves = Addressables.LoadAssetAsync<RoR2.InfiniteTowerWaveCategory>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveCategories/CommonWaveCategory.asset").WaitForCompletion();
             ITBasicWaves.wavePrefabs = ITBasicWaves.wavePrefabs.Add(ITBasicArtifactSingleEliteType, ITBasicArtifactRandomLoadout, ITBasicArtifactStatsOnLowHealth);
 
         }
 
 
-        public static IEnumerator DelayedChatMessage(string chatMessage, float delay)
+        public static IEnumerator DelayedBrigadeMessage(string elite, float delay)
         {
             yield return new WaitForSeconds(delay);
-            Chat.SendBroadcastChat(new Chat.SimpleChatMessage
+            Chat.SendBroadcastChat(new Brigade.BrigadeMessage
             {
-                baseToken = chatMessage
+                eliteNameToken = elite
             });
             yield break;
         }
@@ -625,10 +628,9 @@ namespace ArtifactDissimilarity
                 if (Brigade.ForUsageEliteDefList.Count > 0 && SceneInfo.instance && Run.instance)
                 {
                     Brigade.EliteKinAsMethod();
-                    string token = Brigade.SendBrigadeMessage();
-                    Chat.SendBroadcastChat(new Chat.SimpleChatMessage
+                    Chat.SendBroadcastChat(new Brigade.BrigadeMessage
                     {
-                        baseToken = token
+                        eliteNameToken = Brigade.TempForUsageEliteDef.modifierToken
                     });
                 }
 
@@ -799,14 +801,14 @@ namespace ArtifactDissimilarity
             {
                 if (RunArtifactManager.instance.IsArtifactEnabled(Wander_Def))
                 {
-                    if (Run.instance.NetworkstageClearCount >= 2)
+                    if (Run.instance.NetworkstageClearCount >= 4 && Run.instance.NetworkstageClearCount % 2 == 0)
                     {
                         self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
                     }
                 }
                 else if (RunArtifactManager.instance.IsArtifactEnabled(Dissimilarity_Def))
                 {
-                    if (Run.instance.NetworkstageClearCount >= 3 && random.Next(2) == 1)
+                    if (Run.instance.NetworkstageClearCount > 4 && random.Next(4) == 1)
                     {
                         self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
                     }
@@ -814,11 +816,6 @@ namespace ArtifactDissimilarity
                     {
                         self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
                         //Debug.LogWarning("End of Loop Primordial");
-                    }
-                    else if (SceneInfo.instance.sceneDef.baseSceneName == "skymeadow")
-                    {
-                        self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
-                        //Debug.LogWarning("SkyMeadow Primordial");
                     }
                 }
             }

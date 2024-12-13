@@ -12,23 +12,14 @@ using UnityEngine.Networking;
 namespace ArtifactDissimilarity
 {
     [BepInDependency("com.bepis.r2api")]
-    [BepInPlugin("com.Wolfo.WolfoArtifacts", "WolfoArtifacts", "3.1.0")]
+    [BepInPlugin("com.Wolfo.WolfoArtifacts", "WolfoArtifacts", "3.2.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
 
     public class Main : BaseUnityPlugin
     {
         public static readonly System.Random random = new System.Random();
-
-        public static bool DreamPrimordialBool = false;
-
-        public static SceneDef WanderPreviousSceneDef = null;
-
-        public static ArtifactDef Command = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/Command");
-        public static ArtifactDef MonsterTeamGain = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/MonsterTeamGainsItems");
-        public static ArtifactDef RiskyConformity;
-        //public static ArtifactDef tempartifact = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/FriendlyFire");
-        //
-        //
+ 
+  
         public static ArtifactDef Dissimilarity_Def = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Kith_Def = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Wander_Def = ScriptableObject.CreateInstance<ArtifactDef>();
@@ -37,71 +28,47 @@ namespace ArtifactDissimilarity
         public static ArtifactDef Brigade_Def = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Transpose_Def = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Unison_Def = ScriptableObject.CreateInstance<ArtifactDef>();
-
-        public static SceneExitController tempexitcontroller;
+        public static ArtifactDef Obscurity_Def = ScriptableObject.CreateInstance<ArtifactDef>();
 
         public void Awake()
         {
             Assets.Init(Info);
             WConfig.InitConfig();
             ArtifactAdded();
-
             Spiriting.Start();
             Wander.Start();
             Dissimilarity.Start();
             Kith.Start();
-
+            WanderDissim_LunarSeer.Start();
+            
             GameModeCatalog.availability.CallWhenAvailable(ModSupport);
 
             RunArtifactManager.onArtifactEnabledGlobal += RunArtifactManager_onEnabledArtifactGlobal;
             RunArtifactManager.onArtifactDisabledGlobal += RunArtifactManager_onDisableArtifactGlobal;
 
-            On.RoR2.SceneDirector.Start += OneTimeSceneDic;
-            RoR2.SceneDirector.onGenerateInteractableCardSelection += SceneDirector_onGenerateInteractableCardSelection;
-
-            On.RoR2.SceneDirector.Start += ArtifactCheckerOnStageAwake;
-
-            FixVoidSuppresor();
 
             ChatMessageBase.chatMessageTypeToIndex.Add(typeof(Brigade.BrigadeMessage), (byte)ChatMessageBase.chatMessageIndexToType.Count);
             ChatMessageBase.chatMessageIndexToType.Add(typeof(Brigade.BrigadeMessage));
 
+            FixVoidSuppresor();
             LegacyResourcesAPI.Load<GameObject>("Prefabs/networkedobjects/LunarCauldron, WhiteToGreen").GetComponent<ShopTerminalBehavior>().dropTable = LegacyResourcesAPI.Load<BasicPickupDropTable>("DropTables/dtDuplicatorTier2");
             LegacyResourcesAPI.Load<GameObject>("Prefabs/networkedobjects/LunarCauldron, GreenToRed Variant").GetComponent<ShopTerminalBehavior>().dropTable = LegacyResourcesAPI.Load<BasicPickupDropTable>("DropTables/dtDuplicatorTier3");
             LegacyResourcesAPI.Load<GameObject>("Prefabs/networkedobjects/LunarCauldron, RedToWhite Variant").GetComponent<ShopTerminalBehavior>().dropTable = LegacyResourcesAPI.Load<BasicPickupDropTable>("DropTables/dtDuplicatorTier1");
 
 
-            //What the hell are these
-            //This was like some, carry over items between Void Fields
-            //As to not make going to it multiple times hella boring
-            //But like I wouldn't do that to myself once to begin with
-            /* On.RoR2.ArenaMissionController.Awake += (orig, self) =>
-            {
-                orig(self);
-                if (NetworkServer.active && ArenaInventory)
-                {
-                    self.gameObject.GetComponent<Inventory>().CopyItemsFrom(ArenaInventory);
-                    //Debug.LogWarning(ArenaInventory.itemAcquisitionOrder.Count);
-                }
-            };
-            On.RoR2.ArenaMissionController.OnDisable += (orig, self) =>
-            {
-                if (NetworkServer.active && ArenaInventory)
-                {
-                    if (self.gameObject && self.gameObject.GetComponent<Inventory>())
-                    {
-                        ArenaInventory.CopyItemsFrom(self.gameObject.GetComponent<Inventory>());
-                    }
-                    //Debug.LogWarning(ArenaInventory.itemAcquisitionOrder.Count);
-                }
-                orig(self);
-            };*/
+            On.RoR2.Stage.Start += StageStartMethod;
+            On.RoR2.Run.Start += RunStartHook;
+            On.RoR2.Run.OnDisable += WanderEnder;
+
+            WConfig.EnableObscurityArtifact.Value = false;
+            Obscurity.Start();
         }
+ 
 
         public static void FixVoidSuppresor()
         {
 
-            Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidSuppressor/iscVoidSuppressor.asset").WaitForCompletion().directorCreditCost = 5;
+            Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidSuppressor/iscVoidSuppressor.asset").WaitForCompletion().directorCreditCost = 4;
             //Since we got Void Soupper in Dissim we gotta fix the vanilla up
             GameObject VoidSuppressorPrefab = Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/VoidSuppressor/VoidSuppressor.prefab").WaitForCompletion();
 
@@ -135,62 +102,45 @@ namespace ArtifactDissimilarity
                 ScrapGreenSuppressed.deprecatedTier = ItemTier.Tier2;
                 ScrapRedSuppressed.deprecatedTier = ItemTier.Tier3;
             };
-        }
 
-
-        public static void ArtifactCheckerOnStageAwake(On.RoR2.SceneDirector.orig_Start orig, SceneDirector self)
-        {
-            if (NetworkServer.active && RunArtifactManager.instance)
+            GameObject Hud = Addressables.LoadAssetAsync<GameObject>(key: "RoR2/Base/UI/HUDSimple.prefab").WaitForCompletion();
+            try
             {
-                if (RunArtifactManager.instance.IsArtifactEnabled(Brigade_Def))
-                {
-                    Brigade.EliteKinAsMethod();
-                }
+                Transform SuprresedItems = Hud.transform.GetChild(0).GetChild(8).GetChild(2).GetChild(8).GetChild(0).GetChild(3);
+                SuprresedItems.GetComponent<RoR2.UI.ItemInventoryDisplay>().verticalMargin = 8;
             }
-            orig(self);
+            catch (Exception ex) {
+                Debug.LogException(ex);
+            }
+
+            
+            var chestInspect = Addressables.LoadAssetAsync<InspectDef>(key: "RoR2/DLC1/VoidChest/VoidChestInspectDef.asset").WaitForCompletion();
+            InspectDef inspectDef = ScriptableObject.CreateInstance<InspectDef>();
+            inspectDef.name = "VoidSuppressorInspectDef";
+            var Inspect = new RoR2.UI.InspectInfo();
+            Inspect.TitleToken = "VOID_SUPPRESSOR_NAME";
+            Inspect.DescriptionToken = "VOID_SUPPRESSOR_DESCRIPTION";
+            Inspect.FlavorToken = "VOID_SUPPRESSOR_DESCRIPTION";
+            Inspect.Visual = chestInspect.Info.Visual;
+            inspectDef.Info = Inspect;
+            var InspectInfo = VoidSuppressorPrefab.AddComponent<GenericInspectInfoProvider>();
+            InspectInfo.InspectInfo = inspectDef;
         }
+
+
 
         public static void RunStartHook(On.RoR2.Run.orig_Start orig, Run self)
         {
-            //Debug.LogWarning(self);
-            //Debug.LogWarning(Run.instance);
             if (NetworkServer.active)
             {
                 if (RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(Wander_Def))
                 {
-                    Wander.WanderSetup();
+                    Wander.WanderSetup(true);
                 }
             }
             orig(self);
-            if (NetworkServer.active)
-            {
-                //ArenaInventory = new Inventory();
-                Kith.KithNoRepeat = null;
-                Brigade.SetupBrigade();
-            }
 
-            if (Wander.scenesSeerDestinations.Count < 15)
-            {
-                for (int i = Wander.scenesSeerDestinations.Count-1; i < 0; i--)
-                {
-                    //Debug.Log(Wander.scenesSeerDestinations[i]);
-                    if (Wander.PickNextStageScene_ValidNextStage(Wander.scenesSeerDestinations[i]))
-                    {
-                        //Debug.Log(Wander.scenesSeerDestinations[i]);
-                        Wander.scenesSeerDestinations.Remove(Wander.scenesSeerDestinations[i]);
-                    }
-                }
-
-                for (int i = 0; i < SceneCatalog.allStageSceneDefs.Length; i++)
-                {
-                    //Debug.Log(Wander.scenesSeerDestinations[i]);
-                    if (Wander.PickNextStageScene_ValidNextStage(SceneCatalog.allStageSceneDefs[i]))
-                    {
-                        //Debug.Log(Wander.scenesSeerDestinations[i]);
-                        Wander.scenesSeerDestinations.Add(SceneCatalog.allStageSceneDefs[i]);
-                    }
-                }
-            }
+           
         }
 
         public static IEnumerator DelayedRespawn(PlayerCharacterMasterController playerCharacterMasterController, float delay)
@@ -209,165 +159,251 @@ namespace ArtifactDissimilarity
         {
             if (RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(Wander_Def))
             {
-                Wander.WanderUnSet();
+                Wander.WanderSetup(false);
             }
             orig(self);
         }
 
-        public static System.Collections.IEnumerator StageStartMethod(On.RoR2.Stage.orig_Start orig, RoR2.Stage self)
+        public static IEnumerator StageStartMethod(On.RoR2.Stage.orig_Start orig, RoR2.Stage self)
         {
-            //Wander.WanderStageStart();
-
-            var RETURNTHIS = orig(self);
-
             if (NetworkServer.active)
             {
-                if (RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(Brigade_Def))
-                {
-                    if (!SceneInfo.instance) { return RETURNTHIS; }
-                    self.StartCoroutine(DelayedBrigadeMessage(Brigade.TempForUsageEliteDef.modifierToken, 1.5f));
-                }
-                RoR2.ArtifactTrialMissionController.trialArtifact = ArtifactCatalog.GetArtifactDef((ArtifactIndex)random.Next(ArtifactCatalog.artifactCount));
+                ArtifactTrialMissionController.trialArtifact = ArtifactCatalog.GetArtifactDef((ArtifactIndex)random.Next(ArtifactCatalog.artifactCount));
             }
-
-            return RETURNTHIS;
+            return orig(self);
         }
 
-        public static void OneTimeSceneDic(On.RoR2.SceneDirector.orig_Start orig, SceneDirector self)
-        {
-            orig(self);
-            for (int i = 0; i < ArtifactCatalog.artifactCount; i++)
-            {
-                ArtifactDef temp = ArtifactCatalog.GetArtifactDef((ArtifactIndex)i);
-                if (temp.pickupModelPrefab == null)
-                {
-                    temp.pickupModelPrefab = RoR2Content.Artifacts.EliteOnly.pickupModelPrefab;
-                }
-                PickupDef temppickup = PickupCatalog.FindPickupIndex((ArtifactIndex)i).pickupDef;
-                if (temppickup.displayPrefab == null)
-                {
-                    temppickup.displayPrefab = RoR2Content.Artifacts.EliteOnly.pickupModelPrefab;
-                }
-
-            }
-
-            int[] invoutput = new int[EquipmentCatalog.equipmentCount];
-
-            System.Collections.Generic.List<EquipmentIndex> FullEquipmentList = new System.Collections.Generic.List<EquipmentIndex>();
-            FullEquipmentList.AddRange(EquipmentCatalog.equipmentList);
-
-            for (var i = 0; i < invoutput.Length; i++)
-            {
-                EquipmentDef tempDef = EquipmentCatalog.GetEquipmentDef((EquipmentIndex)i);
-
-                if (tempDef.passiveBuffDef && tempDef.passiveBuffDef.isElite)
-                {
-                    string tempname = tempDef.name;
-                    if (tempname.StartsWith("EliteGold") || tempname.StartsWith("EliteEcho") || tempname.StartsWith("EliteSecretSpeed"))
-                    {
-                    }
-                    else
-                    {
-                        Remodeling.EliteEquipmentList.Add((EquipmentIndex)i);
-                    }
-                }
-            }
-
-            On.RoR2.SceneDirector.Start -= OneTimeSceneDic;
-        }
+ 
 
         public static void ArtifactAdded()
         {
-            UnlockableDef NoMoreArtifact = ScriptableObject.CreateInstance<UnlockableDef>();
-            NoMoreArtifact.cachedName = "NoMoreArtifact";
+            UnlockableDef AlwaysLocked = ScriptableObject.CreateInstance<UnlockableDef>();
+            AlwaysLocked.cachedName = "NoMoreArtifact";
+            Rect rec = new Rect(0, 0, 64, 64);
+
+            #region Dissimilarity (Dissonance Interactable)
+            Texture2D Dissimilarity_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Dissimilarity_On.png");
+            Texture2D Dissimilarity_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Dissimilarity_Off.png");
+            Dissimilarity_On.filterMode = FilterMode.Trilinear;
+            Dissimilarity_Off.filterMode = FilterMode.Trilinear;
+            Sprite Dissimilarity_OnS = Sprite.Create(Dissimilarity_On, rec, new Vector2(0, 0));
+            Sprite Dissimilarity_OffS = Sprite.Create(Dissimilarity_Off, rec, new Vector2(0, 0));
+
             Dissimilarity_Def.cachedName = "MixInteractable";
+            Dissimilarity_Def.nameToken = "ARTIFACT_MIX_INTERACTABLE_NAME";
+            Dissimilarity_Def.descriptionToken = "ARTIFACT_MIX_INTERACTABLE_DESC";
+            Dissimilarity_Def.smallIconSelectedSprite = Dissimilarity_OnS;
+            Dissimilarity_Def.smallIconDeselectedSprite = Dissimilarity_OffS;
+            Dissimilarity_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/MixEnemy").pickupModelPrefab;
+            ContentAddition.AddArtifactDef(Dissimilarity_Def);
+            if (WConfig.EnableDissim.Value == false)
+            {
+                Dissimilarity_Def.unlockableDef = AlwaysLocked;
+            }
+            else
+            {
+                ArtifactCode DissimCode = ScriptableObject.CreateInstance<ArtifactCode>();
+                DissimCode.topRow = new Vector3Int(1, 1, 5);
+                DissimCode.topRow = new Vector3Int(1, 1, 1);
+                DissimCode.topRow = new Vector3Int(5, 1, 1);
+                ArtifactCodeAPI.AddCode(Dissimilarity_Def, DissimCode);
+            }
+            #endregion
+            #region Kith (Kin Interactables)
+            Texture2D Kith_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Kith_On.png");
+            Texture2D Kith_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Kith_Off.png");
+            Kith_On.filterMode = FilterMode.Trilinear;
+            Kith_Off.filterMode = FilterMode.Trilinear;
+            Sprite Kith_OnS = Sprite.Create(Kith_On, rec, new Vector2(0, 0));
+            Sprite Kith_OffS = Sprite.Create(Kith_Off, rec, new Vector2(0, 0));
+
             Kith_Def.cachedName = "SingleInteractablePerCategory";
+            Kith_Def.nameToken = "ARTIFACT_SINGLE_INTERACTABLE_NAME";
+            Kith_Def.descriptionToken = "ARTIFACT_SINGLE_INTERACTABLE_DESC";
+            Kith_Def.smallIconSelectedSprite = Kith_OnS;
+            Kith_Def.smallIconDeselectedSprite = Kith_OffS;
+            Kith_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/SingleMonsterType").pickupModelPrefab;
+            ContentAddition.AddArtifactDef(Kith_Def);
+            if (WConfig.EnableKith.Value == false)
+            {
+                Kith_Def.unlockableDef = AlwaysLocked;
+            }
+            else
+            {
+                ArtifactCode KithCode = ScriptableObject.CreateInstance<ArtifactCode>();
+                KithCode.topRow = new Vector3Int(3, 5, 3);
+                KithCode.topRow = new Vector3Int(3, 5, 3);
+                KithCode.topRow = new Vector3Int(1, 1, 1);
+                ArtifactCodeAPI.AddCode(Kith_Def, KithCode);
+            }
+            #endregion
+            #region Wander (Random Stage Order)
+            Texture2D Wander_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Wander_On.png");
+            Texture2D Wander_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Wander_Off.png");
+            Wander_On.filterMode = FilterMode.Trilinear;
+            Wander_Off.filterMode = FilterMode.Trilinear;
+            Sprite Wander_OnS = Sprite.Create(Wander_On, rec, new Vector2(0, 0));
+            Sprite Wander_OffS = Sprite.Create(Wander_Off, rec, new Vector2(0, 0));
+
             Wander_Def.cachedName = "MeanderStageOrder";
+            Wander_Def.nameToken = "ARTIFACT_RANDOM_STAGEORDER_NAME";
+            Wander_Def.descriptionToken = "ARTIFACT_RANDOM_STAGEORDER_DESC";
+            Wander_Def.smallIconSelectedSprite = Wander_OnS;
+            Wander_Def.smallIconDeselectedSprite = Wander_OffS;
+            Wander_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/Enigma").pickupModelPrefab;
+            ContentAddition.AddArtifactDef(Wander_Def);
+            if (WConfig.EnableWanderArtifact.Value == false)
+            {
+                Wander_Def.unlockableDef = AlwaysLocked;
+            }
+            else
+            {
+                ArtifactCode WanderCode = ScriptableObject.CreateInstance<ArtifactCode>();
+                WanderCode.topRow = new Vector3Int(3, 7, 3);
+                WanderCode.topRow = new Vector3Int(7, 7, 7);
+                WanderCode.topRow = new Vector3Int(3, 7, 3);
+                ArtifactCodeAPI.AddCode(Wander_Def, WanderCode);
+            }
+            #endregion
+            #region Remodeling (Reroll Items)
+            Texture2D Remodeling_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Remodeling_On.png");
+            Texture2D Remodeling_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Remodeling_Off.png");
+            Remodeling_On.filterMode = FilterMode.Trilinear;
+            Remodeling_Off.filterMode = FilterMode.Trilinear;
+            Sprite Remodeling_OnS = Sprite.Create(Remodeling_On, rec, new Vector2(0, 0));
+            Sprite Remodeling_OffS = Sprite.Create(Remodeling_Off, rec, new Vector2(0, 0));
+
             Remodeling_Def.cachedName = "RerollItemsAndEquipments";
+            Remodeling_Def.nameToken = "ARTIFACT_REROLL_ITEMS_NAME";
+            Remodeling_Def.descriptionToken = "ARTIFACT_REROLL_ITEMS_DESC";
+            Remodeling_Def.smallIconSelectedSprite = Remodeling_OnS;
+            Remodeling_Def.smallIconDeselectedSprite = Remodeling_OffS;
+            Remodeling_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/RandomSurvivorOnRespawn").pickupModelPrefab;
+            ContentAddition.AddArtifactDef(Remodeling_Def);
+            if (WConfig.EnableRemodelArtifact.Value == false)
+            {
+                Remodeling_Def.unlockableDef = AlwaysLocked;
+            }
+            else
+            {
+                ArtifactCode RemodelCode = ScriptableObject.CreateInstance<ArtifactCode>();
+                RemodelCode.topRow = new Vector3Int(1, 7, 1);
+                RemodelCode.topRow = new Vector3Int(1, 5, 1);
+                RemodelCode.topRow = new Vector3Int(1, 7, 1);
+                ArtifactCodeAPI.AddCode(Remodeling_Def, RemodelCode);
+            }
+            #endregion
+            #region Spiriting (High Speed on Low Health)
+            Texture2D Spiriting_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Spiriting_On.png");
+            Texture2D Spiriting_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Spiriting_Off.png");
+            Spiriting_On.filterMode = FilterMode.Trilinear;
+            Spiriting_Off.filterMode = FilterMode.Trilinear;
+            Sprite Spiriting_OnS = Sprite.Create(Spiriting_On, rec, new Vector2(0, 0));
+            Sprite Spiriting_OffS = Sprite.Create(Spiriting_Off, rec, new Vector2(0, 0));
+
             Spiriting_Def.cachedName = "StatsOnLowHealth";
-            Transpose_Def.cachedName = "RandomLoadoutOnRespawn";
+            Spiriting_Def.nameToken = "ARTIFACT_SPEED_ONLOWHEALTH_NAME";
+            Spiriting_Def.descriptionToken = "ARTIFACT_SPEED_ONLOWHEALTH_DESC";
+            Spiriting_Def.smallIconSelectedSprite = Spiriting_OnS;
+            Spiriting_Def.smallIconDeselectedSprite = Spiriting_OffS;
+            Spiriting_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/TeamDeath").pickupModelPrefab;
+            ContentAddition.AddArtifactDef(Spiriting_Def);
+            if (WConfig.EnableSpiritualArtifact.Value == false)
+            {
+                Spiriting_Def.unlockableDef = AlwaysLocked;
+            }
+            else
+            {
+                ArtifactCode SpiritingCode = ScriptableObject.CreateInstance<ArtifactCode>();
+                SpiritingCode.topRow = new Vector3Int(5, 3, 5);
+                SpiritingCode.topRow = new Vector3Int(1, 3, 1);
+                SpiritingCode.topRow = new Vector3Int(5, 3, 5);
+                ArtifactCodeAPI.AddCode(Spiriting_Def, SpiritingCode);
+            }
+            #endregion
+            #region Brigade (One Elite Type)
+            Texture2D Briaged_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Briaged_On.png");
+            Texture2D Briaged_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Briaged_Off.png");
+            Briaged_On.filterMode = FilterMode.Trilinear;
+            Briaged_Off.filterMode = FilterMode.Trilinear;
+            Sprite Briaged_OnS = Sprite.Create(Briaged_On, rec, new Vector2(0, 0));
+            Sprite Briaged_OffS = Sprite.Create(Briaged_Off, rec, new Vector2(0, 0));
+
             Brigade_Def.cachedName = "SingleEliteType";
+            Brigade_Def.nameToken = "ARTIFACT_SINGLE_ELITE_NAME";
+            Brigade_Def.descriptionToken = "ARTIFACT_SINGLE_ELITE_DESC";
+            Brigade_Def.smallIconSelectedSprite = Briaged_OnS;
+            Brigade_Def.smallIconDeselectedSprite = Briaged_OffS;
+            Brigade_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/MonsterTeamGainsItems").pickupModelPrefab;
+            ContentAddition.AddArtifactDef(Brigade_Def);
+            if (WConfig.EnableBrigadeArtifact.Value == false)
+            {
+                Brigade_Def.unlockableDef = AlwaysLocked;
+            }
+            #endregion
+            #region Tranpose (Metamorphosis for Loadout)
+            Texture2D Transpose_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Transpose_On.png");
+            Texture2D Transpose_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Transpose_Off.png");
+            Transpose_On.filterMode = FilterMode.Trilinear;
+            Transpose_Off.filterMode = FilterMode.Trilinear;
+            Sprite Transpose_OnS = Sprite.Create(Transpose_On, rec, new Vector2(0, 0));
+            Sprite Transpose_OffS = Sprite.Create(Transpose_Off, rec, new Vector2(0, 0));
+
+            Transpose_Def.cachedName = "RandomLoadoutOnRespawn";
+            Transpose_Def.nameToken = "ARTIFACT_REROLL_SKILLS_NAME";
+            Transpose_Def.descriptionToken = "ARTIFACT_REROLL_SKILLS_DESC";
+            Transpose_Def.smallIconSelectedSprite = Transpose_OnS;
+            Transpose_Def.smallIconDeselectedSprite = Transpose_OffS;
+            Transpose_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/RandomSurvivorOnRespawn").pickupModelPrefab;
+            ContentAddition.AddArtifactDef(Transpose_Def);
+            if (WConfig.EnableTransposeArtifact.Value == false)
+            {
+                Transpose_Def.unlockableDef = AlwaysLocked;
+            }
+            #endregion
+            #region Unison (Single Item Per Tier Per Stage)
+            Texture2D Unison_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Unison_On.png");
+            Texture2D Unison_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Unison_Off.png");
+            Unison_On.filterMode = FilterMode.Trilinear;
+            Unison_Off.filterMode = FilterMode.Trilinear;
+            Sprite Unison_OnS = Sprite.Create(Unison_On, rec, new Vector2(0, 0));
+            Sprite Unison_OffS = Sprite.Create(Unison_Off, rec, new Vector2(0, 0));
+
             Unison_Def.cachedName = "SingleItemPerTier";
+            Unison_Def.nameToken = "ARTIFACT_SINGLE_ITEM_NAME";
+            Unison_Def.descriptionToken = "ARTIFACT_SINGLE_ITEM_DESC";
+            Unison_Def.smallIconSelectedSprite = Unison_OnS;
+            Unison_Def.smallIconDeselectedSprite = Unison_OffS;
+            Unison_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/SingleMonsterType").pickupModelPrefab;
+            ContentAddition.AddArtifactDef(Unison_Def);
+            if (WConfig.EnableUnisonArtifact.Value == false)
+            {
+                Unison_Def.unlockableDef = AlwaysLocked;
+            }
+            #endregion
+            #region Obscurity (Curse of the Blind)
+            Texture2D Egg_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Egg_On.png");
+            Texture2D Egg_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Egg_Off.png");
+            Egg_On.filterMode = FilterMode.Trilinear;
+            Egg_Off.filterMode = FilterMode.Trilinear;
+            Sprite Egg_OnS = Sprite.Create(Egg_On, rec, new Vector2(0, 0));
+            Sprite Egg_OffS = Sprite.Create(Egg_Off, rec, new Vector2(0, 0));
 
+            Obscurity_Def.cachedName = "ItemsBlind";
+            Obscurity_Def.nameToken = "ARTIFACT_BLIND_ITEMS_NAME";
+            Obscurity_Def.descriptionToken = "ARTIFACT_BLIND_ITEMS_DESC";
+            Obscurity_Def.smallIconSelectedSprite = Egg_OnS;
+            Obscurity_Def.smallIconDeselectedSprite = Egg_OffS;
+            Obscurity_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/FriendlyFire").pickupModelPrefab;
+            ContentAddition.AddArtifactDef(Obscurity_Def);
+            if (WConfig.EnableObscurityArtifact.Value == false)
+            {
+                Obscurity_Def.unlockableDef = AlwaysLocked;
+            }
+            #endregion
+            
 
-            //Texture garbage
-            Texture2D DissArtifactOn = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D DissArtifactOff = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D KithArtifactOn = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D KithArtifactOff = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D WanderArtifactOn = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D WanderArtifactOff = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D RemodelingArtifactOn = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D RemodelingArtifactOff = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D SpiritingArtifactOn = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D SpiritingArtifactOff = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D BrigadeArtifactOn = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D BrigadeArtifactOff = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D TransposeArtifactOn = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D TransposeArtifactOff = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D UnisonArtifactOn = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-            Texture2D UnisonArtifactOff = new Texture2D(64, 64, TextureFormat.RGBA32, false);
-
-            DissArtifactOn.filterMode = FilterMode.Trilinear;
-            DissArtifactOff.filterMode = FilterMode.Trilinear;
-            KithArtifactOn.filterMode = FilterMode.Trilinear;
-            KithArtifactOff.filterMode = FilterMode.Trilinear;
-            WanderArtifactOn.filterMode = FilterMode.Trilinear;
-            WanderArtifactOff.filterMode = FilterMode.Trilinear;
-            RemodelingArtifactOn.filterMode = FilterMode.Trilinear;
-            RemodelingArtifactOff.filterMode = FilterMode.Trilinear;
-            SpiritingArtifactOn.filterMode = FilterMode.Trilinear;
-            SpiritingArtifactOff.filterMode = FilterMode.Trilinear;
-            BrigadeArtifactOn.filterMode = FilterMode.Trilinear;
-            BrigadeArtifactOff.filterMode = FilterMode.Trilinear;
-            TransposeArtifactOn.filterMode = FilterMode.Trilinear;
-            TransposeArtifactOff.filterMode = FilterMode.Trilinear;
-            UnisonArtifactOn.filterMode = FilterMode.Trilinear;
-            UnisonArtifactOff.filterMode = FilterMode.Trilinear;
-
-
-            DissArtifactOn.LoadImage(Properties.Resources.Dissimilarity_on, true);
-            DissArtifactOff.LoadImage(Properties.Resources.Dissimilarity_off, true);
-            KithArtifactOn.LoadImage(Properties.Resources.Kith_on, true);
-            KithArtifactOff.LoadImage(Properties.Resources.Kith_off, true);
-            WanderArtifactOn.LoadImage(Properties.Resources.Wander_on, true);
-            WanderArtifactOff.LoadImage(Properties.Resources.Wander_off, true);
-            RemodelingArtifactOn.LoadImage(Properties.Resources.Remodeling_on, true);
-            RemodelingArtifactOff.LoadImage(Properties.Resources.Remodeling_off, true);
-            SpiritingArtifactOn.LoadImage(Properties.Resources.Spiriting_on, true);
-            SpiritingArtifactOff.LoadImage(Properties.Resources.Spiriting_off, true);
-            BrigadeArtifactOn.LoadImage(Properties.Resources.Briaged_on, true);
-            BrigadeArtifactOff.LoadImage(Properties.Resources.Brigade_off, true);
-            TransposeArtifactOn.LoadImage(Properties.Resources.Transpose_on, true);
-            TransposeArtifactOff.LoadImage(Properties.Resources.Transpose_off, true);
-            UnisonArtifactOn.LoadImage(Properties.Resources.Unison_On, true);
-            UnisonArtifactOff.LoadImage(Properties.Resources.Unison_Off, true);
-
-            Rect rec = new Rect(0, 0, DissArtifactOn.width, DissArtifactOn.height);
-            Sprite DisimOn = Sprite.Create(DissArtifactOn, rec, new Vector2(0, 0));
-            Sprite DisimOff = Sprite.Create(DissArtifactOff, rec, new Vector2(0, 0));
-            Sprite KithOn = Sprite.Create(KithArtifactOn, rec, new Vector2(0, 0));
-            Sprite KithOff = Sprite.Create(KithArtifactOff, rec, new Vector2(0, 0));
-            Sprite WanderOn = Sprite.Create(WanderArtifactOn, rec, new Vector2(0, 0));
-            Sprite WanderOff = Sprite.Create(WanderArtifactOff, rec, new Vector2(0, 0));
-            Sprite RemodelingOn = Sprite.Create(RemodelingArtifactOn, rec, new Vector2(0, 0));
-            Sprite RemodelingOff = Sprite.Create(RemodelingArtifactOff, rec, new Vector2(0, 0));
-            Sprite SpiritingOn = Sprite.Create(SpiritingArtifactOn, rec, new Vector2(0, 0));
-            Sprite SpiritingOff = Sprite.Create(SpiritingArtifactOff, rec, new Vector2(0, 0));
-            Sprite BrigadeOn = Sprite.Create(BrigadeArtifactOn, rec, new Vector2(0, 0));
-            Sprite BrigadeOff = Sprite.Create(BrigadeArtifactOff, rec, new Vector2(0, 0));
-            Sprite TransposeOn = Sprite.Create(TransposeArtifactOn, rec, new Vector2(0, 0));
-            Sprite TransposeOff = Sprite.Create(TransposeArtifactOff, rec, new Vector2(0, 0));
-            Sprite UnisonArtifactOnS = Sprite.Create(UnisonArtifactOn, rec, new Vector2(0, 0));
-            Sprite UnisonArtifactOffS = Sprite.Create(UnisonArtifactOff, rec, new Vector2(0, 0));
-
-            //
-            ArtifactCode DissimCode = ScriptableObject.CreateInstance<ArtifactCode>();
-            ArtifactCode KithCode = ScriptableObject.CreateInstance<ArtifactCode>();
-            ArtifactCode WanderCode = ScriptableObject.CreateInstance<ArtifactCode>();
-            ArtifactCode RemodelCode = ScriptableObject.CreateInstance<ArtifactCode>();
-            ArtifactCode SpiritingCode = ScriptableObject.CreateInstance<ArtifactCode>();
-
+  
             //
             /*
             Empty = 11;
@@ -381,167 +417,11 @@ namespace ArtifactDissimilarity
             6 7 8
             */
             //
-
-            //Debug.Log("Loading Artifact of Dissimilarity");
-            Dissimilarity_Def.nameToken = "ARTIFACT_MIX_INTERACTABLE_NAME";
-            Dissimilarity_Def.descriptionToken = "ARTIFACT_MIX_INTERACTABLE_DESC";
-            Dissimilarity_Def.smallIconSelectedSprite = DisimOn;
-            Dissimilarity_Def.smallIconDeselectedSprite = DisimOff;
-            Dissimilarity_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/MixEnemy").pickupModelPrefab;
-            ContentAddition.AddArtifactDef(Dissimilarity_Def);
-            if (WConfig.EnableDissim.Value == false)
-            {
-                Dissimilarity_Def.unlockableDef = NoMoreArtifact;
-            }
-            else
-            {
-                //DissimCode.ArtifactCompounds = new List<int> { 1, 1, 5, 1, 1, 1, 5, 1, 1 };
-                DissimCode.topRow = new Vector3Int(1, 1, 5);
-                DissimCode.topRow = new Vector3Int(1, 1, 1);
-                DissimCode.topRow = new Vector3Int(5, 1, 1);
-                ArtifactCodeAPI.AddCode(Dissimilarity_Def, DissimCode);
-            }
-
-            //Debug.Log("Loading Artifact of Kith");
-            Kith_Def.nameToken = "ARTIFACT_SINGLE_INTERACTABLE_NAME";
-            Kith_Def.descriptionToken = "ARTIFACT_SINGLE_INTERACTABLE_DESC";
-            Kith_Def.smallIconSelectedSprite = KithOn;
-            Kith_Def.smallIconDeselectedSprite = KithOff;
-            Kith_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/SingleMonsterType").pickupModelPrefab;
-            ContentAddition.AddArtifactDef(Kith_Def);
-            if (WConfig.EnableKith.Value == false)
-            {
-                Kith_Def.unlockableDef = NoMoreArtifact;
-            }
-            else
-            {
-                //KithCode.ArtifactCompounds = new List<int> { 3, 5, 3, 3, 5, 3, 1, 1, 1 };
-                KithCode.topRow = new Vector3Int(3, 5, 3);
-                KithCode.topRow = new Vector3Int(3, 5, 3);
-                KithCode.topRow = new Vector3Int(1, 1, 1);
-                ArtifactCodeAPI.AddCode(Kith_Def, KithCode);
-            }
-
-            //Debug.Log("Loading Artifact of Wander");
-            Wander_Def.nameToken = "ARTIFACT_RANDOM_STAGEORDER_NAME";
-            Wander_Def.descriptionToken = "ARTIFACT_RANDOM_STAGEORDER_DESC";
-            Wander_Def.smallIconSelectedSprite = WanderOn;
-            Wander_Def.smallIconDeselectedSprite = WanderOff;
-            Wander_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/Enigma").pickupModelPrefab;
-            ContentAddition.AddArtifactDef(Wander_Def);
-            if (WConfig.EnableWanderArtifact.Value == false)
-            {
-                Wander_Def.unlockableDef = NoMoreArtifact;
-            }
-            else
-            {
-                //WanderCode.ArtifactCompounds = new List<int> { 3, 7, 3, 7, 7, 7, 3, 7, 3 };
-                WanderCode.topRow = new Vector3Int(3, 7, 3);
-                WanderCode.topRow = new Vector3Int(7, 7, 7);
-                WanderCode.topRow = new Vector3Int(3, 7, 3);
-                ArtifactCodeAPI.AddCode(Wander_Def, WanderCode);
-            }
-
-
-            On.RoR2.Stage.Start += StageStartMethod;
-            On.RoR2.Run.Start += RunStartHook;
-            On.RoR2.Run.OnDisable += WanderEnder;
-            On.RoR2.SceneDirector.PlaceTeleporter += WanderLunarTeleporter;
-
-            //Debug.Log("Loading Artifact of Remodeling");
-            Remodeling_Def.nameToken = "ARTIFACT_REROLL_ITEMS_NAME";
-            Remodeling_Def.descriptionToken = "ARTIFACT_REROLL_ITEMS_DESC";
-            Remodeling_Def.smallIconSelectedSprite = RemodelingOn;
-            Remodeling_Def.smallIconDeselectedSprite = RemodelingOff;
-            Remodeling_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/RandomSurvivorOnRespawn").pickupModelPrefab;
-            ContentAddition.AddArtifactDef(Remodeling_Def);
-
-
-
-            if (WConfig.EnableRemodelArtifact.Value == false)
-            {
-                Remodeling_Def.unlockableDef = NoMoreArtifact;
-            }
-            else
-            {
-                //RemodelCode.ArtifactCompounds = new List<int> { 1, 7, 1, 1, 5, 1, 1, 7, 1 };
-                RemodelCode.topRow = new Vector3Int(1, 7, 1);
-                RemodelCode.topRow = new Vector3Int(1, 5, 1);
-                RemodelCode.topRow = new Vector3Int(1, 7, 1);
-                ArtifactCodeAPI.AddCode(Remodeling_Def, RemodelCode);
-            }
-
-
-            //Debug.Log("Loading Artifact of Spiriting");
-            Spiriting_Def.nameToken = "ARTIFACT_SPEED_ONLOWHEALTH_NAME";
-            Spiriting_Def.descriptionToken = "ARTIFACT_SPEED_ONLOWHEALTH_DESC";
-            Spiriting_Def.smallIconSelectedSprite = SpiritingOn;
-            Spiriting_Def.smallIconDeselectedSprite = SpiritingOff;
-            Spiriting_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/TeamDeath").pickupModelPrefab;
-            ContentAddition.AddArtifactDef(Spiriting_Def);
-            if (WConfig.EnableSpiritualArtifact.Value == false)
-            {
-                Spiriting_Def.unlockableDef = NoMoreArtifact;
-            }
-            else
-            {
-                //SpiritingCode.ArtifactCompounds = new List<int> { 5, 3, 5, 1, 3, 1, 5, 3, 5 };
-                SpiritingCode.topRow = new Vector3Int(5, 3, 5);
-                SpiritingCode.topRow = new Vector3Int(1, 3, 1);
-                SpiritingCode.topRow = new Vector3Int(5, 3, 5);
-                ArtifactCodeAPI.AddCode(Spiriting_Def, SpiritingCode);
-            }
-
-
-            //Debug.Log("Loading Artifact of Brigade");
-            Brigade_Def.nameToken = "ARTIFACT_SINGLE_ELITE_NAME";
-            Brigade_Def.descriptionToken = "ARTIFACT_SINGLE_ELITE_DESC";
-            Brigade_Def.smallIconSelectedSprite = BrigadeOn;
-            Brigade_Def.smallIconDeselectedSprite = BrigadeOff;
-            Brigade_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/MonsterTeamGainsItems").pickupModelPrefab;
-            ContentAddition.AddArtifactDef(Brigade_Def);
-            if (WConfig.EnableBrigadeArtifact.Value == false)
-            {
-                Brigade_Def.unlockableDef = NoMoreArtifact;
-            }
-            else
-            {
-                //BrigadeCode.ArtifactCompounds = new List<int> { 7, 1, 1, 5, 1, 5, 3, 7, 7 };
-                //ArtifactCodeAPI.AddCode(Brigade, BrigadeCode);
-            }
-
-            //Debug.Log("Loading Artifact of Transpose");
-            Transpose_Def.nameToken = "ARTIFACT_REROLL_SKILLS_NAME";
-            Transpose_Def.descriptionToken = "ARTIFACT_REROLL_SKILLS_DESC";
-            Transpose_Def.smallIconSelectedSprite = TransposeOn;
-            Transpose_Def.smallIconDeselectedSprite = TransposeOff;
-            Transpose_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/RandomSurvivorOnRespawn").pickupModelPrefab;
-            ContentAddition.AddArtifactDef(Transpose_Def);
-            if (WConfig.EnableTransposeArtifact.Value == false)
-            {
-                Transpose_Def.unlockableDef = NoMoreArtifact;
-            }
-
-
-            Unison_Def.nameToken = "ARTIFACT_SINGLE_ITEM_NAME";
-            Unison_Def.descriptionToken = "ARTIFACT_SINGLE_ITEM_DESC";
-            Unison_Def.smallIconSelectedSprite = UnisonArtifactOnS;
-            Unison_Def.smallIconDeselectedSprite = UnisonArtifactOffS;
-            Unison_Def.pickupModelPrefab = LegacyResourcesAPI.Load<ArtifactDef>("artifactdefs/SingleMonsterType").pickupModelPrefab;
-            ContentAddition.AddArtifactDef(Unison_Def);
-            if (WConfig.EnableUnisonArtifact.Value == false)
-            {
-                Unison_Def.unlockableDef = NoMoreArtifact;
-            }
-
-
-
-
-            //Simu Stuff
+            #region Simu Waves
+            #region Augment of Brigade
             GameObject InfiniteTowerWaveArtifactSingleEliteType = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveArtifactBomb.prefab").WaitForCompletion(), "InfiniteTowerWaveArtifactSingleEliteType", true);
             GameObject InfiniteTowerCurrentArtifactSingleEliteTypeWaveUI = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerCurrentArtifactBombWaveUI.prefab").WaitForCompletion(), "InfiniteTowerCurrentArtifactSingleEliteTypeWaveUI", false);
             InfiniteTowerWaveArtifactPrerequisites ArtifacSingleEliteTypeDisabledPrerequisite = ScriptableObject.CreateInstance<RoR2.InfiniteTowerWaveArtifactPrerequisites>();
-            //ArtifactDef 
 
             InfiniteTowerWaveArtifactSingleEliteType.GetComponent<ArtifactEnabler>().artifactDef = Brigade_Def;
             InfiniteTowerWaveArtifactSingleEliteType.GetComponent<InfiniteTowerWaveController>().overlayEntries[1].prefab = InfiniteTowerCurrentArtifactSingleEliteTypeWaveUI;
@@ -553,30 +433,9 @@ namespace ArtifactDissimilarity
 
             ArtifacSingleEliteTypeDisabledPrerequisite.bannedArtifact = Brigade_Def;
             ArtifacSingleEliteTypeDisabledPrerequisite.name = "ArtifacSingleEliteTypeDisabledPrerequisite";
-
             InfiniteTowerWaveCategory.WeightedWave ITBasicArtifactSingleEliteType = new InfiniteTowerWaveCategory.WeightedWave { wavePrefab = InfiniteTowerWaveArtifactSingleEliteType, weight = 2, prerequisites = ArtifacSingleEliteTypeDisabledPrerequisite };
-            //
-
-            //
-            GameObject InfiniteTowerWaveArtifactRandomLoadout = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveArtifactBomb.prefab").WaitForCompletion(), "InfiniteTowerWaveArtifactRandomLoadout", true);
-            GameObject InfiniteTowerCurrentArtifactRandomLoadoutWaveUI = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerCurrentArtifactBombWaveUI.prefab").WaitForCompletion(), "InfiniteTowerCurrentArtifactRandomLoadoutWaveUI", false);
-            InfiniteTowerWaveArtifactPrerequisites ArtifacRandomLoadoutDisabledPrerequisite = ScriptableObject.CreateInstance<RoR2.InfiniteTowerWaveArtifactPrerequisites>();
-            //ArtifactDef 
-
-            InfiniteTowerWaveArtifactRandomLoadout.GetComponent<ArtifactEnabler>().artifactDef = Transpose_Def;
-            InfiniteTowerWaveArtifactRandomLoadout.GetComponent<InfiniteTowerWaveController>().overlayEntries[1].prefab = InfiniteTowerCurrentArtifactRandomLoadoutWaveUI;
-
-            InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().sprite = Transpose_Def.smallIconSelectedSprite;
-            InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<RoR2.UI.InfiniteTowerWaveCounter>().token = "ITWAVE_ARTIFACT_REROLL_SKILLS_NAME";
-            InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<RoR2.UI.LanguageTextMeshController>().token = "ITWAVE_ARTIFACT_REROLL_SKILLS_DESC";
-
-            ArtifacRandomLoadoutDisabledPrerequisite.bannedArtifact = Transpose_Def;
-            ArtifacRandomLoadoutDisabledPrerequisite.name = "ArtifacRandomLoadoutDisabledPrerequisite";
-
-            InfiniteTowerWaveCategory.WeightedWave ITBasicArtifactRandomLoadout = new InfiniteTowerWaveCategory.WeightedWave { wavePrefab = InfiniteTowerWaveArtifactRandomLoadout, weight = 1f, prerequisites = ArtifacRandomLoadoutDisabledPrerequisite };
-            //
-
-            //
+            #endregion
+            #region Augment of Spiriting
             GameObject InfiniteTowerWaveArtifactStatsOnLowHealth = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveArtifactBomb.prefab").WaitForCompletion(), "InfiniteTowerWaveArtifactStatsOnLowHealth", true);
             GameObject InfiniteTowerCurrentArtifactStatsOnLowHealthWaveUI = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerCurrentArtifactBombWaveUI.prefab").WaitForCompletion(), "InfiniteTowerCurrentArtifactStatsOnLowHealthWaveUI", false);
             InfiniteTowerWaveArtifactPrerequisites ArtifacStatsOnLowHealthDisabledPrerequisite = ScriptableObject.CreateInstance<RoR2.InfiniteTowerWaveArtifactPrerequisites>();
@@ -592,251 +451,115 @@ namespace ArtifactDissimilarity
             ArtifacStatsOnLowHealthDisabledPrerequisite.name = "ArtifacStatsOnLowHealthDisabledPrerequisite";
 
             InfiniteTowerWaveCategory.WeightedWave ITBasicArtifactStatsOnLowHealth = new InfiniteTowerWaveCategory.WeightedWave { wavePrefab = InfiniteTowerWaveArtifactStatsOnLowHealth, weight = 1f, prerequisites = ArtifacStatsOnLowHealthDisabledPrerequisite };
-            //
-            //
+
+            #endregion
+            #region Augment of Tranpose
+            GameObject InfiniteTowerWaveArtifactRandomLoadout = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveArtifactBomb.prefab").WaitForCompletion(), "InfiniteTowerWaveArtifactRandomLoadout", true);
+            GameObject InfiniteTowerCurrentArtifactRandomLoadoutWaveUI = R2API.PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerCurrentArtifactBombWaveUI.prefab").WaitForCompletion(), "InfiniteTowerCurrentArtifactRandomLoadoutWaveUI", false);
+            InfiniteTowerWaveArtifactPrerequisites ArtifacRandomLoadoutDisabledPrerequisite = ScriptableObject.CreateInstance<RoR2.InfiniteTowerWaveArtifactPrerequisites>();
+
+            InfiniteTowerWaveArtifactRandomLoadout.GetComponent<ArtifactEnabler>().artifactDef = Transpose_Def;
+            InfiniteTowerWaveArtifactRandomLoadout.GetComponent<InfiniteTowerWaveController>().overlayEntries[1].prefab = InfiniteTowerCurrentArtifactRandomLoadoutWaveUI;
+
+            InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().sprite = Transpose_Def.smallIconSelectedSprite;
+            InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(1).GetChild(0).GetComponent<RoR2.UI.InfiniteTowerWaveCounter>().token = "ITWAVE_ARTIFACT_REROLL_SKILLS_NAME";
+            InfiniteTowerCurrentArtifactRandomLoadoutWaveUI.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<RoR2.UI.LanguageTextMeshController>().token = "ITWAVE_ARTIFACT_REROLL_SKILLS_DESC";
+
+            ArtifacRandomLoadoutDisabledPrerequisite.bannedArtifact = Transpose_Def;
+            ArtifacRandomLoadoutDisabledPrerequisite.name = "ArtifacRandomLoadoutDisabledPrerequisite";
+            InfiniteTowerWaveCategory.WeightedWave ITBasicArtifactRandomLoadout = new InfiniteTowerWaveCategory.WeightedWave { wavePrefab = InfiniteTowerWaveArtifactRandomLoadout, weight = 1f, prerequisites = ArtifacRandomLoadoutDisabledPrerequisite };
+
+            #endregion
             RoR2.InfiniteTowerWaveCategory ITBasicWaves = Addressables.LoadAssetAsync<RoR2.InfiniteTowerWaveCategory>(key: "RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveCategories/CommonWaveCategory.asset").WaitForCompletion();
             ITBasicWaves.wavePrefabs = ITBasicWaves.wavePrefabs.Add(ITBasicArtifactSingleEliteType, ITBasicArtifactRandomLoadout, ITBasicArtifactStatsOnLowHealth);
-
+            #endregion
         }
 
 
-        public static IEnumerator DelayedBrigadeMessage(string elite, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            Chat.SendBroadcastChat(new Brigade.BrigadeMessage
-            {
-                eliteNameToken = elite
-            });
-            yield break;
-        }
 
         public void RunArtifactManager_onEnabledArtifactGlobal(RunArtifactManager runArtifactManager, ArtifactDef artifactDef)
         {
             if (artifactDef == Spiriting_Def)
             {
-                //For some reason needs to be added on Clients?
-                On.RoR2.CharacterBody.RecalculateStats += Spiriting.RecalcStats;
-                On.RoR2.HealthComponent.TakeDamage += Spiriting.RecalcOnDamage;
-                On.RoR2.HealthComponent.SendHeal += Spiriting.RecalcOnHeal;
-                On.RoR2.CharacterMotor.OnLanded += Spiriting.RecalcOnLand;
-                On.RoR2.Projectile.ProjectileController.Start += Spiriting.RecalcProjectileSpeed;
-                On.RoR2.SetStateOnHurt.SetStun += Spiriting.RecalcStunDuration;
-                Debug.Log("Added Spirit");
+                Spiriting.OnArtifactEnable();
             }
             else if (artifactDef == Brigade_Def)
             {
-                if (Brigade.ForUsageEliteDefList.Count > 0 && SceneInfo.instance && Run.instance)
-                {
-                    Brigade.EliteKinAsMethod();
-                    Chat.SendBroadcastChat(new Brigade.BrigadeMessage
-                    {
-                        eliteNameToken = Brigade.TempForUsageEliteDef.modifierToken
-                    });
-                }
-
-                Debug.Log("Added Brigade");
+                Brigade.OnArtifactEnable();
             }
             else if (artifactDef == Wander_Def)
             {
-                On.RoR2.Run.PickNextStageScene += Wander.WanderNoRepeatStages;
-                if (Run.instance)
-                {
-                    Wander.WanderSetup();
-                    Debug.Log("Added Wander");
-                }
+                Wander.OnArtifactEnable();
             }
             else if (artifactDef == Transpose_Def)
             {
-                On.RoR2.CharacterMaster.Respawn += Transpose.RandomizeLoadoutRespawnMethod;
-                On.RoR2.CharacterMaster.PickRandomSurvivorBodyPrefab += Transpose.Transpose_Metamorphosis;
-                if (WConfig.TransposeRerollHeresy.Value == true)
-                {
-                    On.RoR2.SceneDirector.Start += Transpose.RandomizeHeresyItems;
-                }
-                if (NetworkServer.active)
-                {
-                    foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
-                    {
-                        playerCharacterMasterController.StopAllCoroutines();
-                        playerCharacterMasterController.StartCoroutine(DelayedRespawn(playerCharacterMasterController, 0.35f));
-                        //Transpose.RerollLoadout(playerCharacterMasterController.master.GetBodyObject(), playerCharacterMasterController.master);
-                    }
-                }
-                Debug.Log("Added Transpose");
+                Transpose.OnArtifactEnable();
             }
             else if (artifactDef == Remodeling_Def)
             {
-                On.RoR2.SceneDirector.Start += Remodeling.RandomizeMain;
-                Debug.Log("Added Remodeling");
+                Remodeling.OnArtifactEnable();
             }
             else if (artifactDef == Dissimilarity_Def)
             {
-                if (Kith.KithAdded == false)
-                {
-                    On.RoR2.SceneDirector.GenerateInteractableCardSelection += Dissimilarity.MixInteractableApplier;
-                    Dissimilarity.DissimAdded = true;
-                }
+                Dissimilarity.OnArtifactEnable();
             }
             else if (artifactDef == Kith_Def)
             {
-                if (Dissimilarity.DissimAdded == true)
-                {
-                    On.RoR2.SceneDirector.GenerateInteractableCardSelection -= Dissimilarity.MixInteractableApplier;
-                    Dissimilarity.DissimAdded = false;
-                }
-                //Handles both Kith & Kith+Dissim
-                On.RoR2.SceneDirector.GenerateInteractableCardSelection += Kith.SingleInteractableApplier;
-                Kith.KithAdded = true;
+                Kith.OnArtifactEnable();
             }
             else if (artifactDef == Unison_Def)
             {
                 Unison.OnArtifactEnable();
+            }
+            else if (artifactDef == Obscurity_Def)
+            {
+                Obscurity.OnArtifactEnable();
             }
         }
 
         public void RunArtifactManager_onDisableArtifactGlobal(RunArtifactManager runArtifactManager, ArtifactDef artifactDef)
         {
             //Debug.LogWarning(runArtifactManager + " " + artifactDef);
-
             if (artifactDef == Spiriting_Def)
             {
-                On.RoR2.CharacterBody.RecalculateStats -= Spiriting.RecalcStats;
-                On.RoR2.HealthComponent.TakeDamage -= Spiriting.RecalcOnDamage;
-                On.RoR2.HealthComponent.SendHeal -= Spiriting.RecalcOnHeal;
-                On.RoR2.Projectile.ProjectileController.Start -= Spiriting.RecalcProjectileSpeed;
-                On.RoR2.CharacterMotor.OnLanded -= Spiriting.RecalcOnLand;
-                On.RoR2.SetStateOnHurt.SetStun -= Spiriting.RecalcStunDuration;
-                Debug.Log("Removed Spirit");
-                //Because we fuck up the base stats just respawning seems the easiest way to fix it
-                foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
-                {
-                    playerCharacterMasterController.StopAllCoroutines();
-                    playerCharacterMasterController.StartCoroutine(DelayedRespawn(playerCharacterMasterController, 0.1f));
-                    CharacterBody body = playerCharacterMasterController.master.GetBody();
-                    if (body)
-                    {
-                        //Spiriting.RemoveSpiritBuffsMethod(body, playerCharacterMasterController.master.bodyPrefab.GetComponent<CharacterBody>());
-                    }
-                    
-                }
+                Spiriting.OnArtifactDisable();
             }
             else if (artifactDef == Brigade_Def)
             {
-                //On.RoR2.CombatDirector.Awake -= EliteKinArtifact;
-                if (Brigade.DidBrigadeHappen == true)
-                {
-                    CombatDirector.eliteTiers = Brigade.normalelitetierdefs;
-                    Brigade.DidBrigadeHappen = false;
-                    Debug.Log("UnBrigading");
-                }
+                Brigade.OnArtifactDisable();
             }
             else if (artifactDef == Wander_Def)
             {
-                On.RoR2.Run.PickNextStageScene -= Wander.WanderNoRepeatStages;
-                if (Run.instance)
-                {
-                    Wander.WanderUnSet();
-                }
+                Wander.OnArtifactDisable();
             }
             else if (artifactDef == Transpose_Def)
             {
-                On.RoR2.CharacterMaster.Respawn -= Transpose.RandomizeLoadoutRespawnMethod;
-                On.RoR2.CharacterMaster.PickRandomSurvivorBodyPrefab -= Transpose.Transpose_Metamorphosis;
-                if (WConfig.TransposeRerollHeresy.Value == true)
-                {
-                    On.RoR2.SceneDirector.Start -= Transpose.RandomizeHeresyItems;
-                }
-                foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
-                {
-                    playerCharacterMasterController.networkUser.CopyLoadoutToMaster();
-                    playerCharacterMasterController.StopAllCoroutines();
-                    playerCharacterMasterController.StartCoroutine(DelayedRespawn(playerCharacterMasterController, 0.1f));
-                    /*CharacterBody body = playerCharacterMasterController.master.GetBody();
-                    if (body)
-                    {
-                        body.SetLoadoutServer(playerCharacterMasterController.master.loadout);
-                        ModelSkinController model = body.modelLocator.modelTransform.gameObject.GetComponent<ModelSkinController>();
-                        if (model)
-                        {
-                            model.ApplySkin((int)playerCharacterMasterController.master.loadout.bodyLoadoutManager.GetSkinIndex(playerCharacterMasterController.master.backupBodyIndex));
-                        }
-                    }*/
-                };
+                Transpose.OnArtifactDisable();
             }
             else if (artifactDef == Remodeling_Def)
             {
-                On.RoR2.SceneDirector.Start -= Remodeling.RandomizeMain;
+                Remodeling.OnArtifactDisable();
             }
             else if (artifactDef == Dissimilarity_Def)
             {
-                if (Kith.KithAdded == false)
-                {
-                    On.RoR2.SceneDirector.GenerateInteractableCardSelection -= Dissimilarity.MixInteractableApplier;
-                    Dissimilarity.DissimAdded = true;
-                }
+                Dissimilarity.OnArtifactDisable();
             }
             else if (artifactDef == Kith_Def)
             {
-                if (RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(Dissimilarity_Def))
-                {
-                    On.RoR2.SceneDirector.GenerateInteractableCardSelection += Dissimilarity.MixInteractableApplier;
-                    Dissimilarity.DissimAdded = true;
-                }
-                //Handles both Kith & Kith+Dissim
-                On.RoR2.SceneDirector.GenerateInteractableCardSelection -= Kith.SingleInteractableApplier;
-                Kith.KithAdded = false;
+                Kith.OnArtifactDisable();
             }
             else if (artifactDef == Unison_Def)
             {
                 Unison.OnArtifactDisable();
-
             }
+            else if (artifactDef == Unison_Def)
+            {
+                Obscurity.OnArtifactDisable();
+            }
+
         }
 
 
-
-        public static void WanderLunarTeleporter(On.RoR2.SceneDirector.orig_PlaceTeleporter orig, global::RoR2.SceneDirector self)
-        {
-            if (self.teleporterSpawnCard != null)
-            {
-                if (RunArtifactManager.instance.IsArtifactEnabled(Wander_Def))
-                {
-                    if (Run.instance.NetworkstageClearCount >= 4 && Run.instance.NetworkstageClearCount % 2 == 0)
-                    {
-                        self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
-                    }
-                }
-                else if (RunArtifactManager.instance.IsArtifactEnabled(Dissimilarity_Def))
-                {
-                    if (Run.instance.NetworkstageClearCount > 4 && random.Next(4) == 1)
-                    {
-                        self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
-                    }
-                    else if (Run.instance.NetworkstageClearCount % Run.stagesPerLoop == Run.stagesPerLoop - 1)
-                    {
-                        self.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
-                        //Debug.LogWarning("End of Loop Primordial");
-                    }
-                }
-            }
-            orig(self);
-            if (DreamPrimordialBool == true)
-            {
-                DreamPrimordialBool = false;
-                On.RoR2.Language.GetString_string -= DreamPrimordial;
-            }
-
-
-            if (self.teleporterInstance)
-            {
-                tempexitcontroller = self.teleporterInstance.GetComponent<SceneExitController>();
-            }
-            else
-            {
-                tempexitcontroller = null;
-            }
-            //Debug.LogWarning(tempexitcontroller);
-        }
 
 
 
@@ -844,13 +567,7 @@ namespace ArtifactDissimilarity
         internal static void ModSupport()
         {
             Dissimilarity.ModSupport();
-
-            RiskyConformity = ArtifactCatalog.FindArtifactDef("RiskyArtifactOfConformity");
-
-            if (RiskyConformity == null)
-            {
-                RiskyConformity = Command;
-            }
+            
 
             for (int i = 0; i < ArtifactCatalog.artifactCount; i++)
             {
@@ -863,31 +580,7 @@ namespace ArtifactDissimilarity
         }
 
 
-        private void SceneDirector_onGenerateInteractableCardSelection(SceneDirector sceneDirector, DirectorCardCategorySelection dccs)
-        {
-            if (RunArtifactManager.instance)
-            {
-                if (RunArtifactManager.instance.IsArtifactEnabled(Remodeling_Def))
-                {
-                    dccs.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.RemodelingPredicate));
-                    //Debug.Log("Artifact of Dissimilarity + Tossing");
-                }
-            }
-        }
-
-        public static string DreamPrimordial(On.RoR2.Language.orig_GetString_string orig, string token)
-        {
-            if (token == "LUNAR_TELEPORTER_ACTIVE")
-            {
-                return "<style=cWorldEvent>The Primordial Teleporter aligns with your dream..</style>";
-            }
-            else if (token == "LUNAR_TELEPORTER_IDLE")
-            {
-                return "<style=cWorldEvent>The Primordial Teleporter no longer aligns with your dream..</style>";
-            }
-            return orig(token);
-        }
-
+         
     }
 
 }

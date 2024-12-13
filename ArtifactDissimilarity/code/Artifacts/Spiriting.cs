@@ -6,40 +6,61 @@ namespace ArtifactDissimilarity
 {
     public class Spiriting
     {
-        public static float SpiritSpeedVal;
-        public static float SpiritSpeedEnemyVal;
-        public static float SpiritAttackSpeedEnemyVal;
-        public static float SpiritAttackSpeedPlayerVal;
-        public static float SpiritJumpEnemyVal;
-        public static float SpiritJumpPlayerVal;
-        public static float SpiritCooldownEnemyVal;
-        public static float SpiritCooldownPlayerVal;
-        public static float SpiritDamageEnemyVal;
-        public static float SpiritDamagePlayerVal;
-        public static float SpiritProjectileSpeedVal;
-        public static float SpiritProjectileSpeedEnemyVal;
+        public static float speedPlayers;
+        public static float speedMonster;
+        public static float attackSpeedMonster;
+        public static float attackSpeedPlayers;
+        public static float jumpPowerMonster;
+        public static float jumpPowerPlayers;
+        public static float skillCooldownMonster;
+        public static float skillCooldownPlayers;
+        public static float damagePlayers;
+        public static float damageMonster;
+        public static float projectileSpeedPlayer;
+        public static float projectileSpeedMonster;
 
         public static void Start()
         {
-            SpiritSpeedVal = WConfig.SpiritMovement.Value - 1;
-            SpiritSpeedEnemyVal = SpiritSpeedVal * 0.66f;
+            speedPlayers = 2f;
+            speedMonster = 1.35f;
 
-            SpiritAttackSpeedPlayerVal = WConfig.SpiritAttackSpeed.Value - 1;
-            SpiritAttackSpeedEnemyVal = SpiritAttackSpeedPlayerVal * 1.3f;
+            attackSpeedPlayers = 1;
+            attackSpeedMonster = 1.5f;
 
-            SpiritJumpPlayerVal = WConfig.SpiritJump.Value - 1;
-            SpiritJumpEnemyVal = (SpiritJumpPlayerVal - 1) * 1.5f + 1;
+            jumpPowerPlayers = 0.25f;
+            jumpPowerMonster = 1f;
 
-            SpiritCooldownPlayerVal = WConfig.SpiritCooldown.Value;
-            SpiritCooldownEnemyVal = 0.90f;
+            skillCooldownPlayers = 0.5f;
+            skillCooldownMonster = 0.90f;
 
-            SpiritDamageEnemyVal = WConfig.SpiritDamage.Value;
-            SpiritDamagePlayerVal = WConfig.SpiritDamagePlayer.Value;
+            damagePlayers = 0.25f;
+            damageMonster = 0.25f;
 
-            SpiritProjectileSpeedVal = WConfig.SpiritProjectileSpeed.Value;
-            SpiritProjectileSpeedEnemyVal = (SpiritProjectileSpeedVal - 1) * 0.5f + 1;
+            projectileSpeedPlayer = 1f;
+            projectileSpeedMonster = 1.5f;
 
 
+        }
+        public static void OnArtifactEnable()
+        {
+            //Most need to be added on client because they keep have authority for recalc stats.
+            On.RoR2.CharacterBody.RecalculateStats += Spiriting.RecalcStats;
+            On.RoR2.Projectile.ProjectileController.Start += Spiriting.RecalcProjectileSpeed;
+            On.RoR2.HealthComponent.TakeDamage += Spiriting.RecalcOnDamage;
+            //On.RoR2.HealthComponent.SendHeal += Spiriting.RecalcOnHeal;
+            //On.RoR2.CharacterMotor.OnLanded += Spiriting.RecalcOnLand;       
+            On.RoR2.SetStateOnHurt.SetStun += Spiriting.RecalcStunDuration;
+            Debug.Log("Added Spirit");
+        }
+        public static void OnArtifactDisable()
+        {
+            On.RoR2.CharacterBody.RecalculateStats -= Spiriting.RecalcStats;
+            On.RoR2.Projectile.ProjectileController.Start -= Spiriting.RecalcProjectileSpeed;
+            On.RoR2.HealthComponent.TakeDamage -= Spiriting.RecalcOnDamage;
+            //On.RoR2.HealthComponent.SendHeal -= Spiriting.RecalcOnHeal;
+            //On.RoR2.CharacterMotor.OnLanded -= Spiriting.RecalcOnLand;
+            On.RoR2.SetStateOnHurt.SetStun -= Spiriting.RecalcStunDuration;
+            Debug.Log("Removed Spirit");
         }
 
 
@@ -48,91 +69,177 @@ namespace ArtifactDissimilarity
             if (self.healthComponent && buffDef == RoR2Content.Buffs.ElementalRingsCooldown && buffDef == DLC1Content.Buffs.ElementalRingVoidCooldown)
             {
                 float tempfrac = 1 - (1 - self.healthComponent.combinedHealthFraction) / 0.8f;
-                duration *= (tempfrac * SpiritCooldownPlayerVal + 1 - SpiritCooldownPlayerVal);
+                duration *= (tempfrac * skillCooldownPlayers + 1 - skillCooldownPlayers);
             }
             orig(self, buffDef, duration);
         }
 
         public static void RecalcStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, global::RoR2.CharacterBody self)
         {
-            if (!self.master | !self.healthComponent | !self.skillLocator) { orig(self); return; }
-            float tempfrac = 1;
-            if (self.isPlayerControlled)
+            orig(self);
+
+            if (!self.healthComponent || !self.skillLocator) { return; }
+            float tempfrac = 1 - (1 - self.healthComponent.combinedHealthFraction) / 0.8f;
+            if (tempfrac > 1) { return; }
+            if (tempfrac < 0) { tempfrac = 0; }
+            float reversedFrac = 1 - tempfrac;
+   
+            if (self.isPlayerControlled == true)
             {
-                tempfrac = 1 - (1 - self.healthComponent.combinedHealthFraction) / 0.9f;
+                self.moveSpeed *= reversedFrac * speedPlayers + 1;
+                self.acceleration *= reversedFrac * speedPlayers + 1;
+                self.jumpPower *= reversedFrac * jumpPowerPlayers + 1;
+                self.attackSpeed *= reversedFrac * attackSpeedPlayers + 1;
+                self.damage *= 1 - damagePlayers * reversedFrac;
+                float skillMult = 1 - skillCooldownPlayers * reversedFrac;
+                if (self.skillLocator.primary)
+                {
+                    self.skillLocator.primary.cooldownScale *= skillMult;
+                }
+                if (self.skillLocator.secondary)
+                {
+                    self.skillLocator.secondary.cooldownScale *= skillMult;
+                }
+                if (self.skillLocator.utility)
+                {
+                    self.skillLocator.utility.cooldownScale *= skillMult;
+                }
+                if (self.skillLocator.special)
+                {
+                    self.skillLocator.special.cooldownScale *= skillMult;
+                }
             }
             else
             {
-                tempfrac = 1 - (1 - self.healthComponent.combinedHealthFraction) / 0.8f;
+                self.moveSpeed *= reversedFrac * speedMonster + 1;
+                self.acceleration *= reversedFrac * speedMonster + 1;
+                self.jumpPower *= reversedFrac * jumpPowerMonster + 1;
+                self.attackSpeed *= reversedFrac * attackSpeedMonster + 1;
+                self.damage *= 1 - damageMonster * reversedFrac;
+                float skillMult = 1 - skillCooldownMonster * reversedFrac;
+
+                if (self.skillLocator.primary)
+                {
+                    self.skillLocator.primary.cooldownScale *= (tempfrac * skillCooldownMonster + 1 - skillCooldownMonster);
+                    //if (self.skillLocator.primary.cooldownScale > 0.31f && self.name.StartsWith("Bell")) { self.skillLocator.primary.cooldownScale = 0.32f; }
+                }
+                if (self.skillLocator.secondary)
+                {
+                    self.skillLocator.secondary.cooldownScale *= (tempfrac * skillCooldownMonster + 1 - skillCooldownMonster);
+                }
+                if (self.skillLocator.utility)
+                {
+                    if (self.name.StartsWith("Vagrant") || self.name.StartsWith("GrandParent") || self.name.StartsWith("ClayBoss")) { tempfrac += 0.5f; }
+                    self.skillLocator.utility.cooldownScale *= (tempfrac * skillCooldownMonster + 1 - skillCooldownMonster);
+                }
+                if (self.skillLocator.special)
+                {
+                    if (self.name.StartsWith("Brother") || self.name.StartsWith("SuperRobo")) { return; }
+                    self.skillLocator.special.cooldownScale *= (tempfrac * skillCooldownMonster + 1 - skillCooldownMonster);
+                }
             }
+        }
+
+
+        public static void RecalcStatsOld(On.RoR2.CharacterBody.orig_RecalculateStats orig, global::RoR2.CharacterBody self)
+        {
+            if (!self.master | !self.healthComponent | !self.skillLocator) { orig(self); return; }
+            float tempfrac = 1 - (1 - self.healthComponent.combinedHealthFraction) / 0.8f;
+
             //tempfrac = (float)Decimal.Round((decimal)tempfrac,2); //Maybe looks cleaner idk
             if (tempfrac > 1) { tempfrac = 1; }
             if (tempfrac < 0) { tempfrac = 0; }
+            float reversedFrac = 1 - tempfrac;
 
             CharacterBody tempmaster = self.master.bodyPrefab.GetComponent<CharacterBody>();
 
             if (self.isPlayerControlled == true)
             {
-                self.baseMoveSpeed = ((1 - tempfrac) * SpiritSpeedVal + 1) * tempmaster.baseMoveSpeed;
-                self.baseAcceleration = ((1 - tempfrac) * SpiritSpeedVal + 1) * tempmaster.baseAcceleration;
-                self.baseJumpPower = ((1 - tempfrac) * SpiritJumpPlayerVal + 1) * tempmaster.baseJumpPower;
+                self.baseMoveSpeed = (reversedFrac * speedPlayers + 1) * tempmaster.baseMoveSpeed;
+                self.baseAcceleration = (reversedFrac * speedPlayers + 1) * tempmaster.baseAcceleration;
+                self.baseJumpPower = (reversedFrac * jumpPowerPlayers + 1) * tempmaster.baseJumpPower;
 
-                self.baseDamage = (tempfrac * SpiritDamagePlayerVal + 1 - SpiritDamagePlayerVal) * tempmaster.baseDamage;
-                self.levelDamage = (tempfrac * SpiritDamagePlayerVal + 1 - SpiritDamagePlayerVal) * tempmaster.levelDamage;
-                self.baseAttackSpeed = ((1 - tempfrac) * SpiritAttackSpeedPlayerVal + 1) * tempmaster.baseAttackSpeed;
+                self.baseDamage = (tempfrac * damageMonster + 1 - damageMonster) * tempmaster.baseDamage;
+                self.levelDamage = (tempfrac * damageMonster + 1 - damageMonster) * tempmaster.levelDamage;
+                self.baseAttackSpeed = (reversedFrac * attackSpeedPlayers + 1) * tempmaster.baseAttackSpeed;
             }
             else
             {
-                self.baseMoveSpeed = ((1 - tempfrac) * SpiritSpeedEnemyVal + 1) * tempmaster.baseMoveSpeed;
-                self.baseAcceleration = ((1 - tempfrac) * SpiritSpeedEnemyVal + 1) * tempmaster.baseAcceleration;
-                self.baseJumpPower = ((1 - tempfrac) * SpiritJumpEnemyVal + 1) * tempmaster.baseJumpPower;
+                self.baseMoveSpeed = (reversedFrac * speedMonster + 1) * tempmaster.baseMoveSpeed;
+                self.baseAcceleration = (reversedFrac * speedMonster + 1) * tempmaster.baseAcceleration;
+                self.baseJumpPower = (reversedFrac * jumpPowerMonster + 1) * tempmaster.baseJumpPower;
 
-                self.baseDamage = (tempfrac * SpiritDamageEnemyVal + 1 - SpiritDamageEnemyVal) * tempmaster.baseDamage;
-                self.levelDamage = (tempfrac * SpiritDamageEnemyVal + 1 - SpiritDamageEnemyVal) * tempmaster.levelDamage;
-                self.baseAttackSpeed = ((1 - tempfrac) * SpiritAttackSpeedEnemyVal + 1) * tempmaster.baseAttackSpeed;
+                self.baseDamage = (tempfrac * damagePlayers + 1 - damagePlayers) * tempmaster.baseDamage;
+                self.levelDamage = (tempfrac * damagePlayers + 1 - damagePlayers) * tempmaster.levelDamage;
+                self.baseAttackSpeed = (reversedFrac * attackSpeedMonster + 1) * tempmaster.baseAttackSpeed;
             }
 
             //self.PerformAutoCalculateLevelStats();
             orig(self);
+
+
+
+            if (self.isPlayerControlled == true)
+            {
+                self.moveSpeed *= reversedFrac * 2 + 1;
+                self.acceleration *= reversedFrac * 3 + 1;
+                self.baseJumpPower = (reversedFrac * jumpPowerPlayers + 1) * tempmaster.baseJumpPower;
+
+                self.baseDamage = (tempfrac * damageMonster + 1 - damageMonster) * tempmaster.baseDamage;
+                self.levelDamage = (tempfrac * damageMonster + 1 - damageMonster) * tempmaster.levelDamage;
+                self.baseAttackSpeed = (reversedFrac * attackSpeedPlayers + 1) * tempmaster.baseAttackSpeed;
+            }
+            else
+            {
+                self.baseMoveSpeed = (reversedFrac * speedMonster + 1) * tempmaster.baseMoveSpeed;
+                self.baseAcceleration = (reversedFrac * speedMonster + 1) * tempmaster.baseAcceleration;
+                self.baseJumpPower = (reversedFrac * jumpPowerMonster + 1) * tempmaster.baseJumpPower;
+
+                self.baseDamage = (tempfrac * damagePlayers + 1 - damagePlayers) * tempmaster.baseDamage;
+                self.levelDamage = (tempfrac * damagePlayers + 1 - damagePlayers) * tempmaster.levelDamage;
+                self.baseAttackSpeed = (reversedFrac * attackSpeedMonster + 1) * tempmaster.baseAttackSpeed;
+            }
+
+
             if (self.isPlayerControlled == true)
             {
                 if (self.skillLocator.primary)
                 {
-                    self.skillLocator.primary.cooldownScale *= (tempfrac * SpiritCooldownPlayerVal + 1 - SpiritCooldownPlayerVal);
+                    self.skillLocator.primary.cooldownScale *= (tempfrac * skillCooldownPlayers + 1 - skillCooldownPlayers);
                 }
                 if (self.skillLocator.secondary)
                 {
-                    self.skillLocator.secondary.cooldownScale *= (tempfrac * SpiritCooldownPlayerVal + 1 - SpiritCooldownPlayerVal);
+                    self.skillLocator.secondary.cooldownScale *= (tempfrac * skillCooldownPlayers + 1 - skillCooldownPlayers);
                 }
                 if (self.skillLocator.utility)
                 {
-                    self.skillLocator.utility.cooldownScale *= (tempfrac * SpiritCooldownPlayerVal + 1 - SpiritCooldownPlayerVal);
+                    self.skillLocator.utility.cooldownScale *= (tempfrac * skillCooldownPlayers + 1 - skillCooldownPlayers);
                 }
                 if (self.skillLocator.special)
                 {
-                    self.skillLocator.special.cooldownScale *= (tempfrac * SpiritCooldownPlayerVal + 1 - SpiritCooldownPlayerVal);
+                    self.skillLocator.special.cooldownScale *= (tempfrac * skillCooldownPlayers + 1 - skillCooldownPlayers);
                 }
             }
             else
             {
                 if (self.skillLocator.primary)
                 {
-                    self.skillLocator.primary.cooldownScale *= (tempfrac * SpiritCooldownEnemyVal + 1 - SpiritCooldownEnemyVal);
+                    self.skillLocator.primary.cooldownScale *= (tempfrac * skillCooldownMonster + 1 - skillCooldownMonster);
                     //if (self.skillLocator.primary.cooldownScale > 0.31f && self.name.StartsWith("Bell")) { self.skillLocator.primary.cooldownScale = 0.32f; }
                 }
                 if (self.skillLocator.secondary)
                 {
-                    self.skillLocator.secondary.cooldownScale *= (tempfrac * SpiritCooldownEnemyVal + 1 - SpiritCooldownEnemyVal);
+                    self.skillLocator.secondary.cooldownScale *= (tempfrac * skillCooldownMonster + 1 - skillCooldownMonster);
                 }
                 if (self.skillLocator.utility)
                 {
                     if (self.name.StartsWith("Vagrant") || self.name.StartsWith("GrandParent") || self.name.StartsWith("ClayBoss")) { tempfrac += 0.5f; }
-                    self.skillLocator.utility.cooldownScale *= (tempfrac * SpiritCooldownEnemyVal + 1 - SpiritCooldownEnemyVal);
+                    self.skillLocator.utility.cooldownScale *= (tempfrac * skillCooldownMonster + 1 - skillCooldownMonster);
                 }
                 if (self.skillLocator.special)
                 {
                     if (self.name.StartsWith("Brother") || self.name.StartsWith("SuperRobo")) { return; }
-                    self.skillLocator.special.cooldownScale *= (tempfrac * SpiritCooldownEnemyVal + 1 - SpiritCooldownEnemyVal);
+                    self.skillLocator.special.cooldownScale *= (tempfrac * skillCooldownMonster + 1 - skillCooldownMonster);
                 }
             }
         }
@@ -197,11 +304,11 @@ namespace ArtifactDissimilarity
             if (tempfrac < 0) { tempfrac = 0; }
             if (self.teamFilter.defaultTeam == TeamIndex.Player)
             {
-                temp.desiredForwardSpeed *= (SpiritProjectileSpeedVal - tempfrac * (SpiritProjectileSpeedVal - 1));
+                temp.desiredForwardSpeed *= (projectileSpeedPlayer - tempfrac * (projectileSpeedPlayer - 1));
             }
             else
             {
-                temp.desiredForwardSpeed *= (SpiritProjectileSpeedEnemyVal - tempfrac * (SpiritProjectileSpeedEnemyVal - 1));
+                temp.desiredForwardSpeed *= (projectileSpeedMonster - tempfrac * (projectileSpeedMonster - 1));
             }
         }
 

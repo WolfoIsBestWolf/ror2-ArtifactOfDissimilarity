@@ -1,106 +1,192 @@
-using R2API.Utils;
+using MonoMod.Cil;
 using RoR2;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace ArtifactDissimilarity
 {
     public class Obscurity
     {
-        public static Sprite questionMark_White;  
-        public static Sprite questionMark_Red;
-        public static Sprite questionMark_Orange;
-        public static Sprite questionMark_Yellow;
-        public static Sprite questionMark_Green;
-        public static Sprite questionMark_Blue;
-        public static Sprite questionMark_Pink;
-
-
-        public static void Setup()
+        public static Sprite BlindT1;
+        public static Sprite BlindT2;
+        public static Sprite BlindT3;
+        public static Sprite BlindBoss;
+        public static Sprite BlindLunar;
+        public static Sprite BlindVoid;
+        public static Sprite BlindEquipment;
+        public static Sprite BlindMod;
+         
+        public static void Start()
         {
-            On.RoR2.ShopTerminalBehavior.PreStartClient += ShopTerminalBehavior_PreStartClient;
-            On.RoR2.PickupDisplay.SetPickupIndex += PickupDisplay_SetPickupIndex;
-            On.RoR2.UI.ItemInventoryDisplay.UpdateDisplay += RemoveItemDisplay;
-            On.RoR2.UI.ItemInventoryDisplay.AllocateIcons += ItemInventoryDisplay_AllocateIcons;
-            On.RoR2.UI.ItemIcon.SetItemIndex += ItemIcon_SetItemIndex;
+            Texture2D texture = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Blind/BlindT1.png");
+            texture.wrapMode = TextureWrapMode.Clamp;
+            BlindT1 = Sprite.Create(texture, new Rect(0, 0, 128, 128), new Vector2(0.5f, 0.5f));
 
+            texture = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Blind/BlindT2.png");
+            texture.wrapMode = TextureWrapMode.Clamp;
+            BlindT2 = Sprite.Create(texture, new Rect(0, 0, 128, 128), new Vector2(0.5f, 0.5f));
 
-            On.RoR2.ItemDisplay.SetVisibilityLevel += ItemDisplay_SetVisibilityLevel;
+            texture = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Blind/BlindT3.png");
+            texture.wrapMode = TextureWrapMode.Clamp;
+            BlindT3 = Sprite.Create(texture, new Rect(0, 0, 128, 128), new Vector2(0.5f, 0.5f));
 
-            On.RoR2.UI.PickupPickerPanel.OnCreateButton += PickupPickerPanel_OnCreateButton;
-            //Maybe instead of 0 Items shown, show question mark icons with the stack number, harder to do
+            texture = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Blind/BlindBoss.png");
+            texture.wrapMode = TextureWrapMode.Clamp;
+            BlindBoss = Sprite.Create(texture, new Rect(0, 0, 128, 128), new Vector2(0.5f, 0.5f));
 
-            //PickupPicker Pannel Questionmarks ig ig
+            texture = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Blind/BlindLunar.png");
+            texture.wrapMode = TextureWrapMode.Clamp;
+            BlindLunar = Sprite.Create(texture, new Rect(0, 0, 128, 128), new Vector2(0.5f, 0.5f));
 
-            //PickupCatalog.GetHiddenPickupDisplayPrefab();
+            texture = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Blind/BlindVoid.png");
+            texture.wrapMode = TextureWrapMode.Clamp;
+            BlindVoid = Sprite.Create(texture, new Rect(0, 0, 128, 128), new Vector2(0.5f, 0.5f));
+
+            texture = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Blind/BlindEq.png");
+            texture.wrapMode = TextureWrapMode.Clamp;
+            BlindEquipment = Sprite.Create(texture, new Rect(0, 0, 128, 128), new Vector2(0.5f, 0.5f));
+
+            texture = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Blind/BlindMod.png");
+            texture.wrapMode = TextureWrapMode.Clamp;
+            BlindMod = Sprite.Create(texture, new Rect(0, 0, 128, 128), new Vector2(0.5f, 0.5f));
         }
 
-        private static void ItemDisplay_SetVisibilityLevel(On.RoR2.ItemDisplay.orig_SetVisibilityLevel orig, ItemDisplay self, VisibilityLevel newVisibilityLevel)
+        public static void OnArtifactEnable()
         {
-            orig(self, VisibilityLevel.Invisible);
+            On.RoR2.PickupDisplay.RebuildModel += Hide_PickupOverworld;
+             
+            On.RoR2.GenericPickupController.GetDisplayName += Hide_GetDisplayName;
+            On.RoR2.Chat.PlayerPickupChatMessage.ConstructChatString += Hide_PickupChatMessage;
+            IL.RoR2.UI.PingIndicator.RebuildPing += Hide_PingChat;
+
+            On.RoR2.CharacterModel.UpdateItemDisplay += Hide_PickupDisplays;
+
+            On.RoR2.UI.ItemIcon.SetItemIndex += Hide_ItemIcon;
+            On.RoR2.UI.EquipmentIcon.SetDisplayData += Hide_EquipmentIcon;
+
+           
+ 
+        }
+        public static void OnArtifactDisable()
+        {
         }
 
-        private static void PickupPickerPanel_OnCreateButton(On.RoR2.UI.PickupPickerPanel.orig_OnCreateButton orig, RoR2.UI.PickupPickerPanel self, int index, RoR2.UI.MPButton button)
+        private static void Hide_PickupDisplays(On.RoR2.CharacterModel.orig_UpdateItemDisplay orig, CharacterModel self, Inventory inventory)
         {
-            throw new NotImplementedException();
         }
 
-        private static void ItemIcon_SetItemIndex(On.RoR2.UI.ItemIcon.orig_SetItemIndex orig, RoR2.UI.ItemIcon self, ItemIndex newItemIndex, int newItemCount)
+
+
+        private static void Hide_PingChat(MonoMod.Cil.ILContext il)
+        {
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.Before,
+                x => x.MatchCallvirt("RoR2.ShopTerminalBehavior", "get_pickupIndexIsHidden")))
+            {
+                c.TryGotoNext(MoveType.After,
+                x => x.MatchLdfld("RoR2.PickupDef", "nameToken"));
+                c.EmitDelegate<Func<string, string>>((damageInfo) =>
+                {
+                    return "SHOP_ITEM_MYSTERY_TITLE";
+
+                });
+            }
+            else
+            {
+                Debug.LogWarning("IL Failed: Hide_PingChat");
+            }
+        }
+
+        private static string Hide_GetDisplayName(On.RoR2.GenericPickupController.orig_GetDisplayName orig, GenericPickupController self)
+        {
+            string temp = Language.GetString("SHOP_ITEM_MYSTERY_TITLE");
+            PickupDef pickupDef = PickupCatalog.GetPickupDef(self.pickupIndex);
+            if (pickupDef != null)
+            {
+                string hex = ColorUtility.ToHtmlStringRGB(pickupDef.baseColor);
+                temp = "<color=#" + hex + ">" + temp + "</color>";
+                return temp;
+            }
+            return temp;
+        }
+
+        private static string Hide_PickupChatMessage(On.RoR2.Chat.PlayerPickupChatMessage.orig_ConstructChatString orig, Chat.PlayerPickupChatMessage self)
+        {
+            self.pickupToken = "SHOP_ITEM_MYSTERY_TITLE";
+            return orig(self);
+        }
+
+ 
+
+        private static void Hide_EquipmentIcon(On.RoR2.UI.EquipmentIcon.orig_SetDisplayData orig, RoR2.UI.EquipmentIcon self, ValueType newDisplayData)
+        {
+            orig(self, newDisplayData);
+            if (self.iconImage && self.iconImage != null)
+            {
+                self.iconImage.texture = BlindEquipment.texture;
+                if (self.tooltipProvider)
+                {
+                    self.tooltipProvider.titleToken = "SHOP_ITEM_MYSTERY_TITLE";
+                    self.tooltipProvider.bodyToken = "INSPECT_INFO_MISSING_DESCRIPTION";
+                }
+            }
+           
+        }
+
+      
+        
+        private static void Hide_ItemIcon(On.RoR2.UI.ItemIcon.orig_SetItemIndex orig, RoR2.UI.ItemIcon self, ItemIndex newItemIndex, int newItemCount)
         {
             //Is this Equipment Icon too??
             orig(self, newItemIndex, newItemCount);
 
+            self.tooltipProvider.titleToken = "SHOP_ITEM_MYSTERY_TITLE";
+            self.tooltipProvider.bodyToken = "INSPECT_INFO_MISSING_DESCRIPTION";
             ItemDef itemDef = ItemCatalog.GetItemDef(newItemIndex);
-
-            switch(itemDef.tier)
+            switch (itemDef.tier)
             {
+                case ItemTier.NoTier:
+                    break;
                 case ItemTier.Tier1:
+                    self.image.texture = BlindT1.texture;
                     break;
                 case ItemTier.Tier2:
+                    self.image.texture = BlindT2.texture;
                     break;
                 case ItemTier.Tier3:
+                    self.image.texture = BlindT3.texture;
                     break;
                 case ItemTier.Boss:
+                    self.image.texture = BlindBoss.texture;
                     break;
                 case ItemTier.Lunar:
+                    self.image.texture = BlindLunar.texture;
                     break;
                 case ItemTier.VoidTier1:
                 case ItemTier.VoidTier2:
                 case ItemTier.VoidTier3:
                 case ItemTier.VoidBoss:
+                    self.image.texture = BlindVoid.texture;
                     break;
+                default:
+                    self.image.texture = BlindMod.texture;
+                    break;
+
             }
 
 
         }
 
-        private static void ItemInventoryDisplay_AllocateIcons(On.RoR2.UI.ItemInventoryDisplay.orig_AllocateIcons orig, RoR2.UI.ItemInventoryDisplay self, int desiredItemCount)
+        private static void Hide_PickupOverworld(On.RoR2.PickupDisplay.orig_RebuildModel orig, PickupDisplay self, GameObject modelObjectOverride)
         {
-            //If Inventory
-            //If Tab Inventory
-            //NOT Enemy Inventory
-            //NOT Run End Inventory
-
-            orig(self, 0);
-        }
-
-        private static void RemoveItemDisplay(On.RoR2.UI.ItemInventoryDisplay.orig_UpdateDisplay orig, RoR2.UI.ItemInventoryDisplay self)
-        {
-            orig(self);
-        }
-
-        private static void PickupDisplay_SetPickupIndex(On.RoR2.PickupDisplay.orig_SetPickupIndex orig, PickupDisplay self, PickupIndex newPickupIndex, bool newHidden)
-        {
-            orig(self, newPickupIndex, true);
-        }
-
-        private static void ShopTerminalBehavior_PreStartClient(On.RoR2.ShopTerminalBehavior.orig_PreStartClient orig, ShopTerminalBehavior self)
-        {
-            orig(self);
             self.hidden = true;
-            self.Networkhidden = true;
+
+            orig(self, modelObjectOverride);
         }
+
+
+
+
+
     }
 }

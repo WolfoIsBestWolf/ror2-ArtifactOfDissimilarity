@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using System;
 
 namespace ArtifactDissimilarity
 {
@@ -12,7 +11,7 @@ namespace ArtifactDissimilarity
         public static AssetBundle Bundle;
         public static PluginInfo PluginInfo;
         public static string Folder = "Artifacts\\";
-   
+
 
         internal static string assemblyDir
         {
@@ -38,20 +37,20 @@ namespace ArtifactDissimilarity
             {
                 Debug.LogWarning("COULD NOT FIND LANGUAGES FOLDER");
             }
-            /*if (Directory.Exists(GetPathToFile(Folder + "AssetBundles")))
+            if (Directory.Exists(GetPathToFile(Folder + "AssetBundles")))
             {
-                Bundle = AssetBundle.LoadFromFile(GetPathToFile(Folder + "AssetBundles", "wolfoqualityoflife"));
+                Bundle = AssetBundle.LoadFromFile(GetPathToFile(Folder + "AssetBundles", "artifacts_new"));
             }
             else
             {
                 Debug.LogWarning("COULD NOT FIND ASSETBUNDLES FOLDER");
-            }*/
+            }
         }
 
         private static void SetFolders(On.RoR2.Language.orig_SetFolders orig, RoR2.Language self, System.Collections.Generic.IEnumerable<string> newFolders)
         {
-           var dirs = System.IO.Directory.EnumerateDirectories(Path.Combine(GetPathToFile(Folder + "Languages")), self.name);
-           orig(self, newFolders.Union(dirs));
+            var dirs = System.IO.Directory.EnumerateDirectories(Path.Combine(GetPathToFile(Folder + "Languages")), self.name);
+            orig(self, newFolders.Union(dirs));
         }
 
 

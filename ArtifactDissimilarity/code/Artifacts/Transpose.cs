@@ -8,6 +8,41 @@ namespace ArtifactDissimilarity
 {
     public class Transpose
     {
+        public static void OnArtifactEnable()
+        {
+            On.RoR2.CharacterMaster.Respawn += Transpose.RandomizeLoadoutRespawnMethod;
+            On.RoR2.CharacterMaster.PickRandomSurvivorBodyPrefab += Transpose.Transpose_Metamorphosis;
+            if (WConfig.TransposeRerollHeresy.Value == true)
+            {
+                On.RoR2.SceneDirector.Start += Transpose.RandomizeHeresyItems;
+            }
+            if (NetworkServer.active)
+            {
+                foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
+                {
+                    playerCharacterMasterController.StopAllCoroutines();
+                    playerCharacterMasterController.StartCoroutine(Main.DelayedRespawn(playerCharacterMasterController, 0.35f));
+                    //Transpose.RerollLoadout(playerCharacterMasterController.master.GetBodyObject(), playerCharacterMasterController.master);
+                }
+            }
+            Debug.Log("Added Transpose");
+        }
+        public static void OnArtifactDisable()
+        {
+            On.RoR2.CharacterMaster.Respawn -= Transpose.RandomizeLoadoutRespawnMethod;
+            On.RoR2.CharacterMaster.PickRandomSurvivorBodyPrefab -= Transpose.Transpose_Metamorphosis;
+            if (WConfig.TransposeRerollHeresy.Value == true)
+            {
+                On.RoR2.SceneDirector.Start -= Transpose.RandomizeHeresyItems;
+            }
+            foreach (PlayerCharacterMasterController playerCharacterMasterController in PlayerCharacterMasterController.instances)
+            {
+                playerCharacterMasterController.networkUser.CopyLoadoutToMaster();
+                playerCharacterMasterController.StopAllCoroutines();
+                playerCharacterMasterController.StartCoroutine(Main.DelayedRespawn(playerCharacterMasterController, 0.1f));
+            };
+        }
+
         public static CharacterBody RandomizeLoadoutRespawnMethod(On.RoR2.CharacterMaster.orig_Respawn orig, CharacterMaster self, Vector3 footPosition, Quaternion rotation, bool midStageRevive)
         {
             if (self.playerCharacterMasterController)

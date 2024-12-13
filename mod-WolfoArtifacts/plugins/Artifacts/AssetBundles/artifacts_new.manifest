@@ -1,0 +1,46 @@
+ManifestFileVersion: 0
+CRC: 2176389039
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 36ac5bf72578d3303e212e845a0818bc
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: b0363f7088f9761414f730641bf9a24b
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Artifacts/Obscurity_Off.png
+- Assets/Artifacts/Blind/MysteryFull.png
+- Assets/Artifacts/Blind/BlindLunar.png
+- Assets/Artifacts/Dissimilarity_On.png
+- Assets/Artifacts/Kith_On.png
+- Assets/Artifacts/Remodeling_Off.png
+- Assets/Artifacts/Spiriting_Off.png
+- Assets/Artifacts/Wander_On.png
+- Assets/Artifacts/Obscurity_On.png
+- Assets/Artifacts/Wander_Off.png
+- Assets/Artifacts/Blind/BlindT1.png
+- Assets/Artifacts/Blind/BlindT2.png
+- Assets/Artifacts/Transpose_On.png
+- Assets/Artifacts/Blind/BlindVoid.png
+- Assets/Artifacts/Kith_Off.png
+- Assets/Artifacts/Unison_Off.png
+- Assets/Artifacts/Unison_On.png
+- Assets/Artifacts/Blind/BlindMod.png
+- Assets/Artifacts/Egg_Off.png
+- Assets/Artifacts/Egg_On.png
+- Assets/Artifacts/Remodeling_On.png
+- Assets/Artifacts/Spiriting_On.png
+- Assets/Artifacts/Transpose_Off.png
+- Assets/Artifacts/Briaged_On.png
+- Assets/Artifacts/Blind/BlindBlank.png
+- Assets/Artifacts/Blind/BlindEq.png
+- Assets/Artifacts/Briaged_Off.png
+- Assets/Artifacts/Dissimilarity_Off.png
+- Assets/Artifacts/Blind/BlindBoss.png
+- Assets/Artifacts/Blind/BlindT3.png
+Dependencies: []

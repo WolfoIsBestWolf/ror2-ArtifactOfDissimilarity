@@ -1,0 +1,69 @@
+{
+	"strings":
+	{       
+		"ARTIFACT_MIX_INTERACTABLE_NAME": "Artifact of Dissimilarity",
+		"ARTIFACT_MIX_INTERACTABLE_DESC": "Interactables can appear outside their usual environments.",
+		"LUNAR_TELEPORTER_ALIGN_DREAM": "<style=cWorldEvent>The Primordial Teleporter aligns with your new dream..</style>",
+		"LUNAR_TELEPORTER_ALIGN_NOTDREAM": "what",
+
+
+		"ARTIFACT_RANDOM_STAGEORDER_NAME": "Artifact of Wander",
+		"ARTIFACT_RANDOM_STAGEORDER_DESC": "Stages progress in a random order.\nSimulacrum: stages are in order.",
+	
+				"BAZAAR_SEER_ARENA": "<style=cWorldEvent>You dream of imprisonment.</style>",
+		"BAZAAR_SEER_ARTIFACTWORLD": "<style=cWorldEvent>You dream of sacred treasures.</style>",
+				 "BAZAAR_SEER_SHOP": "<style=cWorldEvent>You dream of spending.</style>",
+				"BAZAAR_SEER_LIMBO": "<style=cWorldEvent>You dream of peace.</style>",
+				   "BAZAAR_SEER_MS": "<style=cWorldEvent>You dream of lost respite.</style>",
+			 "BAZAAR_SEER_VOIDLING": "<style=cWorldEvent>You dream of unfathomable depths.</style>",
+		
+	
+		"ARTIFACT_SINGLE_INTERACTABLE_NAME": "Artifact of Kith",
+		"ARTIFACT_SINGLE_INTERACTABLE_DESC": "Each Interactable category will only contain one entry per stage.",
+			
+			
+			
+		"ARTIFACT_SINGLE_ELITE_NAME": "Artifact of Brigade",
+		"ARTIFACT_SINGLE_ELITE_DESC": "All elites will be the same type per stage.",
+		"ANNOUNCE_BRIGADE_ELITE": "<style=cWorldEvent>All elite monsters will be {0}</style>",
+		
+		"ITWAVE_ARTIFACT_SINGLE_ELITE_NAME": "Wave {0} - Augment of Brigade",
+		"ITWAVE_ARTIFACT_SINGLE_ELITE_DESC": "All elites will be of the same type.",
+		 
+				
+				
+		"ARTIFACT_SINGLE_ITEM_NAME": "Artifact of Unison",
+		"ARTIFACT_SINGLE_ITEM_DESC": "All item tiers only contain one item per stage.\nPrinters are unaffected.",
+		"ITREROLL_UNISON_WHITE": "<style=cWorldEvent>[WARNING] Simulating new Unison <color=#FFFFFF>common</color> item.</style>",
+		"ITREROLL_UNISON_GREEN": "<style=cWorldEvent>[WARNING] Simulating new Unison <color=#77FF17>uncommon</color> item.</style>",
+			
+				
+				
+		"ARTIFACT_REROLL_ITEMS_NAME": "Artifact of Remodeling",
+		"ARTIFACT_REROLL_ITEMS_DESC": "Reroll all items and equipments each stage.",		
+			
+			
+			
+		"ARTIFACT_REROLL_SKILLS_NAME": "Artifact of Transpose",
+		"ARTIFACT_REROLL_SKILLS_DESC": "Randomized your skill loadout every stage.",
+		
+		"ITWAVE_ARTIFACT_REROLL_SKILLS_NAME": "Wave {0} - Augment of Transpose",
+		"ITWAVE_ARTIFACT_REROLL_SKILLS_DESC": "Use a random loadout for this wave.",
+		
+		
+		
+		"ARTIFACT_BLIND_ITEMS_NAME": "Artifact of Obscurity",
+		"ARTIFACT_BLIND_ITEMS_DESC": "Items will be obscured.",
+		
+
+
+		"ARTIFACT_SPEED_ONLOWHEALTH_NAME": "Artifact of Spiriting",
+		"ARTIFACT_SPEED_ONLOWHEALTH_DESC": "All characters move and attack faster the lower their health gets.",
+		
+		"ITWAVE_ARTIFACT_SPEED_ONLOWHEALTH_NAME": "Wave {0} - Augment of Spiriting",
+		"ITWAVE_ARTIFACT_SPEED_ONLOWHEALTH_DESC": "Characters move and attack faster at lower health.",
+		
+			
+		 
+	}
+}

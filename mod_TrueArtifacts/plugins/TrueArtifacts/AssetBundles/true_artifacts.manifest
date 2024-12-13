@@ -1,0 +1,76 @@
+ManifestFileVersion: 0
+CRC: 357315472
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 53359c59cfe73fa5bc17321dbee9be77
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: b0363f7088f9761414f730641bf9a24b
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/TrueArtifacts/True_Swarms_On.png
+- Assets/TrueArtifacts/Mirror_Delusion_On.png
+- Assets/TrueArtifacts/True_Rebirth_Off.png
+- Assets/TrueArtifacts/True_Glass_Off.png
+- Assets/TrueArtifacts/True_Rebirth_On.png
+- Assets/TrueArtifacts/Mirror_Devotion_Off.png
+- Assets/TrueArtifacts/MirrorTrue_Honor_On.png
+- Assets/TrueArtifacts/True_Command_Off.png
+- Assets/TrueArtifacts/Mirror_Kin_Off.png
+- Assets/TrueArtifacts/Mirror_Evolution_Off.png
+- Assets/TrueArtifacts/Mirror_Honor_Off.png
+- Assets/TrueArtifacts/Mirror_Metamorphosis_Off.png
+- Assets/TrueArtifacts/MirrorTrue_Enigma_Off.png
+- Assets/TrueArtifacts/Mirror_Soul_On.png
+- Assets/TrueArtifacts/Mirror_Sacrifice_On.png
+- Assets/TrueArtifacts/MirrorTrue_Glass_On.png
+- Assets/TrueArtifacts/Mirror_Enigma_On.png
+- Assets/TrueArtifacts/True_Command_On.png
+- Assets/TrueArtifacts/True_Frailty_On.png
+- Assets/TrueArtifacts/True_Dissonance_Off.png
+- Assets/TrueArtifacts/True_Swarms_Off.png
+- Assets/TrueArtifacts/Mirror_Frailty_On.png
+- Assets/TrueArtifacts/Mirror_Spite_Off.png
+- Assets/TrueArtifacts/Mirror_Spite_On.png
+- Assets/TrueArtifacts/True_Honor_Off.png
+- Assets/TrueArtifacts/Mirror_Evolution_On.png
+- Assets/TrueArtifacts/Mirror_Swarms_Off.png
+- Assets/TrueArtifacts/True_Evolution_On.png
+- Assets/TrueArtifacts/True_Enigma_On.png
+- Assets/TrueArtifacts/True_Evolution_Off.png
+- Assets/TrueArtifacts/Mirror_Devotion_On.png
+- Assets/TrueArtifacts/True_Sacrifice_Off.png
+- Assets/TrueArtifacts/True_Glass_On.png
+- Assets/TrueArtifacts/Mirror_Delusion_Off.png
+- Assets/TrueArtifacts/MirrorTrue_Swarms_Off.png
+- Assets/TrueArtifacts/Mirror_Sacrifice_Off.png
+- Assets/TrueArtifacts/True_Enigma_Off.png
+- Assets/TrueArtifacts/Mirror_Dissonance_On.png
+- Assets/TrueArtifacts/Mirror_Frailty_Off.png
+- Assets/TrueArtifacts/True_Spite_Off.png
+- Assets/TrueArtifacts/Mirror_Glass_On.png
+- Assets/TrueArtifacts/Mirror_Death_Off.png
+- Assets/TrueArtifacts/Mirror_Enigma_Off.png
+- Assets/TrueArtifacts/True_Frailty_Off.png
+- Assets/TrueArtifacts/MirrorTrue_Enigma_On.png
+- Assets/TrueArtifacts/MirrorTrue_Swarms_On.png
+- Assets/TrueArtifacts/True_Dissonance_On.png
+- Assets/TrueArtifacts/Mirror_Swarms_On.png
+- Assets/TrueArtifacts/Mirror_Dissonance_Off.png
+- Assets/TrueArtifacts/True_Spite_On.png
+- Assets/TrueArtifacts/MirrorTrue_Glass_Off.png
+- Assets/TrueArtifacts/Mirror_Honor_On.png
+- Assets/TrueArtifacts/MirrorTrue_Honor_Off.png
+- Assets/TrueArtifacts/Mirror_Soul_Off.png
+- Assets/TrueArtifacts/True_Sacrifice_On.png
+- Assets/TrueArtifacts/Mirror_Metamorphosis_On.png
+- Assets/TrueArtifacts/Mirror_Kin_On.png
+- Assets/TrueArtifacts/True_Honor_On.png
+- Assets/TrueArtifacts/Mirror_Glass_Off.png
+- Assets/TrueArtifacts/Mirror_Death_On.png
+Dependencies: []

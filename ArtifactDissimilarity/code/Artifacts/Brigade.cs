@@ -1,71 +1,102 @@
 using R2API.Utils;
 using RoR2;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.Networking;
 
 namespace ArtifactDissimilarity
 {
     public class Brigade
     {
-        private static List<EliteDef> EliteDefsTier1 = new List<EliteDef>();
-        private static List<EliteDef> EliteDefsTier2 = new List<EliteDef>();
-        public static List<EliteDef> ForUsageEliteDefList = new List<EliteDef>();
-        public static EliteDef TempForUsageEliteDef;
+        private static List<EliteDef> Tier1EliteDefs = new List<EliteDef>();
+        private static List<EliteDef> Tier2EliteDefs = new List<EliteDef>();
+        public static List<EliteDef> forRandomization = new List<EliteDef>();
+        public static EliteDef chosenEliteDef;
         //private static EliteDef NoRepeatForUsageEliteDef;
         // public static EquipmentIndex[] brigadedAffixes = Array.Empty<EquipmentIndex>();
 
-        public static bool DidBrigadeHappen;
-        public static CombatDirector.EliteTierDef[] normalelitetierdefs;
+        //public static bool DidBrigadeHappen;
+        public static CombatDirector.EliteTierDef[] backupNormalEliteTiers;
 
-        static bool DumbEliteKinThing = false;
-        //static bool DumbT2EliteKinThing = false;
-        static int DumbT2EliteKinInt = 1;
+        static int howManyTimesAddedTier2 = 1;
 
-
- 
-        public static void SetupBrigade()
+        public static void OnArtifactEnable()
         {
-            if (DumbEliteKinThing == false)
+            SetupBrigade();
+            backupNormalEliteTiers = CombatDirector.eliteTiers;
+            if (Brigade.forRandomization.Count > 0 && SceneInfo.instance && Run.instance)
             {
-                for (int i = 0; i < EliteCatalog.eliteList.Count; i++)
-                {
-                    EliteDef tempdef = EliteCatalog.GetEliteDef(EliteCatalog.eliteList[i]);
-                    string tempname = tempdef.name;
-                    //Debug.LogWarning(tempdef);
-                    if (tempname.EndsWith("Gold") || tempname.EndsWith("Honor") || tempname.EndsWith("SecretSpeed") || tempname.EndsWith("Echo") || tempname.Contains("Lunar"))
-                    {
-                    }
-                    else if (tempdef.healthBoostCoefficient > 10 && !EliteDefsTier2.Contains(tempdef) || tempname.EndsWith("Void"))
-                    {
-                        EliteDefsTier2.Add(tempdef);
-                    }
-                    else if (!EliteDefsTier1.Contains(tempdef))
-                    {
-                        EliteDefsTier1.Add(tempdef);
-                    }
-                }
-
-                if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.arimah.PerfectedLoop"))
-                {
-                    EliteDefsTier2.Add(RoR2Content.Elites.Lunar);
-                }
-
-                DumbEliteKinThing = true;
+                Brigade.EliteKinAsMethod();
             }
-            DumbT2EliteKinInt = 1;
-            ForUsageEliteDefList.Clear();
-            ForUsageEliteDefList.AddRange(EliteDefsTier1);
+            Debug.Log("Added Brigade");
+            SceneDirector.onPrePopulateSceneServer += SceneDirector_onPrePopulateSceneServer;
         }
 
-        /*public static string SendBrigadeMessage()
+
+        public static void OnArtifactDisable()
         {
-            string token = Language.GetString("ANNOUNCE_BRIGADE_ELITE");
-            string token2 = string.Format(Language.GetString(TempForUsageEliteDef.modifierToken),"");
-  
-            return string.Format(token, token2);
-        }*/
+            CombatDirector.eliteTiers = backupNormalEliteTiers;
+            SceneDirector.onPrePopulateSceneServer -= SceneDirector_onPrePopulateSceneServer;
+            Debug.Log("UnBrigading");
+            Tier1EliteDefs.Clear();
+            Tier2EliteDefs.Clear();
+            forRandomization.Clear();
+        }
+
+        private static void SceneDirector_onPrePopulateSceneServer(SceneDirector obj)
+        {
+            Brigade.EliteKinAsMethod();
+        }
+
+        public static void SetupBrigade()
+        {
+            Tier1EliteDefs = new List<EliteDef>();
+            Tier2EliteDefs = new List<EliteDef>();
+            forRandomization = new List<EliteDef>();
+            
+ 
+            foreach (CombatDirector.EliteTierDef tier in CombatDirector.eliteTiers)
+            {
+                if (tier.eliteTypes[0] == null || tier.eliteTypes[0].name.EndsWith("Honor"))
+                {
+                    continue;
+                }
+                foreach (EliteDef eliteDef in tier.eliteTypes)
+                {
+                    if (eliteDef.IsAvailable())
+                    {
+                        if (eliteDef.healthBoostCoefficient > 8)
+                        {
+                            if (!Tier2EliteDefs.Contains(eliteDef))
+                            {
+                                Tier2EliteDefs.Add(eliteDef);
+                            }
+                        }
+                        else
+                        {
+                            if (!Tier1EliteDefs.Contains(eliteDef))
+                            {
+                                Tier1EliteDefs.Add(eliteDef);
+                            }
+                        }
+                    }
+                    
+                }
+            }
+
+            Tier1EliteDefs.Remove(RoR2Content.Elites.Lunar);
+            if (DLC1Content.Elites.Void.IsAvailable())
+            {
+                Tier2EliteDefs.Add(DLC1Content.Elites.Void);
+            }        
+            howManyTimesAddedTier2 = 1;
+            forRandomization.AddRange(Tier1EliteDefs);
+        }
+
+
 
         public class BrigadeMessage : RoR2.ChatMessageBase
         {
@@ -96,31 +127,25 @@ namespace ArtifactDissimilarity
         {
             if (NetworkServer.active)
             {
-                if (DumbT2EliteKinInt <= Run.instance.NetworkstageClearCount / 5)
+                if (howManyTimesAddedTier2 <= Run.instance.NetworkstageClearCount / 5)
                 {
-                    DumbT2EliteKinInt++;
+                    howManyTimesAddedTier2++;
                     Debug.Log("Add Tier 2 to Brigade");
-                    ForUsageEliteDefList.AddRange(EliteDefsTier2);
-                    ForUsageEliteDefList.AddRange(EliteDefsTier2);
+                    forRandomization.AddRange(Tier2EliteDefs);
+                    forRandomization.AddRange(Tier2EliteDefs);
                 }
-
-                /*if (TempForUsageEliteDef && RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.EliteOnly))
+                string baseSceneName = SceneInfo.instance.sceneDef.baseSceneName;
+                if (baseSceneName == "moon2" || baseSceneName == "limbo")
                 {
-                    TempForUsageEliteDef.healthBoostCoefficient /= 2;
-                    TempForUsageEliteDef.damageBoostCoefficient /= 2;
-                }*/
-
-                if (SceneInfo.instance.sceneDef.baseSceneName == "moon2" || SceneInfo.instance.sceneDef.baseSceneName == "limbo")
-                {
-                    TempForUsageEliteDef = RoR2Content.Elites.Lunar;
+                    chosenEliteDef = RoR2Content.Elites.Lunar;
                 }
-                else if (SceneInfo.instance.sceneDef.baseSceneName == "voidstage" || SceneInfo.instance.sceneDef.baseSceneName == "voidraid")
+                else if (baseSceneName == "voidstage" || baseSceneName == "voidraid")
                 {
-                    TempForUsageEliteDef = DLC1Content.Elites.Void;
+                    chosenEliteDef = DLC1Content.Elites.Void;
                 }
                 else
                 {
-                    TempForUsageEliteDef = ForUsageEliteDefList[Main.random.Next(ForUsageEliteDefList.Count)];
+                    chosenEliteDef = forRandomization[Main.random.Next(forRandomization.Count)];
                 }
 
                 //Eulogy Lunar
@@ -131,7 +156,7 @@ namespace ArtifactDissimilarity
                     //itemCountGlobal = Math.Min(itemCountGlobal, 10);
                     if (Run.instance.spawnRng.nextNormalizedFloat < 0.05f * (float)itemCountGlobal)
                     {
-                        TempForUsageEliteDef = RoR2Content.Elites.Lunar;
+                        chosenEliteDef = RoR2Content.Elites.Lunar;
                     }
                 }
 
@@ -139,33 +164,27 @@ namespace ArtifactDissimilarity
                 {
                     //WeeklyRun.bossAffixes
                     EquipmentIndex[] brigadedAffixes = Array.Empty<EquipmentIndex>();
-                    brigadedAffixes = brigadedAffixes.Add(TempForUsageEliteDef.eliteEquipmentDef.equipmentIndex);
+                    brigadedAffixes = brigadedAffixes.Add(chosenEliteDef.eliteEquipmentDef.equipmentIndex);
                     Run.instance.SetFieldValue<EquipmentIndex[]>("bossAffixes", brigadedAffixes);
                 }
 
-                Debug.Log("Artifact of Brigade: This stages only Elite " + TempForUsageEliteDef.name);
+                Debug.Log("Artifact of Brigade: This stages only Elite " + chosenEliteDef.name);
 
-                if (DidBrigadeHappen == false)
-                {
-                    DidBrigadeHappen = true;
-                    normalelitetierdefs = CombatDirector.eliteTiers;
-                }
-
-                EliteDef tempelitedef = TempForUsageEliteDef;
-                float CostMultiplier = 6;
-                if (TempForUsageEliteDef.healthBoostCoefficient > 10)
+                EliteDef tempelitedef = chosenEliteDef;
+                float CostMultiplier = 5;
+                if (chosenEliteDef.healthBoostCoefficient > 10)
                 {
                     CostMultiplier = 30;
                 }
- 
+
 
                 CombatDirector.EliteTierDef[] array = new CombatDirector.EliteTierDef[3];
                 array[0] = new CombatDirector.EliteTierDef
                 {
                     costMultiplier = 1,
                     eliteTypes = new EliteDef[1],
-                    isAvailable = ((SpawnCard.EliteRules rules) => CombatDirector.NotEliteOnlyArtifactActive()),
                     canSelectWithoutAvailableEliteDef = true,
+                    isAvailable = ((SpawnCard.EliteRules rules) => !CombatDirector.IsEliteOnlyArtifactActive()),   
                 };
                 array[1] = new CombatDirector.EliteTierDef
                 {
@@ -174,12 +193,12 @@ namespace ArtifactDissimilarity
                     {
                         tempelitedef,
                     },
-                    isAvailable = ((SpawnCard.EliteRules rules) => CombatDirector.NotEliteOnlyArtifactActive()),
+                    isAvailable = ((SpawnCard.EliteRules rules) => !CombatDirector.IsEliteOnlyArtifactActive()),
                     canSelectWithoutAvailableEliteDef = false,
                 };
                 array[2] = new CombatDirector.EliteTierDef
                 {
-                    costMultiplier = CostMultiplier*1.25f,
+                    costMultiplier = CostMultiplier * 1.25f,
                     eliteTypes = new EliteDef[]
                     {
                         tempelitedef,
@@ -188,8 +207,29 @@ namespace ArtifactDissimilarity
                     canSelectWithoutAvailableEliteDef = false,
                 };
                 CombatDirector.eliteTiers = array;
+
+                if (SceneInfo.instance && ClassicStageInfo.instance)
+                {
+                    SceneInfo.instance.StartCoroutine(DelayedBrigadeMessage(Brigade.chosenEliteDef.modifierToken, 1.5f));
+                }
+                else
+                {
+                    Chat.SendBroadcastChat(new Brigade.BrigadeMessage
+                    {
+                        eliteNameToken = Brigade.chosenEliteDef.modifierToken
+                    });
+                }
             }
         }
 
+        public static IEnumerator DelayedBrigadeMessage(string elite, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            Chat.SendBroadcastChat(new Brigade.BrigadeMessage
+            {
+                eliteNameToken = elite
+            });
+            yield break;
+        }
     }
 }

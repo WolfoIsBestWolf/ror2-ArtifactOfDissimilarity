@@ -1,0 +1,11 @@
+{
+    "name": "MirrorAndTrueArtifacts",
+    "version_number": "1.0.0",
+    "website_url": "https://github.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity",
+    "description": "Adds variants or different takes of 11 Artifacts. Mirror Swarms 2 Players, Mirror Kin family events, Mirror Glass double items.",
+    "dependencies": [
+        "bbepis-BepInExPack-5.4.9",
+		"RiskofThunder-HookGenPatcher-1.2.1",
+        "tristanmcpherson-R2API-5.0.5"
+    ]
+}	

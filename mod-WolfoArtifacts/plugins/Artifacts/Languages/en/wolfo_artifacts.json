@@ -4,8 +4,12 @@
 		"ARTIFACT_MIX_INTERACTABLE_NAME": "Artifact of Dissimilarity",
 		"ARTIFACT_MIX_INTERACTABLE_DESC": "Interactables can appear outside their usual environments.",
 		"LUNAR_TELEPORTER_ALIGN_DREAM": "<style=cWorldEvent>The Primordial Teleporter aligns with your new dream..</style>",
-		"LUNAR_TELEPORTER_ALIGN_NOTDREAM": "what",
+		"LUNAR_TELEPORTER_ALIGN_NOTDREAM": "<style=cWorldEvent>The Primordial Teleporter no longer aligns with your dream..</style>",
 
+
+
+		"VOID_SUPPRESSOR_DESCRIPTION": "Eradicate the shown item from existence, preventing it from appearing again for the current run. Existing copies of the item will be scrapped instantly.",
+			
 
 		"ARTIFACT_RANDOM_STAGEORDER_NAME": "Artifact of Wander",
 		"ARTIFACT_RANDOM_STAGEORDER_DESC": "Stages progress in a random order.\nSimulacrum: stages are in order.",

@@ -1,6 +1,21 @@
 
 ### Changelog:
 ```
+v3.2.0 - Code/Readme update
+Dissimiliarity and Kith now work better with Artifacts that remove certain interactables.
+Remodelling now rerolls Devotion Inventory by default.
+Remodelling now rerolls modded item tiers.
+Optimized Spiriting. (No longer messes with base stats)
+Wander now spawns Celestial, Void and Green orbs whenever it forces a Primordial Teleporter.
+
+Unison now removes category chests. (Since their drop would get overwritten anyways)
+Unison no longer affects "available items" lists of Runs.
+-(This was originally done because many mods get items from those directly)
+-((You are meant to use DropTables ever since SotV))
+-(but it caused some confusions and annoyances)
+Fixed some issues with Unison RNG.
+
+
 v3.1.0
 Now uses translate-able language tokens.
 

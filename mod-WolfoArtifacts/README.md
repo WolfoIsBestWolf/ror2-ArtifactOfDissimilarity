@@ -1,98 +1,156 @@
-## Artifact of Dissimilarity
-An Artifact that imitates Artifact of Dissonance but for interactables.
+Adds multiple artifacts similiar to Dissonance, Kin or Metamorphosis
 
-Like Artifact of Dissonance, it won't spawn every possibile option on every stage and instead give a limited amount of options from a list that contains everything per stage.
-
-The general rarity of each interactable is still intact, you should not find stages full of Legendary Chests.\
-But just like Dissonance, interactables can spawn before they usually would.
-
-Some Stages will seem quite normal and others without Small Chests or White Printers might feel quite different.\
-The game overall shouldn't feel too different however.
+But also some other more general artifacts like Spiriting.
 
 
-While the Artifact is on, Lunar Seers will randomly spawn across the stages and show a random stage as opposed to a upcoming one.\
-If you find one leading to Bulwarks Ambry it will be a random Artifact Trial.
+<table>
+	<tbody>
+		<tr>
+			<td colspan="3" align="center"><h2>Artifacts</h2></td>
+		</tr>
+		<tr>
+			<td>
+				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/Artifact/Dissimilarity_On.png" width=64>
+			</td>
+			<td>
+			<b>Artifact of Dissimilarity</b><br>
+			Artifact of Dissonance but for interactables.<br>
+			Will generate a random set of options based on a list of all interactables.<br>
+			<br>
+			Most interactable rarities stay the same, but that may change depending on what options are chosen.<br>
+			<br>
+			Additional interactables such as Cauldrons, Lunar Seers, Void Eradicators may spawn with this Artifact.<br>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/Artifact/Kith_On.png" width=64>
+			</td>
+			<td>
+				<b>Artifact of Kith</b><br>
+				Artifact of Kin but for interactables<br>
+				Each interactable Category will only have 1 thing in it.<br>
+				1 Chest, 1 Shrine, 1 Drone, 1 Printer, etc.<br>
+				<br>
+				Cannot go 2 stages in a row where the Chest is a Lunar or Equipment<br>
+				<br>
+				Can result in heavily skewed runs and very weird stages.				
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/Artifact/Briaged_On.png" width=64>
+			</td>
+			<td>
+				<b>Artifact of Brigade</b><br>
+				Artifact of Kin but for elite types.<br>
+				Only 1 elite type will be allowed per stage.<br>
+				<br>
+				Also available in Simulacrum as an Augment.
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/Artifact/Unison_On.png" width=64>
+			</td>
+			<td>
+				<b>Artifact of Unison</b><br>
+				Artifact of Kin but for items.<br>
+				Only one item, per tier, per stage<br>
+				<br>
+				Printers and Recyclers are unaffected to allow for some control.<br>
+				<br>
+				Cannot get repeats of the items for multiple stages.<br>
+				Simulacrum rolls a new white and sometimes green after wave 5.<br>
+				Command will be limited but will often show choices of multiple tiers.<br>
+				<br>
+				Stages will spawn slightly more loot and printers. Category Chests are removed.<br>
+				<br>
+				Enemies inventories are unaffected.<br>
+				(May not replace all items from modded sources)<br>
+				Obviously this artifact would make the game quite a bit more challenging.
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/Artifact/Transpose_On.png" width=64>
+			</td>
+			<td>
+				<b>Artifact of Transpose</b><br>
+				Artifact of Metamorphosis but for Skills<br>
+				Randomize your Skill and Skin loadout every stage.<br>
+				<br>
+				Loadouts will not be repeated.
+				<br>
+				Also available in Simulacrum as an Augment.
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/Artifact/Remodeling_On.png" width=64>
+			</td>
+			<td>
+				<b>Artifact of Remodelling</b><br>
+				Artifact of Metamorphosis but for items.<br>
+				All items and equipment will be rerolled between stages.<br>
+				<br>
+				Item quality and stack size will be maintained.<br>
+				<br>
+				Scrap will be rerolled out of but never into.<br>
+				Will not reroll Heresy Items, Beads of Fealty and Captains Microbots.<br>
+				<br>
+				Will also reroll: Equipment Drones, Evolution inventory, Devotion inventorys, Simulacrum inventory.<br>
+				Removes Printers.<br>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/Artifact/Spiriting_On.png" width=64>
+			</td>
+			<td>
+				<b>Artifact of Spiriting</b><br>
+				RoR2 version of RoR1's Artifact of Spirit.<br>
+				<br>
+				Players and Monsters gain increased Movement, Attack & Projectile speed and Cooldown reduction the lower their health is.<br>
+				Maximum boost at 20% health or lower.<br>
+				<br>
+				Also available in Simulacrum as an Augment.
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/Artifact/Wander_On.png" width=64>
+			</td>
+			<td>
+				<b>Artifact of Wander</b><br>
+				Random stage order.<br>
+				Like how the game uses for Prismatic Trials.<br>
+				<br>
+				Stages will not be repeated.<br>
+				Lunar Seers in Bazaar will be of any stage.<br>
+				Every other stage starting at stage 5 will have a Primordial Teleporter, Celestial & Void & Green orb.<br>
+				For better control on where to finish the run.
+			</td>
+		</tr>
+	</tbody>
+</table>
 
-Primordial Teleporter might spawn on random stages post loop.
 
-## Artifact of Kith
-An Artifact that imitates Artifact of Kin but for interactables.
 
-Instead of 1 interactable for the whole stage, it's 1 per Category so you can still achieve a normal run.
 
-Not every stage will contain a way to get normal items.\
-Can't get two stages in a row of no normal chest.\
-This Artifact doesn't try to be balanced but is meant to still be fun.
+### Other Things
+Kith and Unison can be a challenge due to being more rng heavy.
 
-Keep in mind things such as Cloaked Chests are "Rare" and Void Cradles are "Void Stuff", and not "Chests".
+Spiriting also lowers damage by up to 25% to counter twice the skills being used twice as fast. (Players and Enemies)
 
-Interactables can spawn before the normally would.
+Lunar Seers will have their destination name in the prompt and ping.
 
-About 1 more chest will spawn per stage to help with loot (16 Credits).
+Fixes Treeborn Cannopy and Helminth Roost not being allowed on Random stage order.
 
-## Artifact of Wander
-An Artifact that enables the gamerule Stage Meander that makes stages progress in a random order.\
-When using it in Simulacrum, the stages will progress in order instead of randomly.
-
-Bazaar Lunar Seers will be entirely random as opposed to showing the two upcoming stages for this Artifact.\
-(Shows different hidden realms and Commencement too)\
-Every stage after looping will spawn a Primordial Teleporter.
-
-## Artifact of Remodeling
-An Artifact that will reroll all your items and equipment upon going to a new stage.
-
-Rerolled items will maintain tier and stack sizes.\
-Rerolls Equipment into the same tier/category.
-
-It will not reroll or roll into; Heresy Items, Beads of Fealty, or unique items like Captains Microbots.\
-But by default Scrap will reroll into a normal items. This is so that you can make one high stack of Scrap that then turns into one high stack of another Item. 
-
-Monsters items from Simulacrum or Artifact of Evolution and Equipment Drone Equipment will be rerolled too.\
-Prevents Printers from spawning.
-
-## Artifact of Brigade
-Artifact of Kin but for Elite Types.\
-All elites will be of the same variety per stage.
-
-Being overwhelmed by one type elite type instead of having manageable bits of all elite types can be fun.\
-Tier 2 Elites will still get more common as you loop multiple times.
-
-This artifact is also available as a Augment in Simulacrum.
-
-## Artifact of Tranpose
-Randomize your Skill and Skin loadout every stage.
-
-Can't get the same loadout twice in a row.
-
-This artifact is also available as a Augment in Simulacrum.
-
-## Artifact of Spiriting
-A more extreme version of Artifact of Spirit from Risk of Rain 1.
-
-Both the player and enemies gain increased movement speed, attack speed, cooldown reduction and projectile speed as their health gets lower.\
-Player Damage gets lowered the higher the boost, but still overall a dps increase.\
-Enemy stat boosts are slightly different so they can better take advantage of it. 
-
-Artifact of Spirit only gave movement speed but in RoR2 enemies can't handle too high speeds but buffing their other stats should consistently make them more threatening.
-
-This artifact is also available as a Augment in Simulacrum.
-
-## Artifact of Unison
-All item tiers will only contain one item per stage.
-
-Can't get the same category of item twice in a row.\
-Printers are unaffected. Lunar Recycler and Recycler Equipment still work.\
-Most specific item drops (Boss Drops, Pearls) will be overwritten.
-
-Simualcrum will roll a new common item when the Focus moves.\
-A new uncommon will also be rolled if you already have a lot of that one.
-
-Having only large stacks of items is fun but important to still give enough control to not end up with only bad items.
-
-More printers will spawn when using this artifact and the director is given slightly more interactable credits. (25 Credits)
-#
+ 
+ 
 ### Codes
-![Image of Artifact Codes](https://cdn.discordapp.com/attachments/743886063738683413/921675680092143616/WolfoArtifactCodes.png) 
+![Image of Artifact Codes](https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/WolfoArtifactCodes.png) 
 
 
 ##

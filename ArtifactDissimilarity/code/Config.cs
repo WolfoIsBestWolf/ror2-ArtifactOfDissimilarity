@@ -14,6 +14,7 @@ namespace ArtifactDissimilarity
         public static ConfigEntry<bool> EnableBrigadeArtifact;
         public static ConfigEntry<bool> EnableTransposeArtifact;
         public static ConfigEntry<bool> EnableUnisonArtifact;
+        public static ConfigEntry<bool> EnableObscurityArtifact;
 
         public static ConfigEntry<bool> DebugPrint;
         //public static ConfigEntry<bool> EnableCustomIneractables;
@@ -23,14 +24,15 @@ namespace ArtifactDissimilarity
         public static ConfigEntry<bool> RemodelRerollOutOfScrap;
         public static ConfigEntry<bool> RemodelRerollMonsterItems;
         public static ConfigEntry<bool> RemodelRerollEquipmentDrones;
+        public static ConfigEntry<bool> RemodelRerollDevotion;
 
-        public static ConfigEntry<float> SpiritMovement;
+        /*public static ConfigEntry<float> SpiritMovement;
         public static ConfigEntry<float> SpiritAttackSpeed;
         public static ConfigEntry<float> SpiritJump;
         public static ConfigEntry<float> SpiritCooldown;
         public static ConfigEntry<float> SpiritDamage;
         public static ConfigEntry<float> SpiritDamagePlayer;
-        public static ConfigEntry<float> SpiritProjectileSpeed;
+        public static ConfigEntry<float> SpiritProjectileSpeed;*/
 
         public static ConfigEntry<bool> TransposeRerollHeresy;
 
@@ -89,7 +91,12 @@ namespace ArtifactDissimilarity
                 true,
                 "One item per tier"
             );
-
+            EnableObscurityArtifact = configFile.Bind(
+               ": Main :",
+               "Enable Artifact of Obscurity WIP",
+               false,
+               "Blind Items"
+           );
 
 
             /*ChangeBazaarSeer = configFile.Bind(
@@ -133,8 +140,14 @@ namespace ArtifactDissimilarity
                 true,
                 "Whether or not their Equipment should also be rerolled"
             );
+            RemodelRerollDevotion = configFile.Bind(
+                "Remodeling",
+                "Reroll Devotion Items",
+                true,
+                "Should Devotion inventory be rerolled."
+            );
 
-            SpiritMovement = configFile.Bind(
+            /*SpiritMovement = configFile.Bind(
                 "Spiriting",
                 "Maximum Movement Speed Bonus",
                 3f,
@@ -179,7 +192,7 @@ namespace ArtifactDissimilarity
                 0.4f,
                 "Maximum Damage Reduction in percent (0.0 - 1.0). 1 means 100% reduction at 0 health and 0 means no Reduction."
             );
-
+            */
 
             DebugPrint = configFile.Bind(
                 ": Main :",

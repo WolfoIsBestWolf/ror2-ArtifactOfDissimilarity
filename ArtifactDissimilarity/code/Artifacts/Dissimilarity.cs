@@ -11,8 +11,6 @@ namespace ArtifactDissimilarity
     {
         public static readonly System.Random random = new System.Random();
 
-        public static bool DissimAdded = false;
-
         public static DirectorCardCategorySelection mixInteractablesCards = ScriptableObject.CreateInstance<DirectorCardCategorySelection>();
         public static DirectorCardCategorySelection TrimmedmixInteractablesCards = ScriptableObject.CreateInstance<DirectorCardCategorySelection>();
 
@@ -21,8 +19,39 @@ namespace ArtifactDissimilarity
         {
             mixInteractablesCards.name = "dccsMixInteractableMaster";
             TrimmedmixInteractablesCards.name = "dccsMixInteractableTrimmed";
-            DCCSmaker();   
+            DCCSmaker();
         }
+
+        public static void OnArtifactDisable()
+        {
+            On.RoR2.ClassicStageInfo.RebuildCards -= ForceMixInteractables_ClassicStageInfo_RebuildCards;
+            SceneDirector.onPrePopulateSceneServer -= LunarTeleporterEvery5Stages;
+        }
+        public static void OnArtifactEnable()
+        {
+            On.RoR2.ClassicStageInfo.RebuildCards += ForceMixInteractables_ClassicStageInfo_RebuildCards;
+            SceneDirector.onPrePopulateSceneServer += LunarTeleporterEvery5Stages;
+            WanderDissim_LunarSeer.PopulateSeerList();
+        }
+
+        private static void LunarTeleporterEvery5Stages(SceneDirector obj)
+        {
+            if (Run.instance.NetworkstageClearCount % Run.stagesPerLoop == Run.stagesPerLoop - 1)
+            {
+                obj.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
+            }
+        }
+
+        private static void ForceMixInteractables_ClassicStageInfo_RebuildCards(On.RoR2.ClassicStageInfo.orig_RebuildCards orig, ClassicStageInfo self, DirectorCardCategorySelection forcedMonsterCategory, DirectorCardCategorySelection forcedInteractableCategory)
+        {
+            MakeTrimmerMixInteractablesDCCS();
+
+            orig(self, forcedInteractableCategory, TrimmedmixInteractablesCards);
+        }
+
+
+
+
 
         public static void ModSupport()
         {
@@ -100,6 +129,8 @@ namespace ArtifactDissimilarity
                 }
             }
 
+
+            /*
             DirectorCard ADScrapper = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscScrapper"),
@@ -114,7 +145,7 @@ namespace ArtifactDissimilarity
             //Smth about not having 2 scrappers or some shit
             Kith.HelperSingleMixInteractable.CopyFrom(mixInteractablesCards);
             mixInteractablesCards.AddCard(6, ADScrapper);  //5
-            Kith.HelperSingleMixInteractable.AddCard(1, ADScrapperB);  //1   
+            Kith.HelperSingleMixInteractable.AddCard(1, ADScrapperB);  //1   */
         }
 
 
@@ -171,40 +202,6 @@ namespace ArtifactDissimilarity
             GameObject LunarSeerObject = LegacyResourcesAPI.Load<GameObject>("Prefabs/networkedobjects/SeerStation");
             SeerStationController LunarSeerTele1 = LunarSeerObject.GetComponent<RoR2.SeerStationController>();
             LunarSeerTele1.fallBackToFirstActiveExitController = true;
-
-            On.RoR2.SeerStationController.OnStartClient += Wander.SeerDestinationRandomizerDissimWander;
-
-            On.RoR2.SeerStationController.OnTargetSceneChanged += (orig, self, sceneDef) =>
-            {
-                orig(self, sceneDef);
-
-                //Debug.LogWarning(sceneDef);
-                if (sceneDef != null)
-                {
-                    string temp = Language.GetString(SceneCatalog.GetSceneDef((SceneIndex)self.NetworktargetSceneDefIndex).nameToken);
-                    temp = temp.Replace("Hidden Realm: ", "");
-                    self.gameObject.GetComponent<PurchaseInteraction>().contextToken = (Language.GetString("BAZAAR_SEER_CONTEXT") + " of " + temp);
-                    self.gameObject.GetComponent<PurchaseInteraction>().displayNameToken = (Language.GetString("BAZAAR_SEER_NAME") + " (" + temp + ")");
-                }
-            };
-
-            On.RoR2.SeerStationController.SetRunNextStageToTarget += (orig, self) =>
-            {
-                orig(self);
-
-                if (self.explicitTargetSceneExitController && self.explicitTargetSceneExitController.name.StartsWith("LunarTeleporter"))
-                {
-                    Chat.SendBroadcastChat(new Chat.SimpleChatMessage
-                    {
-                        baseToken = "LUNAR_TELEPORTER_ALIGN_DREAM"
-                    });
-                    if (Main.DreamPrimordialBool == false)
-                    {
-                        Main.DreamPrimordialBool = true;
-                        On.RoR2.Language.GetString_string += Main.DreamPrimordial;
-                    }
-                }
-            };
 
 
             InteractableSpawnCard LunarSeerISC = ScriptableObject.CreateInstance<InteractableSpawnCard>();
@@ -327,12 +324,12 @@ namespace ArtifactDissimilarity
             DirectorCard ADScrapperB = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscScrapper"),
-                selectionWeight = 10,
+                selectionWeight = 15,
             };
             DirectorCard ADVoidCamp = new DirectorCard
             {
                 spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidCamp/iscVoidCamp.asset").WaitForCompletion(),
-                selectionWeight = 15,
+                selectionWeight = 25,
             };
 
 
@@ -430,7 +427,7 @@ namespace ArtifactDissimilarity
             DirectorCard ADGoldChest = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscGoldChest"),
-                selectionWeight = 5,
+                selectionWeight = 6,
             };
             DirectorCard ADShrineGoldshoresAccess = new DirectorCard
             {
@@ -450,18 +447,18 @@ namespace ArtifactDissimilarity
             DirectorCard ADVoidSuppressor = new DirectorCard
             {
                 spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidSuppressor/iscVoidSuppressor.asset").WaitForCompletion(),
-                selectionWeight = 20,
+                selectionWeight = 23,
             };
             DirectorCard AdShrineHalcyonite = new DirectorCard
             {
                 spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineHalcyonite.asset").WaitForCompletion(),
-                selectionWeight = 20,
+                selectionWeight = 23,
                 minimumStageCompletions = 1
             };
 
             //RareEnd
             //Duplicators
-                DirectorCard ADDuplicator = new DirectorCard
+            DirectorCard ADDuplicator = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscDuplicator"),
                 selectionWeight = 300,
@@ -550,7 +547,7 @@ namespace ArtifactDissimilarity
             mixInteractablesCards.AddCard(2, ADShrineHealing);  //15
             mixInteractablesCards.AddCard(2, ADShrineRestack);  //30
             mixInteractablesCards.AddCard(2, ADShrineShaping);  //30
-            
+
             //Cut to 3?
             mixInteractablesCards.AddCard(3, ADBrokenDrone1);  //15
             mixInteractablesCards.AddCard(3, ADBrokenDrone2);  //15
@@ -586,15 +583,21 @@ namespace ArtifactDissimilarity
 
         }
 
+       
 
-        public static WeightedSelection<DirectorCard> MixInteractableApplier(On.RoR2.SceneDirector.orig_GenerateInteractableCardSelection orig, RoR2.SceneDirector self)
+        public static void MakeTrimmerMixInteractablesDCCS()
         {
-            //Debug.Log("Artifact of Dissimilarity: MixInteractableApplier");
-            if (self.interactableCredit != 0)
+            if (!Run.instance)
             {
-                self.interactableCredit += 4;
+                return;
             }
-            WeightedSelection<DirectorCard> DissimilarityDirectorCards = new WeightedSelection<DirectorCard>();
+            
+
+            //Debug.Log("Artifact of Dissimilarity: MixInteractableApplier");
+            if (ClassicStageInfo.instance.sceneDirectorInteractibleCredits != 0)
+            {
+                ClassicStageInfo.instance.sceneDirectorInteractibleCredits += 4;
+            }
             TrimmedmixInteractablesCards.Clear();
             TrimmedmixInteractablesCards.CopyFrom(mixInteractablesCards);
 
@@ -606,43 +609,24 @@ namespace ArtifactDissimilarity
             //Rare
             //TrimmedmixInteractablesCards.categories[6].selectionWeight = random.Next(7, 10); //Duplicator is 8 in vanilla
 
-            if (RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(Main.Dissimilarity_Def))
+            Filters.Mix_ApplyCardRemovingFilters(TrimmedmixInteractablesCards);
+            Filters.MixInteractables_Trimmer_Direct(TrimmedmixInteractablesCards);
+            Filters.ApplySandSnow(TrimmedmixInteractablesCards);
+
+
+            if (Run.instance && Run.instance.stageClearCount == 0)
             {
-                Filters.ApplyCardRemovingFilters(TrimmedmixInteractablesCards);
-                Filters.MixInteractableTrimmer3(TrimmedmixInteractablesCards);
-                Filters.ApplySandSnow(TrimmedmixInteractablesCards);
-
-
-                if (Run.instance && Run.instance.stageClearCount == 0)
+                DirectorCard AltPathAccess = new DirectorCard
                 {
-                    DirectorCard AltPathAccess = new DirectorCard
-                    {
-                        spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineHalcyoniteTier1.asset").WaitForCompletion(),
-                        selectionWeight = 200,
-                    };
-                    TrimmedmixInteractablesCards.AddCard(2, AltPathAccess);
-                }
-
-                DissimilarityDirectorCards = TrimmedmixInteractablesCards.GenerateDirectorCardWeightedSelection();
-                Debug.Log("Artifact of Dissimilarity: Generated Trimmed mixInteractables selection");
-
-                if (WConfig.DebugPrint.Value == true)
-                {
-                    Debug.Log("__________________________________________________");
-                    Debug.Log("Artifact of Dissimilarity: Trimmed Interactable List");
-                    Debug.Log("");
-                    TrimmedmixInteractablesCards.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.TestingPrintCardResults));
-                    Debug.Log("__________________________________________________");
+                    spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineHalcyoniteTier1.asset").WaitForCompletion(),
+                    selectionWeight = 200,
                 };
-
+                TrimmedmixInteractablesCards.AddCard(2, AltPathAccess);
             }
-            else
-            {
-                //DissimilarityDirectorCards = ClassicStageInfo.instance.interactableCategories.GenerateDirectorCardWeightedSelection(); //fallback
-                Debug.LogWarning("Artifact of Dissimilarity: Failed to generate normal Interactable Categories, using fallback");
-                return orig(self);
-            };
-            return DissimilarityDirectorCards;
+
+           
+
+
         }
 
 

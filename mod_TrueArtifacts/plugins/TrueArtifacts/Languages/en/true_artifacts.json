@@ -1,0 +1,131 @@
+{
+	"strings":
+	{
+		"ARTIFACT_MIRROR_KIN_NAME": "Mirrored Artifact of Kin",
+		"ARTIFACT_MIRROR_KIN_DESC": "A family event will occur on every stage.",
+		
+		"ARTIFACT_MIRROR_GLASS_NAME": "Mirrored Artifact of Glass",
+		"ARTIFACT_MIRROR_GLASS_DESC": "Items spawn an additional copy of themselves, but players have half health.",
+
+		"ARTIFACT_MIRROR_SWARMS_NAME": "Mirrored Artifact of Swarms",
+		"ARTIFACT_MIRROR_SWARMS_DESC": "Players are doubled, but have half health.\nStop your double by holding [Interact]",
+		"DOUBLE_PREFIX": "{0}'s Double",
+
+		"ARTIFACT_MIRROR_SACRIFICE_NAME": "Mirrored Artifact of Sacrifice",
+		"ARTIFACT_MIRROR_SACRIFICE_DESC": "Almost exclusively chests spawn.",
+
+		"ARTIFACT_MIRROR_HONOR_NAME": "Mirrored Artifact of Honor",
+		"ARTIFACT_MIRROR_HONOR_DESC": "Difficulty is doubled. Increases maximum monster level.",
+	
+
+
+
+		"ARTIFACT_TRUE_COMMAND_NAME": "True Artifact of Command",
+		"ARTIFACT_TRUE_COMMAND_DESC": "Choose your items from a list of all items and equipment.",
+		"ARTIFACT_COMMAND_CUBE_RAINBOW": "Omnipotent Command Essence",
+
+		"ARTIFACT_TRUE_DISSONANCE_NAME": "True Artifact of Dissonance",
+		"ARTIFACT_TRUE_DISSONANCE_DESC": "All Monsters can appear in every environment.",
+		
+		"FAMILY_DISSONANT": "<style=cWorldEvent>[WARNING] {0}{1}</style>",
+		
+		"FAMILY_DISSONANT_1": "The earth",
+		"FAMILY_DISSONANT_2": "The earth",
+		"FAMILY_DISSONANT_3": "The ground",
+		"FAMILY_DISSONANT_4": "The ground",
+		"FAMILY_DISSONANT_5": "The air",
+		"FAMILY_DISSONANT_6": "The air",
+		"FAMILY_DISSONANT_7": "The machine",	
+		"FAMILY_DISSONANT_8": "The sky",
+		"FAMILY_DISSONANT_9": "The sea",
+		"FAMILY_DISSONANT_10": "The bulwark",
+		"FAMILY_DISSONANT_11": "The void",
+		"FAMILY_DISSONANT_12": "A familial bond",
+		"FAMILY_DISSONANT_13": "His brother",
+		"FAMILY_DISSONANT_14": "The tar",
+		"FAMILY_DISSONANT_15": "The mass",
+		"FAMILY_DISSONANT_16": "The design",
+		"FAMILY_DISSONANT_17": "The blood",
+		"FAMILY_DISSONANT_18": "The soul",
+		"FAMILY_DISSONANT_19": "A tear in the fabric of the universe",
+		"FAMILY_DISSONANT_20": "The moon",
+	
+		"FAMILY_DISSONANT_01": " rumbles and groans..",
+		"FAMILY_DISSONANT_02": " crackles and arcs..",
+		"FAMILY_DISSONANT_03": " begins to burn..",
+		"FAMILY_DISSONANT_04": " shifts beneath you..",
+		"FAMILY_DISSONANT_05": "'s temperature begins to rise..",
+		"FAMILY_DISSONANT_06": " grows sickly..",
+		"FAMILY_DISSONANT_07": " begin to falter..",
+		"FAMILY_DISSONANT_08": " smells of sweet strawberries..",
+		"FAMILY_DISSONANT_09": " tripped an ancient alarm..",
+		"FAMILY_DISSONANT_010": " has become curious..",		
+		"FAMILY_DISSONANT_011": " turned into rampant breeding grounds..",
+		"FAMILY_DISSONANT_012": " is being interrupted..",
+		"FAMILY_DISSONANT_013": " is full of parasites",
+		"FAMILY_DISSONANT_014": " tastes bitter..",
+		"FAMILY_DISSONANT_015": " tastes like clam chowder..",
+		"FAMILY_DISSONANT_016": " smells foul..",
+		"FAMILY_DISSONANT_017": " begins to freeze..",
+		"FAMILY_DISSONANT_018": " is being ripped apart..",
+		"FAMILY_DISSONANT_019": " begins to dwindle..",
+		"FAMILY_DISSONANT_020": " emits mysterious energies..",
+		"FAMILY_DISSONANT_021": " shines brightly..",
+		
+ 
+	
+		"ARTIFACT_TRUE_SWARMS_NAME": "True Artifact of Swarms",
+		"ARTIFACT_TRUE_SWARMS_DESC": "All monsters are doubled.",
+ 
+		"ARTIFACT_TRUE_EVOLUTION_NAME": "True Artifact of Evolution",
+		"ARTIFACT_TRUE_EVOLUTION_DESC": "Monsters gain your items between stages.",
+		
+ 		"ARTIFACT_TRUE_FRAILTY_NAME": "True Artifact of Frailty",
+		"ARTIFACT_TRUE_FRAILTY_DESC": "Fall damage is quadrupled and lethal. Fall damage immunity removed.",
+
+ 
+ 
+ 		"ARTIFACT_TRUE_HONOR_NAME": "True Artifact of Honor",
+		"ARTIFACT_TRUE_HONOR_DESC": "All enemy has all elite effects or some shit idk",
+  
+		"ARTIFACT_TRUE_SPITE_NAME": "True Artifact of Spite",
+		"ARTIFACT_TRUE_SPITE_DESC": "Enemies drop multiple exploding OGM-72 'DIABLO' Strike on death.",
+	
+		"ARTIFACT_MIRROR_ENIGMA_NAME": "Mirrored Artifact of Enigma",
+		"ARTIFACT_MIRROR_ENIGMA_DESC": "Items have a chance to be replaced with one of a random tier.",
+ 
+		"ARTIFACT_MIRROR_FRAILTY_NAME": "Mirrored Artifact of Frailty",
+		"ARTIFACT_MIRROR_FRAILTY_DESC": "Gravity is doubled.",
+ 
+		"ARTIFACT_MIRROR_DEATH_NAME": "Mirrored Artifact of Death",
+		"ARTIFACT_MIRROR_DEATH_DESC": "Damage is split between all players",
+	
+	
+		"ARTIFACT_MIRROR_SOUL_NAME": "Mirrored Artifact of Soul",
+		"ARTIFACT_MIRROR_SOUL_DESC": "monster leave healing core on death idk ",
+	
+		"ARTIFACT_MIRROR_DISSONANCE_NAME": "Mirrored Artifact of Dissonance",
+		"ARTIFACT_MIRROR_DISSONANCE_DESC": "Elite Monsters can spawn as any elite type. (since there's only like 2 idk this isn't substantial)",
+	
+		"ARTIFACT_TRUE_DEVOTION_NAME": "True Artifact of Devotion",
+		"ARTIFACT_TRUE_DEVOTION_DESC": "Replace broken drones with Lemurian Eggs. Hatched Lemurians copy your inventory multiplied by evolution level.",
+	
+		
+	
+ 
+		"ARTIFACT_MIRROR_SPITE_NAME": "Mirrored Artifact of Spite",
+		"ARTIFACT_MIRROR_SPITE_DESC": "Enemies drop multiple exploding molotovs on death, covering the ground in flames.",
+	
+		
+
+		"ARTIFACT_MIRROR_DELUSION_NAME": "Mirrored Artifact of DELUSION",
+		"ARTIFACT_MIRROR_DELUSION_DESC": "items recycle before entering your inventory idk??",
+
+	
+ 		"ARTIFACT_MIRROR_EVOLUTION_NAME": "Mirrored Artifact of EVOLUTION",
+		"ARTIFACT_MIRROR_EVOLUTION_DESC": "all the enemy shoot you with 600 royal capacitor",
+
+		"ARTIFACT_MIRROR_DEVOTION_NAME": "Mirrored Artifact of DEVOTION",
+		"ARTIFACT_MIRROR_DEVOTION_DESC": "imp elite imp more elite imp ig idk t2 imp",
+	}
+}

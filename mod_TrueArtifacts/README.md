@@ -86,7 +86,7 @@ The artifacts are their own Artifacts indendent of the original at the bottom of
 				Almost exclusively Chests spawn.<br>
 				<br>
 				Inverts the Sacrifice Filter.<br>
-				Give up Money Shrines, Drones and Printers for many Chests and Shrine of Chance<br<
+				Give up Money Shrines, Drones and Printers for many Chests and Shrine of Chance<br>
 				Additional exceptions are : Mountain Shrines, Void Seeds, Halcyon Shrines, Gold Altars, Cleansing Pools, Barrels, Radar Scanners, Lemurian Eggs<br>
 				Does not lower the amount of interactables per stage.<br>
 				<br>
@@ -203,7 +203,7 @@ From [RiskyArtifacts](https://thunderstore.io/package/Moffein/Risky_Artifacts/)
 
 Other
 - [Artifact of Potential ](https://thunderstore.io/package/zombieseatflesh7/Artifact_of_Potential/) : Alt Command : Less options
-- [Artifact of Originationl ](https://thunderstore.io/package/TeamMoonstorm/Starstorm2/) : True Soul : Enemies leave behind copies of themselves, instead of generic wisps
+- [Artifact of Origination ](https://thunderstore.io/package/TeamMoonstorm/Starstorm2/) : True Soul : Enemies leave behind copies of themselves, instead of generic wisps
 
 ##
 

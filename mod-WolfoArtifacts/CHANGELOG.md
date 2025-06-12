@@ -1,6 +1,13 @@
 
 ### Changelog:
 ```
+v3.2.2
+Removed Lunar Seer StageInName. (Got bugged at some point, moved to WQoL a while ago)
+Fixed Lunar Seer rolling on clients.
+
+v3.2.1
+Fixed Brigade breaking if ZetArtifacts is installed. 
+
 v3.2.0 - Code/Readme update
 Dissimiliarity and Kith now work better with Artifacts that remove certain interactables.
 Remodelling now rerolls Devotion Inventory by default.

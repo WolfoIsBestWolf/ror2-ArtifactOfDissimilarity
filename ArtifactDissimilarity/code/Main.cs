@@ -50,7 +50,7 @@ namespace ArtifactDissimilarity
             ChatMessageBase.chatMessageTypeToIndex.Add(typeof(Brigade.BrigadeMessage), (byte)ChatMessageBase.chatMessageIndexToType.Count);
             ChatMessageBase.chatMessageIndexToType.Add(typeof(Brigade.BrigadeMessage));
 
-            FixVoidSuppresor();
+           
             LegacyResourcesAPI.Load<GameObject>("Prefabs/networkedobjects/LunarCauldron, WhiteToGreen").GetComponent<ShopTerminalBehavior>().dropTable = LegacyResourcesAPI.Load<BasicPickupDropTable>("DropTables/dtDuplicatorTier2");
             LegacyResourcesAPI.Load<GameObject>("Prefabs/networkedobjects/LunarCauldron, GreenToRed Variant").GetComponent<ShopTerminalBehavior>().dropTable = LegacyResourcesAPI.Load<BasicPickupDropTable>("DropTables/dtDuplicatorTier3");
             LegacyResourcesAPI.Load<GameObject>("Prefabs/networkedobjects/LunarCauldron, RedToWhite Variant").GetComponent<ShopTerminalBehavior>().dropTable = LegacyResourcesAPI.Load<BasicPickupDropTable>("DropTables/dtDuplicatorTier1");
@@ -65,70 +65,7 @@ namespace ArtifactDissimilarity
         }
  
 
-        public static void FixVoidSuppresor()
-        {
-
-            Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidSuppressor/iscVoidSuppressor.asset").WaitForCompletion().directorCreditCost = 4;
-            //Since we got Void Soupper in Dissim we gotta fix the vanilla up
-            GameObject VoidSuppressorPrefab = Addressables.LoadAssetAsync<GameObject>(key: "RoR2/DLC1/VoidSuppressor/VoidSuppressor.prefab").WaitForCompletion();
-
-            VoidSuppressorPrefab.GetComponent<PurchaseInteraction>().isShrine = true;
-            VoidSuppressorPrefab.GetComponent<VoidSuppressorBehavior>().effectColor.a = 0.85f;
-            VoidSuppressorPrefab.transform.GetChild(0).GetChild(7).GetChild(1).GetChild(1).gameObject.SetActive(true);
-
-
-            ItemDef ScrapWhiteSuppressed = Addressables.LoadAssetAsync<ItemDef>(key: "RoR2/DLC1/ScrapVoid/ScrapWhiteSuppressed.asset").WaitForCompletion();
-            ItemDef ScrapGreenSuppressed = Addressables.LoadAssetAsync<ItemDef>(key: "RoR2/DLC1/ScrapVoid/ScrapGreenSuppressed.asset").WaitForCompletion();
-            ItemDef ScrapRedSuppressed = Addressables.LoadAssetAsync<ItemDef>(key: "RoR2/DLC1/ScrapVoid/ScrapRedSuppressed.asset").WaitForCompletion();
-
-            ScrapWhiteSuppressed.pickupToken = "ITEM_SCRAPWHITE_PICKUP";
-            ScrapGreenSuppressed.pickupToken = "ITEM_SCRAPGREEN_PICKUP";
-            ScrapRedSuppressed.pickupToken = "ITEM_SCRAPRED_PICKUP";
-
-            ScrapWhiteSuppressed.descriptionToken = "ITEM_SCRAPWHITE_DESC";
-            ScrapGreenSuppressed.descriptionToken = "ITEM_SCRAPGREEN_DESC";
-            ScrapRedSuppressed.descriptionToken = "ITEM_SCRAPRED_DESC";
-
-            ScrapWhiteSuppressed.deprecatedTier = ItemTier.Tier1;
-            ScrapGreenSuppressed.deprecatedTier = ItemTier.Tier2;
-            ScrapRedSuppressed.deprecatedTier = ItemTier.Tier3;
-            On.RoR2.UI.LogBook.LogBookController.BuildStaticData += (orig) =>
-            {
-                ScrapWhiteSuppressed.deprecatedTier = ItemTier.NoTier;
-                ScrapGreenSuppressed.deprecatedTier = ItemTier.NoTier;
-                ScrapRedSuppressed.deprecatedTier = ItemTier.NoTier;
-                orig();
-                ScrapWhiteSuppressed.deprecatedTier = ItemTier.Tier1;
-                ScrapGreenSuppressed.deprecatedTier = ItemTier.Tier2;
-                ScrapRedSuppressed.deprecatedTier = ItemTier.Tier3;
-            };
-
-            GameObject Hud = Addressables.LoadAssetAsync<GameObject>(key: "RoR2/Base/UI/HUDSimple.prefab").WaitForCompletion();
-            try
-            {
-                Transform SuprresedItems = Hud.transform.GetChild(0).GetChild(8).GetChild(2).GetChild(8).GetChild(0).GetChild(3);
-                SuprresedItems.GetComponent<RoR2.UI.ItemInventoryDisplay>().verticalMargin = 8;
-            }
-            catch (Exception ex) {
-                Debug.LogException(ex);
-            }
-
-            
-            var chestInspect = Addressables.LoadAssetAsync<InspectDef>(key: "RoR2/DLC1/VoidChest/VoidChestInspectDef.asset").WaitForCompletion();
-            InspectDef inspectDef = ScriptableObject.CreateInstance<InspectDef>();
-            inspectDef.name = "VoidSuppressorInspectDef";
-            var Inspect = new RoR2.UI.InspectInfo();
-            Inspect.TitleToken = "VOID_SUPPRESSOR_NAME";
-            Inspect.DescriptionToken = "VOID_SUPPRESSOR_DESCRIPTION";
-            Inspect.FlavorToken = "VOID_SUPPRESSOR_DESCRIPTION";
-            Inspect.Visual = chestInspect.Info.Visual;
-            inspectDef.Info = Inspect;
-            var InspectInfo = VoidSuppressorPrefab.AddComponent<GenericInspectInfoProvider>();
-            InspectInfo.InspectInfo = inspectDef;
-        }
-
-
-
+       
         public static void RunStartHook(On.RoR2.Run.orig_Start orig, Run self)
         {
             if (NetworkServer.active)

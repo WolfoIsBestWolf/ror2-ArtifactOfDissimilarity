@@ -62,7 +62,7 @@ namespace ArtifactDissimilarity
             On.RoR2.CharacterModel.UpdateItemDisplay += Hide_PickupDisplays;
 
             On.RoR2.UI.ItemIcon.SetItemIndex += Hide_ItemIcon;
-            On.RoR2.UI.EquipmentIcon.SetDisplayData += Hide_EquipmentIcon;
+            //On.RoR2.UI.EquipmentIcon.SetDisplayData += Hide_EquipmentIcon;
 
            
  
@@ -118,7 +118,7 @@ namespace ArtifactDissimilarity
 
  
 
-        private static void Hide_EquipmentIcon(On.RoR2.UI.EquipmentIcon.orig_SetDisplayData orig, RoR2.UI.EquipmentIcon self, ValueType newDisplayData)
+        /*private static void Hide_EquipmentIcon(On.RoR2.UI.EquipmentIcon.orig_SetDisplayData orig, RoR2.UI.EquipmentIcon self, ValueType newDisplayData)
         {
             orig(self, newDisplayData);
             if (self.iconImage && self.iconImage != null)
@@ -131,7 +131,7 @@ namespace ArtifactDissimilarity
                 }
             }
            
-        }
+        }*/
 
       
         

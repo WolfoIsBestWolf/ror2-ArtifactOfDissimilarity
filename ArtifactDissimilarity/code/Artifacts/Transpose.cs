@@ -65,6 +65,7 @@ namespace ArtifactDissimilarity
 
             int repeatSkills = 0;
             //bool inRepeat = false;
+            int rerolls = 0;
             for (int i = 0; i < skills.Length; i++)
             {
                 if (skills[i] != null)
@@ -76,10 +77,10 @@ namespace ArtifactDissimilarity
                     {
                         repeatSkills++;
                     }
-                    if (repeatSkills == 4)
+                    if (repeatSkills == 4 && rerolls != 3)
                     {
                         i = 0;
-                        repeatSkills++;
+                        rerolls++;
                         Debug.Log("Rerolling too similiar loadout");
                     }
                 }

@@ -55,9 +55,7 @@ namespace ArtifactDissimilarity
         {
             MakeSeerMaterials();
             On.RoR2.SeerStationController.OnStartClient += SeerDestinationRandomizerDissimWander;
-
-            On.RoR2.SeerStationController.OnTargetSceneChanged += SeerStation_DestinationInName;
-
+ 
             On.RoR2.SeerStationController.SetRunNextStageToTarget += (orig, self) =>
             {
                 orig(self);
@@ -72,18 +70,7 @@ namespace ArtifactDissimilarity
             };
 
         }
-
-        private static void SeerStation_DestinationInName(On.RoR2.SeerStationController.orig_OnTargetSceneChanged orig, SeerStationController self, SceneDef targetScene)
-        {
-            orig(self, targetScene);
-            if (targetScene != null)
-            {
-                string temp = targetScene.nameToken;
-                temp = temp.Replace("Hidden Realm: ", "");
-                self.gameObject.GetComponent<PurchaseInteraction>().contextToken = (Language.GetString("BAZAAR_SEER_CONTEXT") + " of " + temp);
-                self.gameObject.GetComponent<PurchaseInteraction>().displayNameToken = (Language.GetString("BAZAAR_SEER_NAME") + " (" + temp + ")");
-            }
-        }
+ 
 
         public static void MakeSeerMaterials()
         {
@@ -216,7 +203,12 @@ namespace ArtifactDissimilarity
         {
             orig(self);
             //Randomizes Seers when Wander or Dissim 
-            if (RunArtifactManager.instance.IsArtifactEnabled(Main.Wander_Def) || RunArtifactManager.instance.IsArtifactEnabled(Main.Dissimilarity_Def) && SceneInfo.instance.sceneDef.baseSceneName != "bazaar")
+            if (!NetworkServer.active)
+            {
+                return;
+            }
+
+            if (RunArtifactManager.instance.IsArtifactEnabled(Main.Wander_Def) || RunArtifactManager.instance.IsArtifactEnabled(Main.Dissimilarity_Def) && BazaarController.instance == null)
             {
                 //There's probably a way to get the Teleporter Instance in a better way
                 if (TeleporterInteraction.instance)

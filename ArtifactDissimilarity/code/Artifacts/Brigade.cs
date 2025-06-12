@@ -56,11 +56,13 @@ namespace ArtifactDissimilarity
             Tier1EliteDefs = new List<EliteDef>();
             Tier2EliteDefs = new List<EliteDef>();
             forRandomization = new List<EliteDef>();
-            
- 
-            foreach (CombatDirector.EliteTierDef tier in CombatDirector.eliteTiers)
+
+            Debug.Log("EliteTiers : " + CombatDirector.eliteTiers.Length);
+            for (int i = 0; i < CombatDirector.eliteTiers.Length; i++)
             {
-                if (tier.eliteTypes[0] == null || tier.eliteTypes[0].name.EndsWith("Honor"))
+                var tier = CombatDirector.eliteTiers[i];
+                //Debug.Log("EliteTier : " + tier.eliteTypes.Length);
+                if (tier.eliteTypes.Length == 0 || tier.eliteTypes[0] == null || tier.eliteTypes[0].name.EndsWith("Honor"))
                 {
                     continue;
                 }
@@ -68,7 +70,7 @@ namespace ArtifactDissimilarity
                 {
                     if (eliteDef.IsAvailable())
                     {
-                        if (eliteDef.healthBoostCoefficient > 8)
+                        if (eliteDef.healthBoostCoefficient > 8f)
                         {
                             if (!Tier2EliteDefs.Contains(eliteDef))
                             {
@@ -83,15 +85,41 @@ namespace ArtifactDissimilarity
                             }
                         }
                     }
-                    
                 }
             }
+            /*foreach (CombatDirector.EliteTierDef tier in CombatDirector.eliteTiers)
+            {
+                if (tier.eliteTypes == null || tier.eliteTypes[0] == null || tier.eliteTypes[0].name.EndsWith("Honor"))
+                {
+                    continue;
+                }
+                foreach (EliteDef eliteDef in tier.eliteTypes)
+                {
+                    if (eliteDef.IsAvailable())
+                    {
+                        if (eliteDef.healthBoostCoefficient > 8f)
+                        {
+                            if (!Tier2EliteDefs.Contains(eliteDef))
+                            {
+                                Tier2EliteDefs.Add(eliteDef);
+                            }
+                        }
+                        else
+                        {
+                            if (!Tier1EliteDefs.Contains(eliteDef))
+                            {
+                                Tier1EliteDefs.Add(eliteDef);
+                            }
+                        }
+                    }
+                }
+            }*/
 
             Tier1EliteDefs.Remove(RoR2Content.Elites.Lunar);
             if (DLC1Content.Elites.Void.IsAvailable())
             {
                 Tier2EliteDefs.Add(DLC1Content.Elites.Void);
-            }        
+            }
             howManyTimesAddedTier2 = 1;
             forRandomization.AddRange(Tier1EliteDefs);
         }

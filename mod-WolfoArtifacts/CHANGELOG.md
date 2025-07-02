@@ -1,6 +1,13 @@
 
 ### Changelog:
 ```
+v3.2.3
+Needed to removed some duplicate stuff.
+Needed to add some dependencies from switching around general mod stuff.
+Suppressed Scrap should no longer be showing up in the log.
+I need a icon artist dude.
+
+
 v3.2.2
 Removed Lunar Seer StageInName. (Got bugged at some point, moved to WQoL a while ago)
 Fixed Lunar Seer rolling on clients.

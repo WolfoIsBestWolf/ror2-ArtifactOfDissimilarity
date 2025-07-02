@@ -12,7 +12,7 @@ using UnityEngine.Networking;
 namespace ArtifactDissimilarity
 {
     [BepInDependency("com.bepis.r2api")]
-    [BepInPlugin("com.Wolfo.WolfoArtifacts", "WolfoArtifacts", "3.2.0")]
+    [BepInPlugin("com.Wolfo.WolfoArtifacts", "WolfoArtifacts", "3.2.3")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
 
     public class Main : BaseUnityPlugin

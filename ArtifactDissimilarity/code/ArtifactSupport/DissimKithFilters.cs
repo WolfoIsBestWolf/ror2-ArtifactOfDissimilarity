@@ -151,14 +151,7 @@ namespace ArtifactDissimilarity
             return true;
         }
 
-
-
-        public static bool SacrificeArtifactTrimmer(DirectorCard card)
-        {
-            InteractableSpawnCard prefab = (InteractableSpawnCard)card.spawnCard;
-            return !(prefab.skipSpawnWhenSacrificeArtifactEnabled);
-        }
-
+ 
         public static bool SimulacrumTrimmer(DirectorCard card)
         {
             GameObject prefab = card.spawnCard.prefab;

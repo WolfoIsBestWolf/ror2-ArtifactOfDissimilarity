@@ -54,10 +54,7 @@ namespace ArtifactDissimilarity
             sgInfiniteTowerStageXSkyMeadowWander._sceneEntries = sgInfiniteTowerStageXSkyMeadowWander._sceneEntries.Add(sgInfiniteTowerStageXGolemPlains._sceneEntries[5]);
             sgInfiniteTowerStageXMoonWander._sceneEntries = sgInfiniteTowerStageXMoonWander._sceneEntries.Add(sgInfiniteTowerStage1._sceneEntries[3]);
 
-            SceneDef scene = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC2/habitat/habitat.asset").WaitForCompletion();
-            scene.validForRandomSelection = true;
-            scene = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC2/helminthroost/helminthroost.asset").WaitForCompletion();
-            scene.validForRandomSelection = true;
+
         }
 
         public static void OnArtifactDisable()

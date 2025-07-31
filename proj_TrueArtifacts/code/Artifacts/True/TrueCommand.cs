@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using UnityEngine.UIElements;
 using RoR2.UI;
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class TrueCommand
     {

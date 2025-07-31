@@ -1,11 +1,11 @@
 ﻿using HG;
 using R2API;
 using RoR2;
-using System;
 using UnityEngine;
+using System;
 using UnityEngine.Networking;
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class TrueEvolution
     {
@@ -19,9 +19,12 @@ namespace TrueArtifacts
             Run.onRunStartGlobal += OnRunStartGlobal;
             Run.onRunDestroyGlobal += OnRunDestroyGlobal;
 
+            //Was this really needed
             UNCLONED_InventoryPrefab = PrefabAPI.InstantiateClone(LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/MonsterTeamGainsItemsArtifactInventory"), "TrueEvolutionArtifactInventory", true);
             UNCLONED_InventoryPrefab.GetComponent<ArtifactEnabledResponse>().artifact = Main.True_Evolution;       
         }
+
+        public static ItemTag[] bannedItemTags = Array.Empty<ItemTag>();
 
         public static void On_Artifact_Enable()
         {
@@ -30,7 +33,27 @@ namespace TrueArtifacts
                 SpawnCard.onSpawnedServerGlobal += OnServerCardSpawnedGlobal;
                 Stage.onServerStageBegin += OnServerStageBegin;
                 SceneDirector.onPrePopulateSceneServer += OnPrePopulateSceneServer;
+
+                bannedItemTags = new ItemTag[]
+                {
+                    ItemTag.AIBlacklist,
+                    WConfig.TrueEvoExtraTags.Value ? ItemTag.BrotherBlacklist : ItemTag.AIBlacklist,
+                    WConfig.TrueEvoExtraTags.Value ? ItemTag.OnKillEffect : ItemTag.AIBlacklist,
+                    ItemTag.EquipmentRelated,
+                    ItemTag.SprintRelated,
+                    ItemTag.CannotCopy,
+                    ItemTag.CannotSteal,
+                    ItemTag.Scrap,
+                    //(ItemTag)95,
+                    ItemTag.HoldoutZoneRelated,
+                    ItemTag.OnStageBeginEffect,
+                    ItemTag.ObliterationRelated,
+                    ItemTag.RebirthBlacklist,
+                };
+
+
             }
+            
             currentItemIterator = -1;
             AddItemsFromAllPlayers();
         }
@@ -43,15 +66,25 @@ namespace TrueArtifacts
                 Stage.onServerStageBegin -= OnServerStageBegin;
                 SceneDirector.onPrePopulateSceneServer -= OnPrePopulateSceneServer;
             }
+            bannedItemTags = Array.Empty<ItemTag>();
         }
 
 
         public static void AddItemsFromAllPlayers()
         {
+            if (!NetworkServer.active)
+            {
+                return;
+            }
             if (!Run.instance)
             {
                 return;
             }
+            if (!monsterTeamInventory)
+            {
+                Debug.Log("Trying to add to Null TrueEvo inventory");
+                return;
+            }      
             if (currentItemIterator != Run.instance.stageClearCount)
             {
                 currentItemIterator = Run.instance.stageClearCount;
@@ -61,7 +94,11 @@ namespace TrueArtifacts
                 ArrayUtils.SetAll<int>(array, num);
                 foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
                 {
-                    monsterTeamInventory.AddItemsFrom(player.master.inventory, bigAssItemFilter);
+                    if (player && player.master && player.master.inventory)
+                    {
+                        monsterTeamInventory.AddItemsFrom(player.master.inventory, bigAssItemFilter);
+                    }
+                 
                 }
             }
         }
@@ -70,57 +107,16 @@ namespace TrueArtifacts
         private static bool PlayerToEnemyItemsFilter(ItemIndex itemIndex)
         {
             ItemDef def = ItemCatalog.GetItemDef(itemIndex);
-            if (def.tier == ItemTier.NoTier)
+            if (def == null)
             {
                 return false;
             }
-            else if (def.ContainsTag(ItemTag.AIBlacklist))
+            foreach (ItemTag value2 in bannedItemTags)
             {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.OnKillEffect))
-            {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.CannotCopy))
-            {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.CannotSteal))
-            {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.BrotherBlacklist))
-            {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.EquipmentRelated))
-            {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.SprintRelated))
-            {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.Scrap))
-            {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.OnStageBeginEffect))
-            {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.HoldoutZoneRelated))
-            {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.InteractableRelated))
-            {
-                return false;
-            }
-            else if (def.ContainsTag(ItemTag.ObliterationRelated))
-            {
-                return false;
+                if (Array.IndexOf<ItemTag>(def.tags, value2) != -1)
+                {
+                    return false;
+                }
             }
             return true;
         }

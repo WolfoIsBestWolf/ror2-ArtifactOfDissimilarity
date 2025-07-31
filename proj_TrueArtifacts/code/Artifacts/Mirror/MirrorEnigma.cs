@@ -6,7 +6,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.UIElements;
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class MirrorEnigma
     {

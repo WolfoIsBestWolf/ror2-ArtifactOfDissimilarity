@@ -3,7 +3,7 @@ using RoR2;
 using RoR2.Artifacts;
 using R2API;
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class MirrorGlass
     {

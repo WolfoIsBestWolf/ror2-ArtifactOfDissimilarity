@@ -6,7 +6,7 @@ using UnityEngine;
 using RoR2.Projectile;
 using UnityEngine.AddressableAssets;
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class MirrorSpite
     {

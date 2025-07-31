@@ -12,6 +12,7 @@ namespace TrueArtifacts
         public static ConfigEntry<bool> MirrorKinDisplay;
         public static ConfigEntry<bool> MirrirSwarmsInfestor;
         public static ConfigEntry<bool> TrueDissoEliteStuff;
+        public static ConfigEntry<bool> TrueEvoExtraTags;
         public static ConfigEntry<float> MirrorEnigmaChance;
 
         public static ConfigEntry<bool> SortAtEnd;
@@ -39,6 +40,12 @@ namespace TrueArtifacts
               "Sort Artifacts to end of list",
               true,
               "If you don't like or mind the color mish mash"
+            );
+            TrueEvoExtraTags = configFile.Bind(
+                "True",
+                "True Evolution Extra Blacklist",
+               false,
+                "Blacklist OnKill items, which rarely come into play but may make minions and drones a detrimen. And BrotherBlacklist items such as Tougher Times and SaferSpaces"
             );
             DebugPrint = configFile.Bind(
                "Other",

@@ -3,11 +3,12 @@ using R2API;
 using R2API.Utils;
 using RoR2;
 using UnityEngine;
+using TrueArtifacts.Aritfacts;
 
 namespace TrueArtifacts
 {
     [BepInDependency("com.bepis.r2api")]
-    [BepInPlugin("Wolfo.TrueArtifacts", "TrueArtifacts", "1.0.0")]
+    [BepInPlugin("Wolfo.TrueArtifacts", "TrueArtifacts", "1.0.3")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
 
     public class Main : BaseUnityPlugin

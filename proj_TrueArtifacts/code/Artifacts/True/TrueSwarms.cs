@@ -3,7 +3,7 @@ using RoR2;
 using System;
 using UnityEngine;
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class TrueSwarms
     {

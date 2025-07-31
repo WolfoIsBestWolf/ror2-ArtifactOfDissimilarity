@@ -78,7 +78,7 @@
 		"ARTIFACT_TRUE_SWARMS_DESC": "All monsters are doubled.",
  
 		"ARTIFACT_TRUE_EVOLUTION_NAME": "True Artifact of Evolution",
-		"ARTIFACT_TRUE_EVOLUTION_DESC": "Monsters gain your items between stages.",
+		"ARTIFACT_TRUE_EVOLUTION_DESC": "Monsters gain your items between stages. Unusable items wont be given, Blacklists still apply.",
 		
  		"ARTIFACT_TRUE_FRAILTY_NAME": "True Artifact of Frailty",
 		"ARTIFACT_TRUE_FRAILTY_DESC": "Fall damage is quadrupled and lethal. Fall damage immunity removed.",

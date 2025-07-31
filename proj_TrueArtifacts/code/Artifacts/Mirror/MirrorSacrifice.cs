@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 using EntityStates.ShrineHalcyonite;
 using UnityEngine.AddressableAssets;
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class MirrorSacrifice
     {

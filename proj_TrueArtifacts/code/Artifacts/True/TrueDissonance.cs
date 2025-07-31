@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {  
     public class TrueDissonance
     {

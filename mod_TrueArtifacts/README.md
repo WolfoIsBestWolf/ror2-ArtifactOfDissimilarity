@@ -1,5 +1,7 @@
 This mod is kind of a high effort joke.
 
+If anyone got any icon ideas for these Artifacts that'd be cool. I do not want them to just be recolors but I am not an artist.
+
 Some of these artifacts are clearly overpowered or unfair.
 
 The artifacts are their own Artifacts indendent of the original at the bottom of the list.

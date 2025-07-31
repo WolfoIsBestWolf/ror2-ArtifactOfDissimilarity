@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class MirrorSwarms
     {

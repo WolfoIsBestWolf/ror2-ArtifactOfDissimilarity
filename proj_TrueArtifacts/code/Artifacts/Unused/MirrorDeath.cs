@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class MirrorDeath
     {

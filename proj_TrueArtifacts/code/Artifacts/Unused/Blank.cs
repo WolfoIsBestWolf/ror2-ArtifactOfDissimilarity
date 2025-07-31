@@ -4,7 +4,7 @@ using MonoMod.Cil;
 using System;
 using UnityEngine;
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class Blank
     {

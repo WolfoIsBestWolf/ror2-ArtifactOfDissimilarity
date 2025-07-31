@@ -6,7 +6,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 
-namespace TrueArtifacts
+namespace TrueArtifacts.Aritfacts
 {
     public class MirrorKin
     {

@@ -1,6 +1,14 @@
 
 ### Changelog:
 ```
+v3.5.1
+
+Fixed Flamboyance sometimes generating dynamic weights improperly, leading to no items at all.
+Fixed a rare incompatibility between Artifact of Potential & Flamboyance.
+Fixed Flamboyance + Unison rarely generating a ???.
+Removed a redundant Wander Check which should help in bigger modpacks.
+
+
 v3.5.0
 Updated for Alloyed Collective
 
@@ -9,6 +17,7 @@ Ported Mirror Swarms to here and renamed it.
 -Should be networked better.
 -Doubles are now named as such.
 -Doubles now follow default item inhereting filter.
+-Doubles now actually have half health not 1/3rd.
 
 Ported Mirror Enigma to here and renamed it.
 (Items have a chance to be replace by a random one of any tier)
@@ -17,9 +26,11 @@ Ported Mirror Enigma to here and renamed it.
 
 
 Fixed Double Railgunners not reloading.
+Fixed Double Void Fiends sometimes host client conflicting.
 Fixed Double Seekers not meditating.
 Fixed Double Seekers not exiting Sojourn.
 Fixes Double's Skills sometimes being interupted strangly due to updating inputs too frequently.
+Fixed Doubles being able to buy things. 
 Removed Wander from Simulacrum
 
 ```

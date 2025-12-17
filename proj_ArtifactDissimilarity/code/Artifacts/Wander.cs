@@ -18,10 +18,7 @@ namespace ArtifactDissimilarity.Aritfacts
             On.RoR2.Run.PickNextStageScene -= Wander_PickStage;
             On.RoR2.TeleporterInteraction.Start -= MoreMysterySpacePortal;
             SceneDirector.onPrePopulateSceneServer -= MoreLunarTeleporter;
-            if (Run.instance)
-            {
-                Wander.WanderSetup(false);
-            }
+          
             previouslyVisitedSceneDef.Clear();
         }
 
@@ -30,10 +27,7 @@ namespace ArtifactDissimilarity.Aritfacts
             On.RoR2.Run.PickNextStageScene += Wander_PickStage;
             On.RoR2.TeleporterInteraction.Start += MoreMysterySpacePortal;
             SceneDirector.onPrePopulateSceneServer += MoreLunarTeleporter;
-            if (Run.instance)
-            {
-                Wander.WanderSetup(true);
-            }
+         
             DissimWander_LunarSeer.PopulateSeerList();
             Debug.Log("Added Wander");
         }
@@ -48,15 +42,20 @@ namespace ArtifactDissimilarity.Aritfacts
         private static void MoreMysterySpacePortal(On.RoR2.TeleporterInteraction.orig_Start orig, TeleporterInteraction self)
         {
             orig(self);
-            if (Run.instance.NetworkstageClearCount >= 4 && Run.instance.NetworkstageClearCount % 2 == 0)
+            if (Run.instance.NetworkstageClearCount >= 4 && Run.instance.NetworkstageClearCount % 3 == 0)
             {
                 self.shouldAttemptToSpawnMSPortal = true;
                 var portalSpawners = self.GetComponents<PortalSpawner>();
                 foreach (var portalSpawner in portalSpawners)
                 {
-                    portalSpawner.minStagesCleared = 0;
-                    portalSpawner.spawnChance = 1;
-                    portalSpawner.validStages = new string[0];
+                    if (portalSpawner.previewChildName == "VoidPortalIndicator" ||
+                        portalSpawner.previewChildName == "StormPortalIndicator"
+                        )
+                    {
+                        portalSpawner.minStagesCleared = 0;
+                        portalSpawner.spawnChance = 1;
+                        portalSpawner.validStages = new string[0];
+                    }
                 }
             }
         }
@@ -77,21 +76,14 @@ namespace ArtifactDissimilarity.Aritfacts
 
         public static void Wander_PickStage(On.RoR2.Run.orig_PickNextStageScene orig, Run self, WeightedSelection<SceneDef> choices)
         {
-            if (self.ruleBook.stageOrder == StageOrder.Random)
+            Debug.Log("Wander : Pick next Stage");
+            if (self.stageClearCount % 5 == 0)
             {
-                Debug.Log("Wander : Pick next Stage");
-                if (self.stageClearCount % 5 == 0)
-                {
-                    previouslyVisitedSceneDef.Clear();
-                }
-                SceneDef[] array = SceneCatalog.allStageSceneDefs.Where(new System.Func<SceneDef, bool>(ValidForWander)).ToArray<SceneDef>();
-                self.nextStageScene = self.nextStageRng.NextElementUniform<SceneDef>(array);
-                previouslyVisitedSceneDef.Add(self.nextStageScene);
+                previouslyVisitedSceneDef.Clear();
             }
-            else
-            {
-                orig(self, choices);
-            }
+            SceneDef[] array = SceneCatalog.allStageSceneDefs.Where(new System.Func<SceneDef, bool>(ValidForWander)).ToArray<SceneDef>();
+            self.nextStageScene = self.nextStageRng.NextElementUniform<SceneDef>(array);
+            previouslyVisitedSceneDef.Add(self.nextStageScene);
         }
 
 

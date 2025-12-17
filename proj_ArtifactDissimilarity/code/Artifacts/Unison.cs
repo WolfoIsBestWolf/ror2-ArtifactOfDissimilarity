@@ -432,11 +432,17 @@ namespace ArtifactDissimilarity.Aritfacts
             {
                 pickupsArrayOverride[9] = Run.instance.availableVoidBossDropList[unisonRNG.RangeInt(0, Run.instance.availableVoidBossDropList.Count)];
             }
-
+            if (Run.instance.availableFoodTierDropList.Count > 0)
+            {
+                pickupsArrayOverride[(int)ItemTier.FoodTier] = Run.instance.availableFoodTierDropList[unisonRNG.RangeInt(0, Run.instance.availableFoodTierDropList.Count)];
+            }
             //Equipment
             pickupsArrayOverride[ItemTierCatalog.itemTierDefs.Length] = NoRepeatsEquipment(ItemTierCatalog.itemTierDefs.Length, Run.instance.availableEquipmentDropList);
             pickupsArrayOverride[ItemTierCatalog.itemTierDefs.Length + 1] = Run.instance.availableLunarEquipmentDropList[unisonRNG.RangeInt(0, Run.instance.availableLunarEquipmentDropList.Count)];
-
+            if (PickupTransmutationManager.equipmentBossGroup.Length > 0)
+            {
+                pickupsArrayOverride[ItemTierCatalog.itemTierDefs.Length + 2] = PickupTransmutationManager.equipmentBossGroup[unisonRNG.RangeInt(0, PickupTransmutationManager.equipmentBossGroup.Length)];
+            }
 
             if (WConfig.DebugPrint.Value)
             {
@@ -482,14 +488,21 @@ namespace ArtifactDissimilarity.Aritfacts
                     {
                         return original;
                     }
-                    return pickupsArrayOverride[(int)itemDef.tier];
+                    if (pickupsArrayOverride[(int)itemDef.tier].value != 0)
+                    {
+                        return pickupsArrayOverride[(int)itemDef.tier];
+                    }
                 }
             }
             else if (pickupDef.equipmentIndex != EquipmentIndex.None)
-            {
+            {              
                 if (pickupDef.isLunar)
                 {
                     return pickupsArrayOverride[ItemTierCatalog.itemTierDefs.Length + 1];
+                }
+                if (pickupDef.isBoss)
+                {
+                    return pickupsArrayOverride[ItemTierCatalog.itemTierDefs.Length + 2];
                 }
                 else if (!pickupDef.isBoss)
                 {
@@ -594,7 +607,7 @@ namespace ArtifactDissimilarity.Aritfacts
 
     }
 
-    public class UnisonBackupStorage : MonoBehaviour
+    /*public class UnisonBackupStorage : MonoBehaviour
     {
         public void Set()
         {
@@ -666,4 +679,5 @@ namespace ArtifactDissimilarity.Aritfacts
         public List<PickupIndex> availableFoodTierDropList = new List<PickupIndex>();
 
     }
+    */
 }

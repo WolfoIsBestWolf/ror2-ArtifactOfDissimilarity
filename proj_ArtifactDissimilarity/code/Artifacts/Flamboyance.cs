@@ -34,6 +34,8 @@ namespace ArtifactDissimilarity.Aritfacts
         }
         public static void On_Artifact_Disable()
         {
+            dtAnyTier.doNotGenerate = true;
+            dtAnyTier.selector.Clear();
             On.RoR2.PickupDropTable.GenerateDrop -= OLD_PickupDropTable_GenerateDrop;
             On.RoR2.PickupDropTable.GenerateUniqueDrops -= OLD_PickupDropTable_GenerateUniqueDrops;
             On.RoR2.PickupDropTable.GeneratePickup -= PickupDropTable_GeneratePickup;
@@ -41,11 +43,13 @@ namespace ArtifactDissimilarity.Aritfacts
         }
         public static void On_Artifact_Enable()
         {
-            dtAnyTier.didWeights = false;
             On.RoR2.PickupDropTable.GenerateDrop += OLD_PickupDropTable_GenerateDrop;
             On.RoR2.PickupDropTable.GenerateUniqueDrops += OLD_PickupDropTable_GenerateUniqueDrops;
             On.RoR2.PickupDropTable.GeneratePickup += PickupDropTable_GeneratePickup;
             On.RoR2.PickupDropTable.GenerateDistinctPickups += PickupDropTable_GenerateDistinctPickups;
+            dtAnyTier.didWeights = false;
+            dtAnyTier.doNotGenerate = false;
+            dtAnyTier.Regenerate(Run.instance);
         }
 
         private static void PickupDropTable_GenerateDistinctPickups(On.RoR2.PickupDropTable.orig_GenerateDistinctPickups orig, PickupDropTable self, System.Collections.Generic.List<UniquePickup> dest, int desiredCount, Xoroshiro128Plus rng, bool allowLoop)
@@ -138,6 +142,12 @@ namespace ArtifactDissimilarity.Aritfacts
             }
             if (dt is BasicPickupDropTable) //Needs to be the lowest
             {
+                if ((dt as BasicPickupDropTable).selector.Count == 0)
+                {
+                    dt.Regenerate(Run.instance);
+                }
+
+
                 if ((dt as BasicPickupDropTable).requiredItemTags.Contains(ItemTag.CanBeTemporary))
                 {
                     return rng.nextNormalizedFloat < FlamboyanceDropTable.replacementChance;
@@ -172,7 +182,6 @@ namespace ArtifactDissimilarity.Aritfacts
         {
             if (Roll(self,rng))
             {
-                
                 MatchTagsToDropTable(self);
                 return orig(dtAnyTier, maxDrops, rng);
             }
@@ -181,6 +190,7 @@ namespace ArtifactDissimilarity.Aritfacts
 
         private static PickupIndex OLD_PickupDropTable_GenerateDrop(On.RoR2.PickupDropTable.orig_GenerateDrop orig, PickupDropTable self, Xoroshiro128Plus rng)
         {
+ 
             if (Roll(self, rng))
             {
                 MatchTagsToDropTable(self);
@@ -199,6 +209,7 @@ namespace ArtifactDissimilarity.Aritfacts
         public float full_equipmentWeightLunar;
         public float full_equipmentWeightBoss;
         public bool didWeights = false;
+        public bool doNotGenerate = true;
 
         public static float replacementChance = 0.20f; //1 in 5
         public static float replacementChanceMonster = 0.20f; //1 in 5
@@ -207,10 +218,22 @@ namespace ArtifactDissimilarity.Aritfacts
 
         public void DoWeights(Run run)
         {
+            Debug.Log("B");
             if (!run)
             {
+                //This is just for testing
                 run = Run.instance;
             }
+            if (!run)
+            {
+                return;
+            }
+            if (run.availableTier1DropList.Count == 0)
+            {
+                Debug.LogError("Who the hell generating drop tables before items are even added???");
+                return;
+            }
+
 
             run.availableBossDropList.Add(PickupCatalog.FindPickupIndex(RoR2Content.Items.Pearl.itemIndex));
             run.availableBossDropList.Add(PickupCatalog.FindPickupIndex(RoR2Content.Items.ShinyPearl.itemIndex));
@@ -241,9 +264,9 @@ namespace ArtifactDissimilarity.Aritfacts
             }
  
             didWeights = true;
-            tier1Weight = 100f / run.availableTier1DropList.Count;
-            tier2Weight = 100f / run.availableTier2DropList.Count;
-            tier3Weight = 100f / run.availableTier3DropList.Count;
+            tier1Weight = 100f / Math.Max(15, run.availableTier1DropList.Count);
+            tier2Weight = 100f / Math.Max(15, run.availableTier2DropList.Count);
+            tier3Weight = 100f / Math.Max(15, run.availableTier3DropList.Count);
             lunarItemWeight = 100f / Math.Max(15, run.availableLunarItemDropList.Count);
             bossWeight = 100f / Math.Max(15, run.availableBossDropList.Count);
 
@@ -255,20 +278,28 @@ namespace ArtifactDissimilarity.Aritfacts
             foodTierWeight = 100f / Math.Max(15, run.availableFoodTierDropList.Count);
 
             full_equipmentWeight = 100f / run.availableEquipmentDropList.Count;
-            full_equipmentWeightLunar = Math.Max(15, run.availableLunarEquipmentDropList.Count);
-            full_equipmentWeightBoss = Math.Max(15, availableEliteList.Count);
+            full_equipmentWeightLunar = 50f / Math.Max(15, run.availableLunarEquipmentDropList.Count);
+            full_equipmentWeightBoss = 50f / Math.Max(15, availableEliteList.Count);
 
            
         }
 
-        public List<PickupIndex> availableEliteList;
+        public List<PickupIndex> availableEliteList = new List<PickupIndex>();
 
 
         public override void Regenerate(Run run)
         {
+            if (doNotGenerate)
+            {
+                return;
+            }
             if (!didWeights)
             {
                 DoWeights(run);
+            }
+            if (!didWeights)
+            {
+                return;
             }
             if (bannedItemTags.Length == 0 && requiredItemTags.Length == 0)
             {

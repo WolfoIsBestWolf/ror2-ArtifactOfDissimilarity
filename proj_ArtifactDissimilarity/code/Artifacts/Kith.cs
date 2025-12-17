@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace ArtifactDissimilarity
+namespace ArtifactDissimilarity.Aritfacts
 {
     public class Kith
     {
@@ -29,7 +29,7 @@ namespace ArtifactDissimilarity
                 blacklistedForRepeat.Add(LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscTripleShopEquipment"));
                 blacklistedForRepeat.Add(LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarChest"));
             }
-            Kith.KithNoRepeat = null;         
+            Kith.KithNoRepeat = null;
         }
         public static void OnArtifactDisable()
         {

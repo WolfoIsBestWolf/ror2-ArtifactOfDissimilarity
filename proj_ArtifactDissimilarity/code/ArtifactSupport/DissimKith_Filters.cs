@@ -2,7 +2,7 @@ using RoR2;
 using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-
+using ArtifactDissimilarity.Aritfacts;
 
 namespace ArtifactDissimilarity
 {
@@ -36,12 +36,20 @@ namespace ArtifactDissimilarity
 
         public static void MixInteractables_Trimmer_Direct(DirectorCardCategorySelection interactableCategories)
         {
-            Trimmer_DesiredLength(ref interactableCategories.categories[0].cards, 6);
+            //0 Chest
+            //1 Barrel
+            //2 Shrine
+            //3 Drones
+            //4 MiscDLC
+            //5 Rare
+            //6 Duplicate
+            var rng = Run.instance.stageRngGenerator;
+            Trimmer_DesiredLength(ref interactableCategories.categories[0].cards, 6); //Stages have like 8 stages at least usually
             if (Run.instance is InfiniteTowerRun)
             {
                 Trimmer_DesiredLength(ref interactableCategories.categories[1].cards, 0);
-                Trimmer_DesiredLength(ref interactableCategories.categories[2].cards, 2);
-                Trimmer_DesiredLength(ref interactableCategories.categories[3].cards, 0);
+                Trimmer_DesiredLength(ref interactableCategories.categories[2].cards, rng.RangeInt(2, 4));
+                Trimmer_DesiredLength(ref interactableCategories.categories[3].cards, rng.RangeInt(2, 4));
                 Dissimilarity.TrimmedmixInteractablesCards.categories[1].selectionWeight = 0;
                 Dissimilarity.TrimmedmixInteractablesCards.categories[2].selectionWeight = Dissimilarity.random.Next(1, 6);
                 Dissimilarity.TrimmedmixInteractablesCards.categories[3].selectionWeight = 0;
@@ -49,69 +57,43 @@ namespace ArtifactDissimilarity
             else
             {
                 Trimmer_DesiredLength(ref interactableCategories.categories[1].cards, 2);
-                Trimmer_DesiredLength(ref interactableCategories.categories[2].cards, 3);
-                Trimmer_DesiredLength(ref interactableCategories.categories[3].cards, 3);
+                Trimmer_DesiredLength(ref interactableCategories.categories[2].cards, rng.RangeInt(2, 5)); //Stages have 2 - 4 Shrines
+                Trimmer_DesiredLength(ref interactableCategories.categories[3].cards, rng.RangeInt(2, 6)); //Stages have 2 - 6 Drones
             }
-            Trimmer_DesiredLength(ref interactableCategories.categories[5].cards, 3);
+            Trimmer_DesiredLength(ref interactableCategories.categories[4].cards, 1); //DLC Stuff
+            Trimmer_DesiredLength(ref interactableCategories.categories[5].cards, 2); //Rare Junk
             if (RunArtifactManager.instance.IsArtifactEnabled(Main.Remodeling_Def))
             {
                 interactableCategories.categories[6].selectionWeight /= 2;
-                Trimmer_DesiredLength(ref interactableCategories.categories[6].cards, 2);
+                Trimmer_DesiredLength(ref interactableCategories.categories[6].cards, 3);
             }
             else
             {
-                Trimmer_DesiredLength(ref interactableCategories.categories[6].cards, 4);
+                Trimmer_DesiredLength(ref interactableCategories.categories[6].cards, 5);
             }
 
             Debug.Log("Artifact of Dissimilarity: Generated Trimmed mixInteractables selection");
             if (WConfig.DebugPrint.Value == true)
             {
                 string debugString = "-----------------\n";
-                debugString += "Artifact of Dissimilarity: Trimmed Interactable List\n";
+                debugString += "Artifact of Dissimilarity: Trimmed Interactable List\n\n";
                 for (int i = 0; i < interactableCategories.categories.Length; i++)
                 {
                     ref DirectorCardCategorySelection.Category ptr = ref interactableCategories.categories[i];
+                    debugString += $"--{ptr.name} wt:{ptr.selectionWeight}--";
                     for (int j = ptr.cards.Length - 1; j >= 0; j--)
                     {
-                        debugString += ptr.cards[j].spawnCard.prefab.name;
+                        debugString += ptr.cards[j].GetSpawnCard().prefab.name;
                         debugString += "\n";
                     }
                 }
                 debugString += "-----------------";
                 Debug.Log(debugString);
-            };
+            }
+            
         }
 
-        public static void MixInteractableTrimmerWithNames(DirectorCardCategorySelection interactableCategories)
-        {
-            Trimmer_WithCategoryName("Chests", 6, ref interactableCategories);
-            if (Run.instance.name.Equals("InfiniteTowerRun(Clone)"))
-            {
-                Trimmer_WithCategoryName("Barrels", 0, ref interactableCategories);
-                Trimmer_WithCategoryName("Shrines", 2, ref interactableCategories);
-                Trimmer_WithCategoryName("Drones", 0, ref interactableCategories);
-                Dissimilarity.TrimmedmixInteractablesCards.categories[1].selectionWeight = 0;
-                Dissimilarity.TrimmedmixInteractablesCards.categories[2].selectionWeight = Dissimilarity.random.Next(1, 6);
-                Dissimilarity.TrimmedmixInteractablesCards.categories[3].selectionWeight = 0;
-            }
-            else
-            {
-                Trimmer_WithCategoryName("Barrels", 2, ref interactableCategories);
-                Trimmer_WithCategoryName("Shrines", 3, ref interactableCategories);
-                Trimmer_WithCategoryName("Drones", 3, ref interactableCategories);
-            }
-            Trimmer_WithCategoryName("Rare", 2, ref interactableCategories);
-            if (RunArtifactManager.instance.IsArtifactEnabled(Main.Remodeling_Def))
-            {
-                interactableCategories.categories[6].selectionWeight /= 2;
-                Trimmer_WithCategoryName("Duplicator", 2, ref interactableCategories);
-            }
-            else
-            {
-                Trimmer_WithCategoryName("Duplicator", 4, ref interactableCategories);
-            }
-        }
-
+     
 
         public static void SingleInteractable_Trimmer(DirectorCardCategorySelection interactableCategories)
         {
@@ -131,18 +113,19 @@ namespace ArtifactDissimilarity
                     ref DirectorCardCategorySelection.Category ptr = ref interactableCategories.categories[i];
                     for (int j = ptr.cards.Length - 1; j >= 0; j--)
                     {
-                        debugString += ptr.cards[j].spawnCard.prefab.name;
+                        debugString += ptr.cards[j].GetSpawnCard().prefab.name;
                         debugString += "\n";
                     }
                 }
                 debugString += "-----------------";
                 Debug.Log(debugString);
-            };
+            }
+            ;
         }
 
         public static bool NoMoreRadioTower(DirectorCard card)
         {
-            GameObject prefab = card.spawnCard.prefab;
+            GameObject prefab = card.GetSpawnCard().prefab;
             if (prefab.GetComponent<RadiotowerTerminal>() || card.selectionWeight == 0)
             {
                 return false;
@@ -151,16 +134,16 @@ namespace ArtifactDissimilarity
             return true;
         }
 
- 
+
         public static bool SimulacrumTrimmer(DirectorCard card)
         {
-            GameObject prefab = card.spawnCard.prefab;
+            GameObject prefab = card.GetSpawnCard().prefab;
             return !(prefab.GetComponent<ShrineCombatBehavior>() | prefab.GetComponent<OutsideInteractableLocker>());
         }
 
         public static bool TestingPrintCardResults(DirectorCard card)
         {
-            Debug.Log(card.spawnCard);
+            Debug.Log(card.GetSpawnCard());
             return true;
         }
 
@@ -169,43 +152,42 @@ namespace ArtifactDissimilarity
             //Debug.LogWarning(card.minimumStageCompletions);
             if (card.minimumStageCompletions <= 3)
             {
-                card.minimumStageCompletions = 0;
+                card.minimumStageCompletions = 1;
             }
             else if (card.minimumStageCompletions >= 4)
             {
-                card.minimumStageCompletions = 1;
+                card.minimumStageCompletions = 2;
             }
             return true;
         }
 
         public static bool Kith_DoNotRepeatLunarEquipmentOnly(DirectorCard card)
         {
-            return !Kith.blacklistedForRepeat.Contains(card.spawnCard);
+            return !Kith.blacklistedForRepeat.Contains(card.GetSpawnCard());
         }
 
-
-        //
+ 
         public static bool NoMoreScrapper(DirectorCard card)
         {
-            GameObject prefab = card.spawnCard.prefab;
+            GameObject prefab = card.GetSpawnCard().prefab;
             return !prefab.GetComponent<ScrapperController>();
         }
 
         public static bool NoMorePrinters(DirectorCard card)
         {
-            GameObject prefab = card.spawnCard.prefab;
+            GameObject prefab = card.GetSpawnCard().prefab;
             return !(prefab.name.StartsWith("Duplicator"));
         }
 
         public static bool ArtifactWorldPredicate(DirectorCard card)
         {
-            GameObject prefab = card.spawnCard.prefab;
+            GameObject prefab = card.GetSpawnCard().prefab;
             return !(prefab.name.Equals("DuplicatorWild") | prefab.GetComponent<OutsideInteractableLocker>() | prefab.GetComponent<ShrineCombatBehavior>() | prefab.GetComponent<ScrapperController>());
         }
 
         public static bool RemoveInteractablesThatNeedTeleporter(DirectorCard card)
         {
-            GameObject prefab = card.spawnCard.prefab;
+            GameObject prefab = card.GetSpawnCard().prefab;
             return !(prefab.GetComponent<ShrineBossBehavior>() | prefab.GetComponent<PortalStatueBehavior>() | prefab.GetComponent<SeerStationController>());
         }
 
@@ -214,7 +196,7 @@ namespace ArtifactDissimilarity
 
         public static void Mix_ApplyCardRemovingFilters(DirectorCardCategorySelection DCCSInput)
         {
-            if (Run.instance && Run.instance.name.StartsWith("InfiniteTowerRun"))
+            if (Run.instance is InfiniteTowerRun)
             {
                 DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.RemoveInteractablesThatNeedTeleporter));
                 DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.SimulacrumTrimmer));
@@ -224,7 +206,7 @@ namespace ArtifactDissimilarity
             {
                 return;
             }
-            else if (SceneInfo.instance.sceneDef.baseSceneName == "artifactworld")
+            else if (SceneInfo.instance.sceneDef.baseSceneName.StartsWith("artifactworld"))
             {
                 DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.RemoveInteractablesThatNeedTeleporter));
                 DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.ArtifactWorldPredicate));
@@ -242,11 +224,16 @@ namespace ArtifactDissimilarity
 
         public static void ApplySandSnow(DirectorCardCategorySelection DCCSInput)
         {
-            if (SceneInfo.instance.sceneDef.baseSceneName == "snowyforest" || SceneInfo.instance.sceneDef.baseSceneName == "frozenwall" || SceneInfo.instance.sceneDef.baseSceneName == "itfrozenwall")
+            string scene = SceneInfo.instance.sceneDef.baseSceneName;
+            if (scene == "snowyforest" ||
+                scene == "frozenwall" ||
+                scene == "itfrozenwall" ||
+                scene == "nest"
+                )
             {
                 foreach (DirectorCard directorCard in DCCSInput.categories[2].cards)
                 {
-                    switch (directorCard.spawnCard.name)
+                    switch (directorCard.GetSpawnCard().name)
                     {
                         case "iscShrineBlood":
                         case "iscShrineBloodSnowy":
@@ -281,11 +268,16 @@ namespace ArtifactDissimilarity
                     }
                 }
             }
-            else if (SceneInfo.instance.sceneDef.baseSceneName == "goolake" || SceneInfo.instance.sceneDef.baseSceneName == "itgoolake")
+            else if (scene == "goolake" ||
+                    scene == "itgoolake" ||
+                    scene == "ironalluvium" ||
+                    scene == "ironalluvium2" ||
+                    scene == "repurposedcrater"
+                    )
             {
                 foreach (DirectorCard directorCard in DCCSInput.categories[2].cards)
                 {
-                    switch (directorCard.spawnCard.name)
+                    switch (directorCard.GetSpawnCard().name)
                     {
                         case "iscShrineBlood":
                         case "iscShrineBloodSnowy":
@@ -324,7 +316,7 @@ namespace ArtifactDissimilarity
             {
                 foreach (DirectorCard directorCard in DCCSInput.categories[2].cards)
                 {
-                    switch (directorCard.spawnCard.name)
+                    switch (directorCard.GetSpawnCard().name)
                     {
                         case "iscShrineBlood":
                         case "iscShrineBloodSnowy":

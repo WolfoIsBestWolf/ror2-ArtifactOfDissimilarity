@@ -3,7 +3,7 @@ using RoR2;
 using System;
 using UnityEngine;
 
-namespace ArtifactDissimilarity
+namespace ArtifactDissimilarity.Aritfacts
 {
     public class Obscurity
     {
@@ -15,7 +15,7 @@ namespace ArtifactDissimilarity
         public static Sprite BlindVoid;
         public static Sprite BlindEquipment;
         public static Sprite BlindMod;
-         
+
         public static void Start()
         {
             Texture2D texture = Assets.Bundle.LoadAsset<Texture2D>("Assets/Artifacts/Blind/BlindT1.png");
@@ -54,18 +54,18 @@ namespace ArtifactDissimilarity
         public static void OnArtifactEnable()
         {
             On.RoR2.PickupDisplay.RebuildModel += Hide_PickupOverworld;
-             
+
             On.RoR2.GenericPickupController.GetDisplayName += Hide_GetDisplayName;
             On.RoR2.Chat.PlayerPickupChatMessage.ConstructChatString += Hide_PickupChatMessage;
             IL.RoR2.UI.PingIndicator.RebuildPing += Hide_PingChat;
 
             On.RoR2.CharacterModel.UpdateItemDisplay += Hide_PickupDisplays;
 
-            On.RoR2.UI.ItemIcon.SetItemIndex += Hide_ItemIcon;
+            On.RoR2.UI.ItemIcon.SetItemIndex_ItemIndex_int_float += Hide_ItemIcon;
             //On.RoR2.UI.EquipmentIcon.SetDisplayData += Hide_EquipmentIcon;
 
-           
- 
+
+
         }
         public static void OnArtifactDisable()
         {
@@ -116,7 +116,7 @@ namespace ArtifactDissimilarity
             return orig(self);
         }
 
- 
+
 
         /*private static void Hide_EquipmentIcon(On.RoR2.UI.EquipmentIcon.orig_SetDisplayData orig, RoR2.UI.EquipmentIcon self, ValueType newDisplayData)
         {
@@ -133,12 +133,12 @@ namespace ArtifactDissimilarity
            
         }*/
 
-      
-        
-        private static void Hide_ItemIcon(On.RoR2.UI.ItemIcon.orig_SetItemIndex orig, RoR2.UI.ItemIcon self, ItemIndex newItemIndex, int newItemCount)
+
+
+        private static void Hide_ItemIcon(On.RoR2.UI.ItemIcon.orig_SetItemIndex_ItemIndex_int_float orig, RoR2.UI.ItemIcon self, ItemIndex newItemIndex, int newItemCount, float decay)
         {
             //Is this Equipment Icon too??
-            orig(self, newItemIndex, newItemCount);
+            orig(self, newItemIndex, newItemCount, decay);
 
             self.tooltipProvider.titleToken = "SHOP_ITEM_MYSTERY_TITLE";
             self.tooltipProvider.bodyToken = "INSPECT_INFO_MISSING_DESCRIPTION";

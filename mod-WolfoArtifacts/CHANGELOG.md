@@ -1,11 +1,34 @@
 
 ### Changelog:
 ```
+v3.5.0
+Updated for Alloyed Collective
+
+Ported Mirror Swarms to here and renamed it.
+(Players control 2 characters)
+-Should be networked better.
+-Doubles are now named as such.
+-Doubles now follow default item inhereting filter.
+
+Ported Mirror Enigma to here and renamed it.
+(Items have a chance to be replace by a random one of any tier)
+-Higher replacement chance.
+
+
+
+Fixed Double Railgunners not reloading.
+Fixed Double Seekers not meditating.
+Fixed Double Seekers not exiting Sojourn.
+Fixes Double's Skills sometimes being interupted strangly due to updating inputs too frequently.
+Removed Wander from Simulacrum
+
+```
+````
+
 v3.2.3
 Needed to removed some duplicate stuff.
 Needed to add some dependencies from switching around general mod stuff.
 Suppressed Scrap should no longer be showing up in the log.
-I need a icon artist dude.
 
 
 v3.2.2

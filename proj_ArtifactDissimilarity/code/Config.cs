@@ -14,7 +14,9 @@ namespace ArtifactDissimilarity
         public static ConfigEntry<bool> EnableBrigadeArtifact;
         public static ConfigEntry<bool> EnableTransposeArtifact;
         public static ConfigEntry<bool> EnableUnisonArtifact;
-        public static ConfigEntry<bool> EnableObscurityArtifact;
+        //public static ConfigEntry<bool> EnableObscurityArtifact;
+        public static ConfigEntry<bool> Enable_Flamboyance_Artifact;
+        public static ConfigEntry<bool> Enable_Doubles_Artifact;
 
         public static ConfigEntry<bool> DebugPrint;
         //public static ConfigEntry<bool> EnableCustomIneractables;
@@ -91,12 +93,24 @@ namespace ArtifactDissimilarity
                 true,
                 "One item per tier"
             );
-            EnableObscurityArtifact = configFile.Bind(
+            Enable_Flamboyance_Artifact = configFile.Bind(
+                ": Main :",
+                "Enable Artifact of Flamboyance",
+                true,
+                "Items may be rerolled into a random one of any tier"
+            );
+            Enable_Doubles_Artifact = configFile.Bind(
+                ": Main :",
+                "Enable Artifact of Doubles",
+                true,
+                "Players control 2 survivors or sometimes more."
+            );
+            /*EnableObscurityArtifact = configFile.Bind(
                ": Main :",
                "Enable Artifact of Obscurity WIP",
                false,
                "Blind Items"
-           );
+           );*/
 
 
             /*ChangeBazaarSeer = configFile.Bind(

@@ -6,8 +6,7 @@
 		"LUNAR_TELEPORTER_ALIGN_DREAM": "<style=cWorldEvent>The Primordial Teleporter aligns with your new dream..</style>",
 		"LUNAR_TELEPORTER_ALIGN_NOTDREAM": "<style=cWorldEvent>The Primordial Teleporter no longer aligns with your dream..</style>",
 
-	
-
+ 
 		"ARTIFACT_RANDOM_STAGEORDER_NAME": "Artifact of Wander",
 		"ARTIFACT_RANDOM_STAGEORDER_DESC": "Stages progress in a random order.\nSimulacrum: stages are in order.",
 	
@@ -20,8 +19,14 @@
 		
 	
 		"ARTIFACT_SINGLE_INTERACTABLE_NAME": "Artifact of Kith",
-		"ARTIFACT_SINGLE_INTERACTABLE_DESC": "Each Interactable category will only contain one entry per stage.",
- 		
+		"ARTIFACT_SINGLE_INTERACTABLE_DESC": "Stages only spawn one type of chest, shrine, drone and printer per stage",
+		"ARTIFACT_SINGLE_INTERACTABLE_DESC_OLD": "Each Interactable category will only contain one entry per stage.",
+			
+	    "ARTIFACT_THREE_MONSTERS_NAME": "Artifact of Hordes",
+		"ARTIFACT_THREE_MONSTERS_DESC": "Stages only spawn one type of small, medium and large monster per stage.",
+	
+			
+			
 		"ARTIFACT_SINGLE_ELITE_NAME": "Artifact of Brigade",
 		"ARTIFACT_SINGLE_ELITE_DESC": "All elites will be the same type per stage.",
 		"ANNOUNCE_BRIGADE_ELITE": "<style=cWorldEvent>All elite monsters will be {0}</style>",
@@ -41,6 +46,11 @@
 		"ARTIFACT_REROLL_ITEMS_NAME": "Artifact of Remodeling",
 		"ARTIFACT_REROLL_ITEMS_DESC": "Reroll all items and equipments each stage.",		
 			
+		"ARTIFACT_REROLL_DRONES_NAME": "Artifact of Hardware",
+		"ARTIFACT_REROLL_DRONES_DESC": "Reroll all drones betwee each stage. Start with 1 common drone.",		
+			
+			
+			
 			
 			
 		"ARTIFACT_REROLL_SKILLS_NAME": "Artifact of Transpose",
@@ -51,9 +61,11 @@
 		
 		
 		
+		
+		
+		
 		"ARTIFACT_BLIND_ITEMS_NAME": "Artifact of Obscurity",
 		"ARTIFACT_BLIND_ITEMS_DESC": "Items will be obscured.",
-		
 
 
 		"ARTIFACT_SPEED_ONLOWHEALTH_NAME": "Artifact of Spiriting",
@@ -62,6 +74,14 @@
 		"ITWAVE_ARTIFACT_SPEED_ONLOWHEALTH_NAME": "Wave {0} - Augment of Spiriting",
 		"ITWAVE_ARTIFACT_SPEED_ONLOWHEALTH_DESC": "Characters move and attack faster at lower health.",
 		
+		
+		"ARTIFACT_DOUBLEPLAYER_NAME": "Artifact of Doubles",
+		"ARTIFACT_DOUBLEPLAYER_DESC": "Players are doubled, but have half health.\nStop your double by holding <style=cStack>[Interact]</style>",
+		"DOUBLE_PREFIX": "{0}'s Double",
+	
+		"ARTIFACT_RANDOMLYANYTIER_NAME": "Artifact of Flamboyance",
+		"ARTIFACT_RANDOMLYANYTIER_DESC": "Items have a chance to be replaced with one of a random tier.",
+ 
 			
 		 
 	}

@@ -21,30 +21,6 @@ The artifacts are their own Artifacts indendent of the original at the bottom of
 		</tr>
 		<tr>
 			<td>
-				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/True/Mirror_Swarms_On.png" width=64>
-			</td>
-			<td>
-				<b>Mirrored Artifact of Swarms</b><br>
-				Spawn a clone of every player, but you have half health.<br>
-				<br>
-				The clone copies your items.<br>
-				The clone copies your movements, targeting, skill uses etc.<br>
-				The clone teleporters to you if too far away.<br>
-				The clone stops moving if you hold down [Interact].<br>
-				The clone is considered cloaked and will not be targeted by enemies first.<br>
-				If the clone dies, nothing happens.<br>
-				The clone and you share movement speed.<br>
-				The clone and you share "MultiKills" (Berzerkers)<br>
-				<br>
-				Some attacks might be blocked if you are too close together, not really anything I can do about it I think.<br>
-				For Void Fiend, Void corruptions are synced.<br>			
-				For CHEF, Cleavers recalling might be a little jank, as in vanilla CHEF AI can not use Cleavers at all.<br>
-				This thing was annoying to network hopefully it works fine.<br>
-				<br>
-			</td>
-		</tr>
-		<tr>
-			<td>
 				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/True/Mirror_Glass_On.png" width=64>
 			</td>
 			<td>
@@ -56,26 +32,6 @@ The artifacts are their own Artifacts indendent of the original at the bottom of
 				Scrap isnt duplicated<br>
 				<br>
 				If you find some other infinite loop to get items well yknow oops.<br>
-				<br>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/True/Mirror_Kin_On.png" width=64>
-			</td>
-			<td>
-				<b>Mirrored Artifact of Kin</b><br>
-				A family event occurs every stage<br>
-				<br>
-				The family event tries to be chosen based on the enemies on the stage.<br>
-				(Instead of the families set on that stage, else Stage 5 would only ever have Gup family)<br>
-				<br>
-				With Dissonance any family event could occur on any stage.<br>
-				With True Dissonance, it will be a "custom" family of 3 random enemies. (Essentially just Kin x3)<br>
-				Shows what enemies are available on the stage like Kin.<br>
-				<br>
-				The thing multiple people already think Kin is but now real.<br>
-				(Suggesting to use LittleGameplayTweaks to add more families but works fine without it.<br>
 				<br>
 			</td>
 		</tr>
@@ -98,21 +54,6 @@ The artifacts are their own Artifacts indendent of the original at the bottom of
 		</tr>
 		<tr>
 			<td>
-				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/True/Mirror_Enigma_On.png" width=64>
-			</td>
-			<td>
-				<b>Mirrored Artifact of Enigma</b><br>
-				Items and equipment have a chance to be of a random tier<br>
-				<br>
-				10% base chance to replace it. 5% for printers.<br>
-				Think Eulogy Zero but any tier.<br>
-				Maintains item tag requirements of pools its replacing.<br>
-				This could lead to obviously game breaking situations. (Red item in White Printer)<br>
-				<br>
-			</td>
-		</tr>
-		<tr>
-			<td>
 				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/True/Mirror_Honor_On.png" width=64>
 			</td>
 			<td>
@@ -120,18 +61,6 @@ The artifacts are their own Artifacts indendent of the original at the bottom of
 				Difficulty is doubled.<br>
 				<br>
 				Max level is raised to 199.<br>
-				<br>
-			</td>
-		</tr>	
-		<tr>
-			<td>
-				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/True/Mirror_Frailty_On.png" width=64>
-			</td>
-			<td>
-				<b>Mirrored Artifact of Frailty</b><br>
-				Gravity is doubled.<br>
-				<br>
-				Jumppad velocity is multiplied so they remain functional.<br>
 				<br>
 			</td>
 		</tr>	
@@ -147,19 +76,6 @@ The artifacts are their own Artifacts indendent of the original at the bottom of
 				Choose any item or equipment.<br>
 				Instead of tiered Command essences, get a rainbow all tier one.<br>
 				<br>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/True/True_Dissonance_On.png" width=64>
-			</td>
-			<td>
-				<b>True Artifact of Dissonance</b><br>
-				Uses the uncut Dissonance spawn pool.<br>
-				Includes special bosses like AWU or Mithrix as rare spawns.<br>
-				<br>
-				(Enemies missing from Dissonance normally will also just be missing here, download VanillaArtifactsPlus)<br>
-				<br>				
 			</td>
 		</tr>
 		<tr>

@@ -8,18 +8,18 @@ using TrueArtifacts.Aritfacts;
 namespace TrueArtifacts
 {
     [BepInDependency("com.bepis.r2api")]
-    [BepInPlugin("Wolfo.TrueArtifacts", "TrueArtifacts", "1.0.3")]
+    [BepInPlugin("Wolfo.TrueArtifacts", "TrueArtifacts", "1.2.0")]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
 
     public class Main : BaseUnityPlugin
     {
         public static ArtifactDef Mirror_Kin = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Mirror_Glass = ScriptableObject.CreateInstance<ArtifactDef>();
-        public static ArtifactDef Mirror_Swarms = ScriptableObject.CreateInstance<ArtifactDef>();
+        //public static ArtifactDef Mirror_Swarms = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Mirror_Sacrifice = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Mirror_Honor = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Mirror_Frailty = ScriptableObject.CreateInstance<ArtifactDef>();
-        public static ArtifactDef Mirror_Enigma = ScriptableObject.CreateInstance<ArtifactDef>();
+       // public static ArtifactDef Mirror_Enigma = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Mirror_Spite = ScriptableObject.CreateInstance<ArtifactDef>();
 
         public static ArtifactDef True_Command = ScriptableObject.CreateInstance<ArtifactDef>();
@@ -41,8 +41,8 @@ namespace TrueArtifacts
             TrueCommand.Start();
             TrueEvolution.Start();
             MirrorSacrifice.Start();
-            MirrorSwarms.Start();
-            MirrorEnigma.Start();
+            //MirrorSwarms.Start();
+            //MirrorEnigma.Start();
 
             ArtifactCatalog.availability.CallWhenAvailable(CallLate);
 
@@ -69,11 +69,11 @@ namespace TrueArtifacts
             //True Dissonance : Artifact of Universe similiar but like, even more stupid.
             #endregion
 
-            ChatMessageBase.chatMessageTypeToIndex.Add(typeof(SendMirrorKinTracker), (byte)ChatMessageBase.chatMessageIndexToType.Count);
-            ChatMessageBase.chatMessageIndexToType.Add(typeof(SendMirrorKinTracker));
+            //ChatMessageBase.chatMessageTypeToIndex.Add(typeof(SendMirrorKinTracker), (byte)ChatMessageBase.chatMessageIndexToType.Count);
+            //ChatMessageBase.chatMessageIndexToType.Add(typeof(SendMirrorKinTracker));
 
-            ChatMessageBase.chatMessageTypeToIndex.Add(typeof(MirrorSwarms.SendMirrorSwarms), (byte)ChatMessageBase.chatMessageIndexToType.Count);
-            ChatMessageBase.chatMessageIndexToType.Add(typeof(MirrorSwarms.SendMirrorSwarms));
+            //ChatMessageBase.chatMessageTypeToIndex.Add(typeof(MirrorSwarms.SendMirrorSwarms), (byte)ChatMessageBase.chatMessageIndexToType.Count);
+            //ChatMessageBase.chatMessageIndexToType.Add(typeof(MirrorSwarms.SendMirrorSwarms));
 
         }
 
@@ -88,8 +88,8 @@ namespace TrueArtifacts
             Mirror_Glass.unlockableDef = RoR2Content.Artifacts.Glass.unlockableDef;
             Mirror_Glass.pickupModelPrefab = RoR2Content.Artifacts.Glass.pickupModelPrefab;
 
-            Mirror_Swarms.unlockableDef = RoR2Content.Artifacts.Swarms.unlockableDef;
-            Mirror_Swarms.pickupModelPrefab = RoR2Content.Artifacts.Swarms.pickupModelPrefab;
+            //Mirror_Swarms.unlockableDef = RoR2Content.Artifacts.Swarms.unlockableDef;
+            //Mirror_Swarms.pickupModelPrefab = RoR2Content.Artifacts.Swarms.pickupModelPrefab;
 
             Mirror_Sacrifice.unlockableDef = RoR2Content.Artifacts.Sacrifice.unlockableDef;
             Mirror_Sacrifice.pickupModelPrefab = RoR2Content.Artifacts.Sacrifice.pickupModelPrefab;
@@ -100,8 +100,8 @@ namespace TrueArtifacts
             Mirror_Frailty.unlockableDef = RoR2Content.Artifacts.EliteOnly.unlockableDef;
             Mirror_Frailty.pickupModelPrefab = RoR2Content.Artifacts.EliteOnly.pickupModelPrefab;
 
-            Mirror_Enigma.unlockableDef = RoR2Content.Artifacts.Enigma.unlockableDef;
-            Mirror_Enigma.pickupModelPrefab = RoR2Content.Artifacts.Enigma.pickupModelPrefab;
+            //Mirror_Enigma.unlockableDef = RoR2Content.Artifacts.Enigma.unlockableDef;
+            //Mirror_Enigma.pickupModelPrefab = RoR2Content.Artifacts.Enigma.pickupModelPrefab;
 
 
             True_Command.unlockableDef = RoR2Content.Artifacts.Command.unlockableDef;
@@ -152,7 +152,7 @@ namespace TrueArtifacts
             Mirror_Kin.descriptionToken = "ARTIFACT_MIRROR_KIN_DESC";
             Mirror_Kin.smallIconSelectedSprite = Sprite.Create(Mirror_Kin_On, rec, vector); ;
             Mirror_Kin.smallIconDeselectedSprite = Sprite.Create(Mirror_Kin_Off, rec, vector);
-            ContentAddition.AddArtifactDef(Mirror_Kin);
+            //ContentAddition.AddArtifactDef(Mirror_Kin);
             #endregion
 
             #region Mirror Glass
@@ -195,7 +195,7 @@ namespace TrueArtifacts
             True_Dissonance.descriptionToken = "ARTIFACT_TRUE_DISSONANCE_DESC";
             True_Dissonance.smallIconSelectedSprite = Sprite.Create(True_Dissonance_On, rec, vector); ;
             True_Dissonance.smallIconDeselectedSprite = Sprite.Create(True_Dissonance_Off, rec, vector);
-            ContentAddition.AddArtifactDef(True_Dissonance);
+            //ContentAddition.AddArtifactDef(True_Dissonance);
             #endregion
 
             #region True Swarms
@@ -226,7 +226,7 @@ namespace TrueArtifacts
             //ContentAddition.AddArtifactDef(True_Frailty);
             #endregion
 
-            #region Mirror Swarms
+            /*#region Mirror Swarms
             Texture2D Mirror_Swarms_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/Mirror_Swarms_On.png");
             Texture2D Mirror_Swarms_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/Mirror_Swarms_Off.png");
             Mirror_Swarms_On.filterMode = FilterMode.Trilinear;
@@ -238,7 +238,7 @@ namespace TrueArtifacts
             Mirror_Swarms.smallIconSelectedSprite = Sprite.Create(Mirror_Swarms_On, rec, vector);
             Mirror_Swarms.smallIconDeselectedSprite = Sprite.Create(Mirror_Swarms_Off, rec, vector);
             ContentAddition.AddArtifactDef(Mirror_Swarms);
-            #endregion
+            #endregion*/
 
             #region True Evolution
             Texture2D True_Evolution_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/True_Evolution_On.png");
@@ -294,10 +294,10 @@ namespace TrueArtifacts
             Mirror_Frailty.descriptionToken = "ARTIFACT_MIRROR_FRAILTY_DESC";
             Mirror_Frailty.smallIconSelectedSprite = Sprite.Create(Mirror_Frailty_On, rec, vector);
             Mirror_Frailty.smallIconDeselectedSprite = Sprite.Create(Mirror_Frailty_Off, rec, vector);
-            ContentAddition.AddArtifactDef(Mirror_Frailty);
+            //ContentAddition.AddArtifactDef(Mirror_Frailty);
             #endregion
 
-            #region Mirror Enigma        
+            /*#region Mirror Enigma        
             Texture2D Mirror_Enigma_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/Mirror_Enigma_On.png");
             Texture2D Mirror_Enigma_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/Mirror_Enigma_Off.png");
             Mirror_Enigma_On.filterMode = FilterMode.Trilinear;
@@ -309,7 +309,7 @@ namespace TrueArtifacts
             Mirror_Enigma.smallIconSelectedSprite = Sprite.Create(Mirror_Enigma_On, rec, vector);
             Mirror_Enigma.smallIconDeselectedSprite = Sprite.Create(Mirror_Enigma_Off, rec, vector);
             ContentAddition.AddArtifactDef(Mirror_Enigma);
-            #endregion
+            #endregion*/
 
             #region Mirror Spite        
             Texture2D Mirror_Spite_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/Mirror_Spite_On.png");
@@ -333,31 +333,31 @@ namespace TrueArtifacts
                 TrueCommand.On_Artifact_Enable();
                 runArtifactManager.SetArtifactEnabled(RoR2Content.Artifacts.Command, false);
             }
-            else if (artifactDef == True_Dissonance)
+            /*else if (artifactDef == True_Dissonance)
             {
                 TrueDissonance.On_Artifact_Enable();
                 runArtifactManager.SetArtifactEnabled(RoR2Content.Artifacts.MixEnemy, false);
-            }
+            }*/
             else if (artifactDef == True_Swarms)
             {
                 TrueSwarms.On_Artifact_Enable();
             }
-            else if (artifactDef == Mirror_Kin)
+            /*else if (artifactDef == Mirror_Kin)
             {
-                MirrorKin.On_Artifact_Enable();
-            }
+                /irrorKin.On_Artifact_Enable();
+            }*/
             else if (artifactDef == Mirror_Glass)
             {
                 MirrorGlass.On_Artifact_Enable();
             }
-            else if (artifactDef == True_Frailty)
+            /*else if (artifactDef == True_Frailty)
             {
-                //TrueFrailty.On_Artifact_Enable();
-            }
-            else if (artifactDef == Mirror_Swarms)
+               TrueFrailty.On_Artifact_Enable();
+            }*/
+            /*else if (artifactDef == Mirror_Swarms)
             {
                 MirrorSwarms.On_Artifact_Enable();
-            }
+            }*/
             else if (artifactDef == True_Evolution)
             {
                 TrueEvolution.On_Artifact_Enable();
@@ -370,18 +370,18 @@ namespace TrueArtifacts
             {
                 MirrorHonor.On_Artifact_Enable();
             }
-            else if (artifactDef == Mirror_Frailty)
+            /*else if (artifactDef == Mirror_Frailty)
             {
                 MirrorFrailty.On_Artifact_Enable();
-            }
-            else if (artifactDef == Mirror_Enigma)
+            }*/
+            /*else if (artifactDef == Mirror_Enigma)
             {
                 MirrorEnigma.On_Artifact_Enable();
-            }
-            else if (artifactDef == Mirror_Spite)
+            }*/
+            /*else if (artifactDef == Mirror_Spite)
             {
-                //MirrorSpite.On_Artifact_Enable();
-            }
+                MirrorSpite.On_Artifact_Enable();
+            }*/
         }
 
         private void Artifact_Disable([JetBrains.Annotations.NotNull] RunArtifactManager runArtifactManager, [JetBrains.Annotations.NotNull] ArtifactDef artifactDef)
@@ -392,30 +392,30 @@ namespace TrueArtifacts
             {
                 TrueCommand.On_Artifact_Disable();
             }
-            else if (artifactDef == True_Dissonance)
+            /*else if (artifactDef == True_Dissonance)
             {
                 TrueDissonance.On_Artifact_Disable();
-            }
+            }*/
             else if (artifactDef == True_Swarms)
             {
                 TrueSwarms.On_Artifact_Disable();
             }
-            else if (artifactDef == Mirror_Kin)
+            /*else if (artifactDef == Mirror_Kin)
             {
                 MirrorKin.On_Artifact_Disable();
-            }
+            }*/
             else if (artifactDef == Mirror_Glass)
             {
                 MirrorGlass.On_Artifact_Disable();
             }
-            else if (artifactDef == True_Frailty)
+            /*else if (artifactDef == True_Frailty)
             {
-                //TrueFrailty.On_Artifact_Disable();
-            }
-            else if (artifactDef == Mirror_Swarms)
+                TrueFrailty.On_Artifact_Disable();
+            }*/
+            /*else if (artifactDef == Mirror_Swarms)
             {
                 MirrorSwarms.On_Artifact_Disable();
-            }
+            }*/
             else if (artifactDef == True_Evolution)
             {
                 TrueEvolution.On_Artifact_Disable();
@@ -428,18 +428,18 @@ namespace TrueArtifacts
             {
                 MirrorHonor.On_Artifact_Disable();
             }
-            else if (artifactDef == Mirror_Frailty)
+            /*else if (artifactDef == Mirror_Frailty)
             {
                 MirrorFrailty.On_Artifact_Disable();
-            }
-            else if (artifactDef == Mirror_Enigma)
+            }*/
+            /*else if (artifactDef == Mirror_Enigma)
             {
                 MirrorEnigma.On_Artifact_Disable();
-            }
-            else if (artifactDef == Mirror_Spite)
+            }*/
+            /*else if (artifactDef == Mirror_Spite)
             {
                 //MirrorSpite.On_Artifact_Disable();
-            }
+            }*/
         }
     }
 

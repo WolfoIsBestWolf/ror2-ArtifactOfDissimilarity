@@ -1,12 +1,15 @@
 {
     "name": "WolfoArtifacts",
-    "version_number": "3.2.3",
+    "version_number": "3.5.0",
     "website_url": "https://github.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity",
-    "description": "Adds 8 Artifacts, many in the spirit of Dissonance, Kin or Metamorphosis. Adds a updated Artifact of Spirit from RoR1.",
+    "description": "Adds 10 Artifacts, many in the spirit of Dissonance, Kin or Metamorphosis. Updated Artifact of Spirit from RoR1. Artifact of Swarms but for Players!",
     "dependencies": [
-		"Wolfo-WolfFixes-1.1.6",
+		"Wolfo-WolfFixes-1.2.2",
         "bbepis-BepInExPack-5.4.9",
 		"RiskofThunder-HookGenPatcher-1.2.1",
-        "tristanmcpherson-R2API-5.0.5"
+        "RiskofThunder-R2API_Prefab-1.1.1",
+		"RiskofThunder-R2API_ArtifactCode-1.0.1",
+		"RiskofThunder-R2API_Networking-1.0.4"
+		
     ]
 }	

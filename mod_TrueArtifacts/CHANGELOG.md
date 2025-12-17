@@ -1,6 +1,15 @@
 
 ### Changelog:
 ```
+v1.1.0
+Updated for Alloyed Collective.
+
+Moved Mirror Swarms & Mirror Enigma to WolfoArtifacts.
+
+Removed True Dissonance and Mirror Kin as I do not want to maintain them and other alternatives exist.
+Removed Mirror Frailty for being filler.
+
+
 v1.0.2
 Missing Saftey and Network checks that caused issues for some.
 

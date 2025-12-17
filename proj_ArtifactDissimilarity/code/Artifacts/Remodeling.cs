@@ -7,10 +7,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using static UnityEngine.RemoteConfigSettingsHelper;
+ 
 
-
-namespace ArtifactDissimilarity
+namespace ArtifactDissimilarity.Aritfacts
 {
     public class Remodeling
     {
@@ -21,11 +20,6 @@ namespace ArtifactDissimilarity
         //public static List<EquipmentIndex> BlacklistedEquipment = new List<EquipmentIndex>();
         public static List<List<PickupIndex>> itemPickupLists;
         public static List<List<PickupIndex>> equipmentPickupLists;
-
-
-
-
-
 
 
         public static void OnArtifactEnable()
@@ -175,33 +169,45 @@ namespace ArtifactDissimilarity
                 Debug.Log("Attempted to reroll equipment of Null inventory");
                 return;
             }
-            for (int k = 0; k < inv.equipmentStateSlots.Length; k++)
+            //Slot is MulT
+            //Set is FunctionalCoupler
+
+            for (uint slot = 0; slot < inv._equipmentStateSlots.Length; slot++)
             {
-                if (inv.equipmentStateSlots[k].equipmentIndex != EquipmentIndex.None)
+                for (uint set = 0; set < inv._equipmentStateSlots[slot].Length; set++)
                 {
-                    EquipmentDef equipDef = EquipmentCatalog.GetEquipmentDef(inv.currentEquipmentIndex);
-                    if (equipDef.isBoss)
+                    var state = inv._equipmentStateSlots[slot][set];
+                    if (state.equipmentIndex != EquipmentIndex.None)
                     {
-                        int randomIndex = random.Next(0, equipmentPickupLists[2].Count);
-                        inv.SetEquipment(new EquipmentState(equipmentPickupLists[2][randomIndex].equipmentIndex, Run.FixedTimeStamp.negativeInfinity, 0), (uint)k);
+                        EquipmentDef equipDef = EquipmentCatalog.GetEquipmentDef(inv.currentEquipmentIndex);
+                        if (equipDef.isBoss)
+                        {
+                            int randomIndex = random.Next(0, equipmentPickupLists[2].Count);
+                            inv.SetEquipmentIndexForSlot(equipmentPickupLists[2][randomIndex].equipmentIndex, slot, set);
+                        }
+                        else if (equipDef.isLunar)
+                        {
+                            int randomIndex = random.Next(0, equipmentPickupLists[1].Count);
+                            inv.SetEquipmentIndexForSlot(equipmentPickupLists[1][randomIndex].equipmentIndex, slot, set);
+                        }
+                        else if (equipDef.isConsumed || equipDef.canDrop)
+                        {
+                            int randomIndex = random.Next(0, equipmentPickupLists[0].Count);
+                            inv.SetEquipmentIndexForSlot(equipmentPickupLists[0][randomIndex].equipmentIndex, slot, set);
+                        }
+                        Debug.Log($"Rerolled {inv}'s equipment");
                     }
-                    else if (equipDef.isLunar)
-                    {
-                        int randomIndex = random.Next(0, equipmentPickupLists[1].Count);
-                        inv.SetEquipment(new EquipmentState(equipmentPickupLists[1][randomIndex].equipmentIndex, Run.FixedTimeStamp.negativeInfinity, 0), (uint)k);
-                    }
-                    else if (equipDef.isConsumed || equipDef.canDrop)
-                    {
-                        int randomIndex = random.Next(0, equipmentPickupLists[0].Count);
-                        inv.SetEquipment(new EquipmentState(equipmentPickupLists[0][randomIndex].equipmentIndex, Run.FixedTimeStamp.negativeInfinity, 0), (uint)k);
-                    }
-                    Debug.Log($"Rerolled {inv}'s equipment");
                 }
             }
         }
 
 
-
+        public enum InventoryOwner
+        {
+            Player,
+            Evolution,
+            Devotion
+        }
         public static void RandomizeItemsNew(Inventory inv, bool isEnemyTeam, bool isDevotion)
         {
             if (!inv)
@@ -209,12 +215,13 @@ namespace ArtifactDissimilarity
                 Debug.Log("Attempted to reroll items of Null inventory");
                 return;
             }
-            int[] invoutput = new int[inv.itemStacks.Length];
-            inv.itemStacks.CopyTo(invoutput, 0);
-
             int LengthLists = ItemTierCatalog.itemTierDefs.Length + 1;
             int LengthDo = (int)ItemTier.AssignedAtRuntime - 1;
 
+
+
+            int[] srcItemStacks = ItemCatalog.RequestItemStackArray();
+            inv.WriteAllPermanentItemStacks(srcItemStacks);
 
             int[] amountPerTier = new int[LengthLists];
             List<List<int>> itemStacksList = new List<List<int>>(LengthLists);
@@ -227,9 +234,10 @@ namespace ArtifactDissimilarity
             //Could do it myself but eeeehhh, how'd we know if it's like a stupid leftover or an item that can actually drop.
             //Better to use Run because i don't think pickuptransmanager knows if a item is disabled
 
-            for (var i = 0; i < invoutput.Length; i++)
+            #region Compile Permament Item Stack Sizes
+            for (var i = 0; i < srcItemStacks.Length; i++)
             {
-                if (invoutput[i] > 0)
+                if (srcItemStacks[i] > 0)
                 {
                     ItemDef itemDef = ItemCatalog.GetItemDef((ItemIndex)i);
                     if (itemDef.tier == ItemTier.NoTier || itemDef.tier > ItemTier.AssignedAtRuntime)
@@ -237,21 +245,22 @@ namespace ArtifactDissimilarity
                         //No untiered or modded tiers
                         continue;
                     }
-                    if (itemDef.name.Equals("LunarTrinket") || itemDef.name.EndsWith("Replacement"))
+                    if (itemDef.name.EndsWith("Replacement"))
                     {
                         //Important to run too shouldn't reroll
                         continue;
                     }
-                    if (itemDef.ContainsTag(ItemTag.WorldUnique) && !(itemDef.ContainsTag(ItemTag.Scrap) || itemDef.name.EndsWith("Pearl")))
+                    if (itemDef.ContainsTag(ItemTag.ObjectiveRelated) || itemDef.ContainsTag(ItemTag.ObliterationRelated) || itemDef.ContainsTag(ItemTag.WorldUnique) && !(itemDef.ContainsTag(ItemTag.Scrap) || itemDef.name.EndsWith("Pearl")))
                     {
                         //Filter out world unique items like Captain. But we keep pearls in rotation
                         continue;
                     }
                     amountPerTier[(int)itemDef.tier]++;
-                    itemStacksList[(int)itemDef.tier].Add(invoutput[i]);
-                    inv.RemoveItem((ItemIndex)i, invoutput[i]);
+                    itemStacksList[(int)itemDef.tier].Add(srcItemStacks[i]);
+                    inv.RemoveItemPermanent((ItemIndex)i, srcItemStacks[i]);
                 }
             }
+            #endregion
 
             ItemTag[] banndItemTags = new ItemTag[0];
             if (isEnemyTeam)
@@ -279,9 +288,6 @@ namespace ArtifactDissimilarity
                     ItemTag.DevotionBlacklist,
                 };
             }
-
-
-
 
             for (var tier = 0; tier < LengthDo; tier++)
             {
@@ -331,11 +337,101 @@ namespace ArtifactDissimilarity
                     }
                     int Windex = random.Next(0, forUseList.Count);
                     int WCount = random.Next(0, itemStacksList[tier].Count);
-                    inv.GiveItem(forUseList[Windex].itemIndex, itemStacksList[tier][WCount]);
+                    inv.GiveItemPermanent(forUseList[Windex].itemIndex, itemStacksList[tier][WCount]);
                     forUseList.Remove(forUseList[Windex]);
                     itemStacksList[tier].Remove(itemStacksList[tier][WCount]);
                 }
             }
+
+
+            #region Temporary 
+            if (!isEnemyTeam || isDevotion)
+            {
+
+                float[] srcItemStacksTEMP = new float[srcItemStacks.Length];
+                inv.WriteAllTempItemRawValues(srcItemStacksTEMP);
+
+                int[] amountPerTierTEMP = new int[LengthLists];
+                List<List<float>> itemStacksListTEMP = new List<List<float>>(LengthLists);
+                for (int i = 0; i < LengthLists; i++)
+                {
+                    itemStacksListTEMP.Add(new List<float>());
+                }
+
+                //While it'd be fun to work on stuff like Essences and Highlighlander, I don't think the game stores anything like that as a group
+                //Could do it myself but eeeehhh, how'd we know if it's like a stupid leftover or an item that can actually drop.
+                //Better to use Run because i don't think pickuptransmanager knows if a item is disabled
+
+                #region Compile Temp Item Stack Sizes
+                for (var i = 0; i < srcItemStacksTEMP.Length; i++)
+                {
+                    Debug.Log($"{i} | {srcItemStacksTEMP[i]}");
+                    if (srcItemStacksTEMP[i] > 0)
+                    {
+                        ItemDef itemDef = ItemCatalog.GetItemDef((ItemIndex)i);
+                        if (itemDef.tier == ItemTier.NoTier || itemDef.tier > ItemTier.AssignedAtRuntime)
+                        {
+                            //No untiered or modded tiers
+                            continue;
+                        }
+                        if (itemDef.ContainsTag(ItemTag.ObjectiveRelated) || itemDef.ContainsTag(ItemTag.ObliterationRelated) || itemDef.ContainsTag(ItemTag.WorldUnique) && !(itemDef.ContainsTag(ItemTag.Scrap) || itemDef.name.EndsWith("Pearl")))
+                        {
+                            //Filter out world unique items like Captain. But we keep pearls in rotation
+                            continue;
+                        }
+                        amountPerTierTEMP[(int)itemDef.tier]++;
+                        itemStacksListTEMP[(int)itemDef.tier].Add(srcItemStacksTEMP[i]);
+                        inv.RemoveItemTemp((ItemIndex)i, srcItemStacksTEMP[i]);
+                    }
+                }
+                #endregion
+
+
+                for (var tier = 0; tier < LengthDo; tier++)
+                {
+                    if (tier == (int)ItemTier.NoTier)
+                    {
+                        continue;
+                    }
+                    if (itemPickupLists[tier].Count <= 1)
+                    {
+                        //Skip item tiers with only 1 (Void Boss)
+                        continue;
+                    }
+                    if (amountPerTierTEMP[tier] == 0)
+                    {
+                        //Dont reroll tiers that you didnt have
+                        continue;
+                    }
+                    List<PickupIndex> forUseList = new List<PickupIndex>();
+                    forUseList.AddRange(itemPickupLists[tier]);
+
+                    for (var i = 0; i < forUseList.Count; i++)
+                    {
+                        ItemDef temp = ItemCatalog.GetItemDef(forUseList[i].itemIndex);
+                        if (!temp.ContainsTag(ItemTag.CanBeTemporary))
+                        {
+                            forUseList.Remove(forUseList[i]);
+                            i--;
+                            break;
+                        }
+                    }
+                    for (var i = 0; i < amountPerTierTEMP[tier]; i++)
+                    {
+                        if (forUseList.Count == 0)
+                        {
+                            forUseList.AddRange(itemPickupLists[tier]);
+                        }
+                        int Windex = random.Next(0, forUseList.Count);
+                        int WCount = random.Next(0, itemStacksListTEMP[tier].Count);
+                        inv.GiveItemTemp(forUseList[Windex].itemIndex, itemStacksListTEMP[tier][WCount]);
+                        forUseList.Remove(forUseList[Windex]);
+                        itemStacksListTEMP[tier].Remove(itemStacksListTEMP[tier][WCount]);
+                    }
+                }
+
+            }
+            #endregion
 
             Debug.Log($"Rerolled {inv}'s Items");
         }

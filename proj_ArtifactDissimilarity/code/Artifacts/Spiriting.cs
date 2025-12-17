@@ -2,7 +2,7 @@ using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace ArtifactDissimilarity
+namespace ArtifactDissimilarity.Aritfacts
 {
     public class Spiriting
     {
@@ -83,7 +83,7 @@ namespace ArtifactDissimilarity
             if (tempfrac > 1) { return; }
             if (tempfrac < 0) { tempfrac = 0; }
             float reversedFrac = 1 - tempfrac;
-   
+
             if (self.isPlayerControlled == true)
             {
                 self.moveSpeed *= reversedFrac * speedPlayers + 1;

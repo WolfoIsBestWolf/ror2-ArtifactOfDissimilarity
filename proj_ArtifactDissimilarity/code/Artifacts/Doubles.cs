@@ -1,5 +1,5 @@
-﻿/*
- * using HG;
+﻿using HG;
+using MonoMod.Cil;
 using Newtonsoft.Json.Utilities;
 using R2API;
 using RoR2;
@@ -13,52 +13,36 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using UnityEngine.UIElements;
 
-namespace TrueArtifacts.Aritfacts
+namespace ArtifactDissimilarity.Aritfacts
 {
-    public class MirrorSwarms
+    public partial class Doubles
     {
+
+
         public static void Start()
         {
-            //Host copy over entity states from main body?
-            ////Would desync if the cooldowns are desynced ig
-
-
-            //It just fucking, like refuses to send the network state machine, why??
-
-
-            //Add Net ID of Clone to connection, owned objects
-
-
-            //Gets sent but with the hosts net id so it doesn't ever apply?
-
-            //Multikill Syncer?
-            //Maybe we can respawn a clone after TP or Simu boss wave or before big fights idk?
-
-            //Reset Skills for both
-
-            GameObject playerMaster = Addressables.LoadAssetAsync<GameObject>(key: "5acc65dc41dfe5840a14db71ba004f72").WaitForCompletion();
-
-
+            //GameObject playerMaster = Addressables.LoadAssetAsync<GameObject>(key: "5acc65dc41dfe5840a14db71ba004f72").WaitForCompletion();
             GameObject commandoMaster = Addressables.LoadAssetAsync<GameObject>(key: "f146e1c7699e35b43b70e119b46875e8").WaitForCompletion();
-
-            CloneMaster = PrefabAPI.InstantiateClone(commandoMaster, "CloneMaster", false);
+            DoublesCloneMaster = PrefabAPI.InstantiateClone(commandoMaster, "DoublesMaster", false);
 
            
-            var skills = CloneMaster.GetComponents<AISkillDriver>();
+            var skills = DoublesCloneMaster.GetComponents<AISkillDriver>();
             for (int i = 0; i < skills.Length;i++)
             {
                 GameObject.Destroy(skills[i]);
             }
-            GameObject.Destroy(CloneMaster.GetComponent<BaseAI>());
-            GameObject.Destroy(CloneMaster.GetComponent<EntityStateMachine>());
+            GameObject.Destroy(DoublesCloneMaster.GetComponent<BaseAI>());
+            GameObject.Destroy(DoublesCloneMaster.GetComponent<EntityStateMachine>());
 
-            CloneMaster.AddComponent<MirrorSwarms_Network>();
+            DoublesCloneMaster.AddComponent<ArtifactDoubles_MasterNetwork>();
             //CloneMaster.AddComponent<MirrorSwarms_MovementController>();
 
-            PrefabAPI.RegisterNetworkPrefab(CloneMaster);
+            PrefabAPI.RegisterNetworkPrefab(DoublesCloneMaster);
 
+            SpecificHooks();
         }
-        public static GameObject CloneMaster;
+ 
+        public static GameObject DoublesCloneMaster;
 
 
         public static void On_Artifact_Disable()
@@ -67,8 +51,10 @@ namespace TrueArtifacts.Aritfacts
             On.RoR2.CharacterMaster.TransformBody_string_bool -= Transform_Clones_ForDebug;
             On.RoR2.CharacterBody.GetVisibilityLevel_TeamIndex -= MakeMirrorsInvisible;
             On.RoR2.CharacterBody.RecalculateStats -= MatchSpeed;
-            On.RoR2.CharacterBody.AddMultiKill -= CharacterBody_AddMultiKill;
+            On.RoR2.CharacterBody.AddMultiKill -= Sync_MultiKill;
             On.RoR2.SkillLocator.ResetSkills -= SkillLocator_ResetSkills;
+            On.JunkPickup.OnTriggerStay -= SyncDrifterJunk;
+            IL.EntityStates.Seeker.Meditate.Update -= SyncMeditate;
         }
 
         public static void On_Artifact_Enable()
@@ -77,26 +63,52 @@ namespace TrueArtifacts.Aritfacts
             On.RoR2.CharacterMaster.TransformBody_string_bool += Transform_Clones_ForDebug;
             On.RoR2.CharacterBody.GetVisibilityLevel_TeamIndex += MakeMirrorsInvisible;
             On.RoR2.CharacterBody.RecalculateStats += MatchSpeed;
-            On.RoR2.CharacterBody.AddMultiKill += CharacterBody_AddMultiKill;
+            On.RoR2.CharacterBody.AddMultiKill += Sync_MultiKill;
             On.RoR2.SkillLocator.ResetSkills += SkillLocator_ResetSkills;
-            On.JunkPickup.OnTriggerStay += JunkPickup_OnTriggerStay;
+            On.JunkPickup.OnTriggerStay += SyncDrifterJunk;
+            IL.EntityStates.Seeker.Meditate.Update += SyncMeditate;
  
             RoR2Content.Items.CutHp.hidden = true;
+            DLC3Content.Items.Junk.tags = DLC3Content.Items.Junk.tags.Remove(ItemTag.CannotCopy);
         }
 
-        private static void JunkPickup_OnTriggerStay(On.JunkPickup.orig_OnTriggerStay orig, JunkPickup self, Collider other)
+        private static void SyncMeditate(MonoMod.Cil.ILContext il)
         {
-            if (other.TryGetComponent<MirrorSwarms_IsClone>(out var a))
+            ILCursor c = new ILCursor(il);
+            if (c.TryGotoNext(MoveType.Before,
+                x => x.MatchLdcI4(1),
+                x => x.MatchStfld("EntityStates.Seeker.Meditate", "wrapUpAnimationPlayed")))
             {
-                orig(self, a.otherBody.GetComponent<Collider>());
-            }
-            orig(self, other);
-        }
+                c.EmitDelegate<Func<EntityStates.Seeker.Meditate, EntityStates.Seeker.Meditate>>((self) =>
+                {
+                    if (self.characterBody.TryGetComponent<ArtifactDoubles_IsHost>(out var link))
+                    {
+                        if (link.otherBody)
+                        {
+                            var state = link.otherBody.skillLocator.special.stateMachine;
+                            if (state.state is EntityStates.Seeker.Meditate)
+                            {
+                                (state.state as EntityStates.Seeker.Meditate).meditationSuccess = self.meditationSuccess;
+                                (state.state as EntityStates.Seeker.Meditate).missedInput = self.missedInput;
+                                (state.state as EntityStates.Seeker.Meditate).meditationWrapUp = true;
+                            }
+                        }
+                    }
+                    return self;
 
+                });
+            }
+            else
+            {
+                Debug.LogWarning("IL Failed: SyncMeditate");
+            }
+        }
+ 
+      
         private static void Transform_Clones_ForDebug(On.RoR2.CharacterMaster.orig_TransformBody_string_bool orig, CharacterMaster self, string bodyName, bool og)
         {
             orig(self,bodyName, og);
-            foreach(MirrorSwarms_Network clone in MirrorSwarms_Network.instances)
+            foreach(ArtifactDoubles_MasterNetwork clone in ArtifactDoubles_MasterNetwork.instances)
             {
                 if (clone.originMaster == self && clone.targetMaster)
                 {
@@ -109,12 +121,11 @@ namespace TrueArtifacts.Aritfacts
         private static void SkillLocator_ResetSkills(On.RoR2.SkillLocator.orig_ResetSkills orig, SkillLocator self)
         {
             orig(self);
-            MirrorSwarms_BodyLinker var;
-            if (self.TryGetComponent<MirrorSwarms_BodyLinker>(out var))
+            if (self.TryGetComponent<ArtifactDoubles_BodyLinker>(out var Link))
             {
-                if (var.otherBody && var.otherBody.skillLocator)
+                if (Link.otherBody && Link.otherBody.skillLocator)
                 {
-                    orig(var.otherBody.skillLocator);
+                    orig(Link.otherBody.skillLocator);
                 }
             }
         }
@@ -136,8 +147,8 @@ namespace TrueArtifacts.Aritfacts
         private static void MatchSpeed(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
             orig(self);
-            MirrorSwarms_BodyLinker var;
-            if (self.TryGetComponent<MirrorSwarms_BodyLinker>(out var))
+            ArtifactDoubles_BodyLinker var;
+            if (self.TryGetComponent<ArtifactDoubles_BodyLinker>(out var))
             {
                 self.hasOneShotProtection = true;
                 var.preEqualizedMoveSpeed = self.moveSpeed;
@@ -158,11 +169,11 @@ namespace TrueArtifacts.Aritfacts
             }
         }
 
-        private static void CharacterBody_AddMultiKill(On.RoR2.CharacterBody.orig_AddMultiKill orig, CharacterBody self, int kills)
+        private static void Sync_MultiKill(On.RoR2.CharacterBody.orig_AddMultiKill orig, CharacterBody self, int kills)
         {
             orig(self, kills);
-            MirrorSwarms_BodyLinker var;
-            if (self.TryGetComponent<MirrorSwarms_BodyLinker>(out var))
+            ArtifactDoubles_BodyLinker var;
+            if (self.TryGetComponent<ArtifactDoubles_BodyLinker>(out var))
             {
                 if (var.otherBody)
                 {
@@ -173,7 +184,7 @@ namespace TrueArtifacts.Aritfacts
 
         private static VisibilityLevel MakeMirrorsInvisible(On.RoR2.CharacterBody.orig_GetVisibilityLevel_TeamIndex orig, CharacterBody self, TeamIndex observerTeam)
         {
-            if (self.GetComponent<MirrorSwarms_IsClone>())
+            if (self.GetComponent<ArtifactDoubles_IsClone>())
             {
                 if (observerTeam == TeamIndex.Player)
                 {
@@ -209,7 +220,7 @@ namespace TrueArtifacts.Aritfacts
                 Debug.LogWarning("Attempted to make Clone of null master");
                 return;
             }
-            foreach (MirrorSwarms_Network clone in MirrorSwarms_Network.instances)
+            foreach (ArtifactDoubles_MasterNetwork clone in ArtifactDoubles_MasterNetwork.instances)
             {
                 if (clone.originMaster == srcCharacterMaster && clone.targetMaster)
                 {
@@ -227,8 +238,8 @@ namespace TrueArtifacts.Aritfacts
             {
                 return;
             }
-            spawnCard.prefab = CloneMaster;
-            CloneMaster.GetComponent<CharacterMaster>().bodyPrefab = srcCharacterMaster.bodyPrefab;
+            spawnCard.prefab = DoublesCloneMaster;
+            DoublesCloneMaster.GetComponent<CharacterMaster>().bodyPrefab = srcCharacterMaster.bodyPrefab;
 
             Vector3 core = srcCharacterMaster.GetBody().corePosition;
 
@@ -257,7 +268,7 @@ namespace TrueArtifacts.Aritfacts
             directorSpawnRequest.summonerBodyObject = srcCharacterMaster.GetBodyObject();
             directorSpawnRequest.onSpawnedServer = (Action<SpawnCard.SpawnResult>)Delegate.Combine(directorSpawnRequest.onSpawnedServer, new Action<SpawnCard.SpawnResult>(delegate (SpawnCard.SpawnResult result)
             {
-                result.spawnedInstance.GetComponent<MirrorSwarms_Network>().originMaster = srcCharacterMaster;
+                result.spawnedInstance.GetComponent<ArtifactDoubles_MasterNetwork>().originMaster = srcCharacterMaster;
                 //result.spawnedInstance.GetComponent<CharacterMaster>().spawnOnStart.bodyPrefab = srcCharacterMaster.bodyPrefab;
             }));
             DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
@@ -272,9 +283,9 @@ namespace TrueArtifacts.Aritfacts
 
 
 
-        public class MirrorSwarms_Network : NetworkBehaviour
+        public class ArtifactDoubles_MasterNetwork : NetworkBehaviour
         {
-            public static List<MirrorSwarms_Network> instances = new List<MirrorSwarms_Network>();
+            public static List<ArtifactDoubles_MasterNetwork> instances = new List<ArtifactDoubles_MasterNetwork>();
             public CharacterMaster _originMaster;
             public CharacterMaster originMaster
             {
@@ -313,7 +324,8 @@ namespace TrueArtifacts.Aritfacts
                 }
             }
 
-            public CharacterBody _targetBody;
+            public CharacterBody originBody;
+            public CharacterBody _targetBody;        
             public CharacterBody targetBody
             {
                 get { return _targetBody; }
@@ -334,22 +346,20 @@ namespace TrueArtifacts.Aritfacts
 
             public override bool OnSerialize(NetworkWriter writer, bool initialState)
             {
-                Debug.Log("OnSerialize "+ syncVarDirtyBits);
-                uint num = base.syncVarDirtyBits;
-                bool flag = (num & 1U) > 0U;
-                if (flag)
+                //Debug.Log("OnSerialize "+ syncVarDirtyBits);
+                uint b = base.syncVarDirtyBits;
+                writer.Write((byte)b);
+                if ((b & 1U) > 0U)
                 {
-                    writer.Write((byte)num);
                     writer.Write(_originMaster.gameObject);
                 }            
-                return num > 0U;
+                return b > 0U;
             }
             public override void OnDeserialize(NetworkReader reader, bool initialState)
             {
-                Debug.Log("OnDeserialize");
+                //Debug.Log("OnDeserialize");
                 byte b = reader.ReadByte();
-                bool flag = (b & 1) > 0;
-                if (flag)
+                if ((b & 1U) > 0U)
                 {
                     GameObject obj = reader.ReadGameObject();
                     Debug.Log(obj);
@@ -366,7 +376,10 @@ namespace TrueArtifacts.Aritfacts
                 instances.AddDistinct(this);
                 targetMaster = this.GetComponent<CharacterMaster>();
                 targetInventory = targetMaster.GetComponent<Inventory>();
+                targetInventory.GiveItemChanneled(RoR2Content.Items.AdaptiveArmor.itemIndex);
                 targetMaster.onBodyStart += TargetMaster_onBodyStart;
+
+                extraEquip = DLC3Content.Items.ExtraEquipment.itemIndex;
             }
 
             public void SetupMaster(CharacterMaster master)
@@ -374,7 +387,7 @@ namespace TrueArtifacts.Aritfacts
               
                 if (!master)
                 {
-                    Debug.LogError("MirrorSwarms_Networked: NO MASTER");
+                    Debug.LogError("ArtifactDoubles_Networked: NO MASTER");
                     return;
                 }
            
@@ -393,10 +406,12 @@ namespace TrueArtifacts.Aritfacts
  
                 if (master.playerCharacterMasterController.networkUser.isLocalPlayer)
                 {
-                    MirrorSwarms_MovementController var = targetMaster.gameObject.EnsureComponent<MirrorSwarms_MovementController>();
+                    ArtifactDoubles_MovementController var = targetMaster.gameObject.EnsureComponent<ArtifactDoubles_MovementController>();
                     var.originMaster = master;
                 }
- 
+
+                originInventory.GiveItemPermanent(RoR2Content.Items.CutHp, 1 - originInventory.GetItemCountPermanent(RoR2Content.Items.CutHp));
+
             }
 
             private void RespawnIfInfestedDeath(CharacterBody obj)
@@ -421,14 +436,56 @@ namespace TrueArtifacts.Aritfacts
                         obj.networkIdentity.m_ClientAuthorityOwner = originMaster.networkIdentity.clientAuthorityOwner;
                         obj.GetComponent<CharacterNetworkTransform>().hasEffectiveAuthority = false;
                     }
-             
+
+                    obj.baseNameToken = Language.GetStringFormatted("DOUBLE_PREFIX",originMaster.playerCharacterMasterController.GetDisplayName());
+
+                    SharedBodySetup();
                 }
             }
 
             private void OriginMaster_onBodyStart(CharacterBody obj)
             {
-               
+                originBody = obj;
+                SharedBodySetup();
             }
+
+            public void SharedBodySetup()
+            {
+                if (targetBody && originBody)
+                {
+                    //Has to be here because networked
+                    if (NetworkServer.active)
+                    {
+                        VoidSurvivorController voidTarget = targetBody.GetComponent<VoidSurvivorController>();
+                        if (voidTarget)
+                        {
+                            VoidSurvivorController voidOrigin = originBody.GetComponent<VoidSurvivorController>();
+                            var voidSync = targetBody.GetComponent<ArtifactDoubles_SyncVoidSurv>();
+                            if (!voidSync)
+                            {
+                                voidSync = targetBody.gameObject.AddComponent<ArtifactDoubles_SyncVoidSurv>();
+                            }
+                            voidSync.originVoidSurv = voidOrigin;
+                        }
+ 
+                    }
+        
+                    targetBody.healthComponent.godMode = originBody.healthComponent.godMode;
+
+                    if (targetBody.TryGetComponent<InteractionDriver>(out var drive))
+                    {
+                        drive.enabled = false;
+                    }
+
+                    JunkController drifterTarget = targetBody.GetComponent<JunkController>();
+                    if (drifterTarget)
+                    {
+                        originBody.bodyFlags = originBody.bodyFlags | CharacterBody.BodyFlags.Ungrabbable;
+                        drifterTarget.MaxJunk = 6;
+                    }
+                }
+            }
+
 
             public void OnDisable()
             {
@@ -447,29 +504,33 @@ namespace TrueArtifacts.Aritfacts
                 }
                 RespawnIfInfestedDeath(targetBody);
             }
-
-            public void OnDestroy()
-            {
-                instances.Remove(this);
-            }
-
+      
             private void OriginInventory_onInventoryChanged()
             {
-                originInventory.GiveItemPermanent(RoR2Content.Items.CutHp, 1 - originInventory.GetItemCountPermanent(RoR2Content.Items.CutHp));
                 if (targetInventory)
                 {
                     if (targetBody && targetBody.teamComponent.teamIndex != TeamIndex.Player)
                     {
+                        targetInventory.SetActiveEquipmentSet(0);
                         targetInventory.RemoveItemPermanent(RoR2Content.Items.CutHp, 1);
                         targetInventory.RemoveItemPermanent(RoR2Content.Items.AdaptiveArmor, 1);
                         return;
                     }
-                   
-                    targetInventory.CopyItemsFrom(originInventory, ourFilter);
-                    targetInventory.CopyEquipmentFrom(originInventory, true);
-                    targetInventory.GiveItemPermanent(RoR2Content.Items.AdaptiveArmor);
-                    //targetInventory.GiveItemPermanent(RoR2Content.Items.CutHp);
 
+                    //SLOT MULT
+                    //SET COUPLER
+
+                    //Dont drop equipment from invalidation on clones
+
+                    targetInventory.CopyItemsFrom(originInventory, ourFilter);
+                    //CleanTempItems();
+                    CopyTempItemsFrom();
+                    targetInventory.CopyEquipmentFrom(originInventory, true);
+                    
+                    if (originInventory.activeEquipmentSet.Length > 0)
+                    {
+                        targetInventory.SetActiveEquipmentSet(originInventory.activeEquipmentSet[0]);
+                    }
                     targetInventory.infusionBonus = originInventory.infusionBonus;
                     targetInventory.beadAppliedDamage = originInventory.beadAppliedDamage;
                     targetInventory.beadAppliedHealth = originInventory.beadAppliedHealth;
@@ -478,19 +539,45 @@ namespace TrueArtifacts.Aritfacts
 
             }
 
-
+            public void CleanTempItems()
+            {
+                targetInventory.tempItemsStorage.tempItemStacks.Clear();
+                targetInventory.tempItemsStorage.decayToZeroTimeStamps.Clear();
+                targetInventory.tempItemsStorage.SyncStacksToDecay();
+              
+            }
+            public void CopyTempItemsFrom()
+            {
+                targetInventory.tempItemsStorage.tempItemStacks.Clear();
+                targetInventory.tempItemsStorage.decayToZeroTimeStamps.Clear();
+                using (new Inventory.InventoryChangeScope(targetInventory))
+                {
+                    List<ItemIndex> list;
+                    using (CollectionPool<ItemIndex, List<ItemIndex>>.RentCollection(out list))
+                    {
+                        originInventory.tempItemsStorage.GetNonZeroIndices(list);
+                        foreach (ItemIndex itemIndex in list)
+                        {
+                            targetInventory.GiveItemTemp(itemIndex, ourFilter(itemIndex) ? originInventory.tempItemsStorage.GetItemRawValue(itemIndex) : 0);                  
+                        }
+                    }
+                }
+                targetInventory.tempItemsStorage.SyncStacksToDecay();
+            }
 
             public static readonly Func<ItemIndex, bool> ourFilter = new Func<ItemIndex, bool>(DefaultItemCopyFilter);
+            public static ItemIndex extraEquip;
             private static bool DefaultItemCopyFilter(ItemIndex itemIndex)
             {
-                return true;
+                return !ItemCatalog.GetItemDef(itemIndex).ContainsTag(ItemTag.CannotCopy);
+                //return true;
             }
 
         }
 
-        public class MirrorSwarms_MovementController : MonoBehaviour
+        public class ArtifactDoubles_MovementController : MonoBehaviour
         {
-            public static List<MirrorSwarms_MovementController> instances = new List<MirrorSwarms_MovementController>();
+            public static List<ArtifactDoubles_MovementController> instances = new List<ArtifactDoubles_MovementController>();
 
             public CharacterMaster _originMaster;
             public CharacterMaster originMaster
@@ -520,14 +607,14 @@ namespace TrueArtifacts.Aritfacts
             public RigidbodyMotor originMotor_Drone;
             public RigidbodyMotor targetMotor_Drone;
 
-            public EquipmentSlot originEquipmentSlot;
-            public HurtBox targetTarget;
+            //public EquipmentSlot originEquipmentSlot;
+            //public HurtBox targetTarget;
 
             private float teleportAttemptTimer = 1f;
             public GameObject helperPrefab;
 
-            public MirrorSwarms_IsHost originBodyIdentifier;
-            public MirrorSwarms_IsClone targetBodyIdentifier;
+            public ArtifactDoubles_IsHost originBodyIdentifier;
+            public ArtifactDoubles_IsClone targetBodyIdentifier;
 
             public void OnEnable()
             {
@@ -560,55 +647,48 @@ namespace TrueArtifacts.Aritfacts
                     originInputs = originBody.inputBank;
                     originMotor = originBody.characterMotor;
                     originMotor_Drone = originBody.GetComponent<RigidbodyMotor>();
-                    originEquipmentSlot = originBody.equipmentSlot;
+                    //originEquipmentSlot = originBody.equipmentSlot;
 
                     SharedBodySetup();
+                    SetupTargetSearch();
                 }
             }
 
-
+            //WHAT THEç FUCK DO YOU MEAN THEY CAN BUY SHIT
             public void SharedBodySetup()
             {
                 if (targetBody && originBody)
                 {
-                    originBodyIdentifier = originBody.gameObject.GetComponent<MirrorSwarms_IsHost>();
-                    targetBodyIdentifier = targetBody.gameObject.GetComponent<MirrorSwarms_IsClone>();
+                    originBodyIdentifier = originBody.gameObject.GetComponent<ArtifactDoubles_IsHost>();
+                    targetBodyIdentifier = targetBody.gameObject.GetComponent<ArtifactDoubles_IsClone>();
                     if (originBodyIdentifier == null)
                     {
-                        originBodyIdentifier = originBody.gameObject.AddComponent<MirrorSwarms_IsHost>();
+                        originBodyIdentifier = originBody.gameObject.AddComponent<ArtifactDoubles_IsHost>();
                     }
                     if (targetBodyIdentifier == null)
                     {
-                        targetBodyIdentifier = targetBody.gameObject.AddComponent<MirrorSwarms_IsClone>();
+                        targetBodyIdentifier = targetBody.gameObject.AddComponent<ArtifactDoubles_IsClone>();
                     }
                     originBodyIdentifier.otherBody = targetBody;
                     originBodyIdentifier.otherLink = targetBodyIdentifier;
                     targetBodyIdentifier.otherBody = originBody;
+                    targetBodyIdentifier.originCollider = originBody.GetComponent<Collider>();
                     targetBodyIdentifier.otherLink = originBodyIdentifier;
 
-                    VoidSurvivorController voidTarget = targetBody.GetComponent<VoidSurvivorController>();
-                    if (voidTarget)
-                    {
-                        VoidSurvivorController voidOrigin = originBody.GetComponent<VoidSurvivorController>();
-                        var voidSync = targetBody.GetComponent<MirrorSwarms_SyncVoidSurv>();
-                        if (!voidSync)
-                        {
-                            voidSync = targetBody.gameObject.AddComponent<MirrorSwarms_SyncVoidSurv>();
-                        }
-                        voidSync.originVoidSurv = voidOrigin;
-                    }
-
+        
                     ChefController chefTarget = targetBody.GetComponent<ChefController>();
                     if (chefTarget)
                     {
                         ChefController chefOrigin = originBody.GetComponent<ChefController>();
-                        var chefSync = targetBody.GetComponent<MirrorSwarms_SyncCHEF>();
+                        var chefSync = targetBody.GetComponent<ArtifactDoubles_SyncCHEF>();
                         if (!chefSync)
                         {
-                            chefSync = targetBody.gameObject.AddComponent<MirrorSwarms_SyncCHEF>();
+                            chefSync = targetBody.gameObject.AddComponent<ArtifactDoubles_SyncCHEF>();
                         }
                         chefSync.originCHEF = chefOrigin;
                     }
+
+       
                 }
             }
 
@@ -631,25 +711,88 @@ namespace TrueArtifacts.Aritfacts
 
             }
 
+            private BullseyeSearch targetFinder = new BullseyeSearch();
+            private HurtBox currentTarget;
 
 
+           
+            public void SetupTargetSearch()
+            {
+                targetFinder.teamMaskFilter = TeamMask.GetUnprotectedTeams(TeamIndex.Player);
+                targetFinder.sortMode = BullseyeSearch.SortMode.Angle;
+                targetFinder.filterByLoS = true;
+                targetFinder.maxAngleFilter = 8f; //10 on equip, 30 on huntress
+                //targetFinder.maxDistanceFilter = 40;
+                targetFinder.viewer = this.originBody;
+       
+            }
+
+            private Ray GetAimRay()
+            {
+                return new Ray
+                {
+                    direction = this.originInputs.aimDirection,
+                    origin = this.originInputs.aimOrigin
+                };
+            }
+            private void UpdateTargets()
+            {
+                Ray ray = CameraRigController.ModifyAimRayIfApplicable(this.GetAimRay(), originBody.gameObject, out _);
+                this.targetFinder.searchOrigin = ray.origin;
+                this.targetFinder.searchDirection = ray.direction;
+                this.targetFinder.RefreshCandidates();
+                this.targetFinder.FilterOutGameObject(base.gameObject);
+
+                currentTarget = this.targetFinder.GetResults().FirstOrDefault<HurtBox>();
+            }
+            private float stopWatchTimer;
+            private float stopMovementTimer;
 
             public void FixedUpdate()
             {
                 if (targetInput && originBody)
                 {
-                    if (originEquipmentSlot)
+                    if (originInputs.interact.wasDown)
+                    {
+                        stopMovementTimer += Time.fixedDeltaTime;
+                    }
+                    else
+                    {
+                        stopMovementTimer = 0f;
+                    }
+                    if (stopMovementTimer > 0.12f)
+                    {
+                        targetInput.sprint.PushState(false);
+                    }
+                    else
+                    {
+                        targetInput.skill3.PushState(originInputs.skill3.down);
+                        targetInput.sprint = originInputs.sprint;
+                    }
+                    targetInput.skill1.PushState(originInputs.skill1.down);
+                    targetInput.skill2.PushState(originInputs.skill2.down);
+                    targetInput.skill4.PushState(originInputs.skill4.down);
+
+
+
+                    /*if (originEquipmentSlot)
                     {
                         targetTarget = originEquipmentSlot.currentTarget.hurtBox;
                         if (targetTarget == null)
                         {
+                            UpdateTargets();
                             originEquipmentSlot.ConfigureTargetFinderForEnemies();
                             targetTarget = originEquipmentSlot.targetFinder.GetResults().FirstOrDefault<HurtBox>();
                         }
-                    }
-                    if (targetTarget)
+                    }*/
+                    stopWatchTimer += Time.fixedDeltaTime;
+                    if (stopWatchTimer > 0.2f)
                     {
-                        targetInput.aimDirection = (targetTarget.transform.position - targetInput.aimOrigin).normalized;
+                        UpdateTargets();
+                    }
+                    if (currentTarget)
+                    {
+                        targetInput.aimDirection = (currentTarget.transform.position - targetInput.aimOrigin).normalized;
                     }
                     else
                     {
@@ -668,8 +811,7 @@ namespace TrueArtifacts.Aritfacts
                         {
                             this.teleportAttemptTimer = 1f;
 
-                            Vector3 additionalDistance = originMotor.velocity / 10;
-                            additionalDistance.y = 0;
+                   
                             float x = UnityEngine.Random.Range(1f, 3f);
                             float z = UnityEngine.Random.Range(1f, 3f);
                             if (UnityEngine.Random.Range(0, 2) == 1)
@@ -681,7 +823,13 @@ namespace TrueArtifacts.Aritfacts
                                 z *= -1;
                             }
                             Vector3 corePosition = new Vector3(originBody.corePosition.x+x, originBody.corePosition.y, originBody.corePosition.z+z);
-                            corePosition += additionalDistance;
+                            if (originMotor)
+                            {
+                                Vector3 additionalDistance = originMotor.velocity / 10;
+                                additionalDistance.y = 0;
+                                corePosition += additionalDistance;
+                            }
+                      
 
                             TeleportHelper.TeleportBody(targetBody, corePosition, false);
                             GameObject teleportEffectPrefab = Run.instance.GetTeleportEffectPrefab(targetBody.gameObject);
@@ -692,7 +840,7 @@ namespace TrueArtifacts.Aritfacts
                             }
                             targetBody.AddTimedBuff(JunkContent.Buffs.IgnoreFallDamage,3f);
 
-                            if (originMotor)
+                            if (originMotor != null)
                             {
                                 targetMotor.rootMotion = originMotor.rootMotion;
                                 targetMotor.moveDirection = originMotor.moveDirection;
@@ -712,20 +860,17 @@ namespace TrueArtifacts.Aritfacts
 
             public void Update()
             {
+                //While inputs are updated on Fixed Update
                 if (originInputs)
                 {
-                    targetInput.skill1.PushState(originInputs.skill1.down);
-                    targetInput.skill2.PushState(originInputs.skill2.down);
-                    targetInput.skill4.PushState(originInputs.skill4.down);
-                    if (originInputs.interact.wasDown)
-                    {
+                    if (stopMovementTimer > 0.12f)
+                    {         
+                        targetInput.jump.PushState(false);
                         targetInput.moveVector = Vector3.zeroVector;
                     }
                     else
                     {
                         targetInput.moveVector = originInputs.moveVector;
-                        targetInput.skill3.PushState(originInputs.skill3.down);
-                        targetInput.sprint = originInputs.sprint;
                         targetInput.jump = originInputs.jump;
                     }
                 }
@@ -745,14 +890,15 @@ namespace TrueArtifacts.Aritfacts
             }
 
         }
-
-
-
-        public class MirrorSwarms_BodyLinker : MonoBehaviour
+ 
+        public class ArtifactDoubles_BodyLinker : MonoBehaviour
         {
             public CharacterBody thisBody;
             public CharacterBody otherBody;
-            public MirrorSwarms_BodyLinker otherLink;
+
+
+
+            public ArtifactDoubles_BodyLinker otherLink;
  
             public float preEqualizedMoveSpeed;
             public float preEqualizedAcceleration;
@@ -771,7 +917,19 @@ namespace TrueArtifacts.Aritfacts
             }
         }
 
-        public class MirrorSwarms_SyncVoidSurv : MonoBehaviour
+        public class ArtifactDoubles_IsClone : ArtifactDoubles_BodyLinker
+        {
+            public Collider originCollider;
+        }
+        public class ArtifactDoubles_IsHost : ArtifactDoubles_BodyLinker
+        {
+
+        }
+
+
+
+
+        public class ArtifactDoubles_SyncVoidSurv : MonoBehaviour
         {
             public VoidSurvivorController originVoidSurv;
             public VoidSurvivorController targetVoidSurv;
@@ -802,7 +960,7 @@ namespace TrueArtifacts.Aritfacts
             }
         }
 
-        public class MirrorSwarms_SyncCHEF : MonoBehaviour
+        public class ArtifactDoubles_SyncCHEF : MonoBehaviour
         {
             public ChefController originCHEF;
             public ChefController targetCHEF;
@@ -826,61 +984,7 @@ namespace TrueArtifacts.Aritfacts
             }
         }
 
-        public class MirrorSwarms_IsClone : MirrorSwarms_BodyLinker
-        {
-         
-        }
-        public class MirrorSwarms_IsHost : MirrorSwarms_BodyLinker
-        {
 
-        }
-
-        //public class SendMirrorSwarms : ChatMessageBase
-        public class ass : ChatMessageBase
-        {
-            public override string ConstructChatString()
-            {
-                Debug.Log("SendMirrorSwarms | " + originMaster + "  " + targetMaster);
-                CharacterMaster master = originMaster.GetComponent<CharacterMaster>();
-
-                if (NetworkServer.active)
-                {
-                    MirrorSwarms_Network var = targetMaster.AddComponent<MirrorSwarms_Network>();
-                    var.originMaster = master;
-                    var.OnEnable();
-                }
-
-
-                if (master && master.playerCharacterMasterController.networkUser.isLocalPlayer)
-                {
-                    MirrorSwarms_MovementController var = targetMaster.AddComponent<MirrorSwarms_MovementController>();
-                    var.originMaster = master;
-                    var.OnEnable();
-                }
-                else
-                {
-               
-                }
-                return null;
-            }
-
-            public GameObject originMaster;
-            public GameObject targetMaster;
-            public override void Serialize(NetworkWriter writer)
-            {
-                base.Serialize(writer);
-                writer.Write(originMaster);
-                writer.Write(targetMaster);
-            }
-            public override void Deserialize(NetworkReader reader)
-            {
-                base.Deserialize(reader);
-                originMaster = reader.ReadGameObject();
-                targetMaster = reader.ReadGameObject();
-            }
-        }
     }
 }
 
-
-*/

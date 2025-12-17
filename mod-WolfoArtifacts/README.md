@@ -18,8 +18,9 @@ But also some other more general artifacts like Spiriting.
 			Will generate a random set of options based on a list of all interactables.<br>
 			<br>
 			Most interactable rarities stay the same, but that may change depending on what options are chosen.<br>
+			* (Like if no Small Chest is chosen lots of other ones would spawn)
 			<br>
-			Additional interactables such as Cauldrons, Lunar Seers, Void Eradicators may spawn with this Artifact.<br>
+			Additional interactables such as Cauldrons, Lunar Seers may spawn with this Artifact.<br>
 			</td>
 		</tr>
 		<tr>
@@ -62,7 +63,6 @@ But also some other more general artifacts like Spiriting.
 				<br>
 				Cannot get repeats of the items for multiple stages.<br>
 				Simulacrum rolls a new white and sometimes green after wave 5.<br>
-				Command will be limited but will often show choices of multiple tiers.<br>
 				<br>
 				Stages will spawn slightly more loot and printers. Category Chests are removed.<br>
 				<br>
@@ -97,7 +97,7 @@ But also some other more general artifacts like Spiriting.
 				Item quality and stack size will be maintained.<br>
 				<br>
 				Scrap will be rerolled out of but never into.<br>
-				Will not reroll Heresy Items, Beads of Fealty and Captains Microbots.<br>
+				Will not reroll Quest Items, Unique Items & Heresy Items.<br>
 				<br>
 				Will also reroll: Equipment Drones, Evolution inventory, Devotion inventorys, Simulacrum inventory.<br>
 				Removes Printers.<br>
@@ -130,6 +130,41 @@ But also some other more general artifacts like Spiriting.
 				Lunar Seers in Bazaar will be of any stage.<br>
 				Every other stage starting at stage 5 will have a Primordial Teleporter, Celestial & Void & Green orb.<br>
 				For better control on where to finish the run.
+				<br>
+				Unavailable in Simulacrum.
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/Artifact/Flamboyance_On.png" width=64>
+			</td>
+			<td>
+				<b>Artifact of Flamboyance</b><br>
+				Items have a chance to be replaced with one of a random tier.<br>
+				<br>
+				Think Eulogy Zero but any item tier.
+				1 in 5 chance to replace for most loot sources.
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<img src="https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/Artifact/Doppel_On.png" width=64>
+			</td>
+			<td>
+				<b>Artifact of Doppels</b><br>
+				Players spawn with a body double and control two survivors at once.<br>
+				<br>
+				The clone copies your movements, aim target, skill uses etc.<br>
+				The clone stops moving if you hold down [Interact].<br>
+				The clone copies your items.<br>
+				The clone is considered cloaked and will not be targeted by enemies first.<br>
+				The clone can die.<br>
+				The clone and you share movement speed.<br>
+				The clone and you share "Multi-Kill streaks" for the purposes of some items.<br>
+				<br>
+				For Void Fiend, Void corruptions are synced.<br>			
+				<br>
 			</td>
 		</tr>
 	</tbody>
@@ -143,11 +178,7 @@ Kith and Unison can be a challenge due to being more rng heavy.
 
 Spiriting also lowers damage by up to 25% to counter twice the skills being used twice as fast. (Players and Enemies)
 
-Lunar Seers will have their destination name in the prompt and ping.
-
-Fixes Treeborn Cannopy and Helminth Roost not being allowed on Random stage order.
-
- 
+Flamboyance can give you game breaking printers.
  
 ### Codes
 ![Image of Artifact Codes](https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/WolfoArtifactCodes.png) 

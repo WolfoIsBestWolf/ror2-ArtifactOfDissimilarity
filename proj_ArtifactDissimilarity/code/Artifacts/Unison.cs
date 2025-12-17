@@ -5,14 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UIElements;
 
 
-namespace ArtifactDissimilarity
+namespace ArtifactDissimilarity.Aritfacts
 {
     public class Unison
     {
         public static Xoroshiro128Plus unisonRNG = new Xoroshiro128Plus(1U);
 
+        public static bool[] isTempBlacklistedPickup;
         public static PickupIndex[] pickupsArrayOverride = new PickupIndex[0];
         public static PickupIndex[] pickupsArrayNoRepeats = new PickupIndex[0];
         public static PickupIndex[] pickupsArrayNoRepeats2 = new PickupIndex[0];
@@ -23,10 +25,12 @@ namespace ArtifactDissimilarity
             {
                 return;
             }
-            On.RoR2.PickupDropTable.GenerateDrop -= OverrideDrop_GenerateDrop;
-            On.RoR2.PickupDropTable.GenerateUniqueDrops -= OverrideDropsArray_GenerateUniqueDrops;
+            On.RoR2.PickupDropTable.GenerateDrop -= LEGACY_OverrideDrop_GenerateDrop;
+            On.RoR2.PickupDropTable.GeneratePickup -= PickupDropTable_GeneratePickup;
+            On.RoR2.PickupDropTable.GenerateUniqueDrops -= LEGACY_OverrideDropsArray_GenerateUniqueDrops;
+            On.RoR2.PickupDropTable.GenerateDistinctPickups -= PickupDropTable_GenerateDistinctPickups;
             On.RoR2.ChestBehavior.ItemDrop -= ChestBehavior_ItemDrop; //??
-            On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact -= Unison_Command;
+            //On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact_UniquePickup -= Unison_Command;
             Run.onRunStartGlobal -= Run_onRunStartGlobal;
             Stage.onServerStageComplete -= Stage_onServerStageComplete;
             SceneDirector.onGenerateInteractableCardSelection -= MorePrintersAndCredits;
@@ -40,10 +44,12 @@ namespace ArtifactDissimilarity
                 return;
             }
             //Overrides
-            On.RoR2.PickupDropTable.GenerateDrop += OverrideDrop_GenerateDrop;
-            On.RoR2.PickupDropTable.GenerateUniqueDrops += OverrideDropsArray_GenerateUniqueDrops;
+            On.RoR2.PickupDropTable.GenerateDrop += LEGACY_OverrideDrop_GenerateDrop;
+            On.RoR2.PickupDropTable.GeneratePickup += PickupDropTable_GeneratePickup;
+            On.RoR2.PickupDropTable.GenerateUniqueDrops += LEGACY_OverrideDropsArray_GenerateUniqueDrops;
+            On.RoR2.PickupDropTable.GenerateDistinctPickups += PickupDropTable_GenerateDistinctPickups;
             On.RoR2.ChestBehavior.ItemDrop += ChestBehavior_ItemDrop; //??
-            On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact += Unison_Command;
+            //On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact_UniquePickup += Unison_Command;
             //Generate new
             Run.onRunStartGlobal += Run_onRunStartGlobal;
             Stage.onServerStageComplete += Stage_onServerStageComplete;
@@ -57,10 +63,32 @@ namespace ArtifactDissimilarity
             }
         }
 
-        private static void Unison_Command(On.RoR2.PickupPickerController.orig_SetOptionsFromPickupForCommandArtifact orig, PickupPickerController self, PickupIndex pickupIndex)
+        private static void PickupDropTable_GenerateDistinctPickups(On.RoR2.PickupDropTable.orig_GenerateDistinctPickups orig, PickupDropTable self, List<UniquePickup> dest, int desiredCount, Xoroshiro128Plus rng, bool allowLoop)
+        {
+            orig(self, dest, desiredCount, rng, allowLoop);
+            if (IsDropTableEligibleForReplacing(self, out bool temp))
+            {
+                for (int i = 0; i < dest.Count; i++)
+                {
+                    dest[i] = new UniquePickup(GetNewPickupIndex(dest[i].pickupIndex, temp));
+                }
+            }
+        }
+
+        private static UniquePickup PickupDropTable_GeneratePickup(On.RoR2.PickupDropTable.orig_GeneratePickup orig, PickupDropTable self, Xoroshiro128Plus rng)
+        {
+            if (IsDropTableEligibleForReplacing(self, out bool temp))
+            {
+                return new UniquePickup(GetNewPickupIndex(orig(self, rng).pickupIndex, temp));
+            }
+            return orig(self, rng);
+        }
+
+        /*
+        private static void Unison_Command(On.RoR2.PickupPickerController.orig_SetOptionsFromPickupForCommandArtifact_UniquePickup orig, PickupPickerController self, UniquePickup pickupIndex)
         {
             bool dontOverride = false;
-            PickupDef pickupDef = pickupIndex.pickupDef;
+            PickupDef pickupDef = pickupIndex.pickupIndex.pickupDef;
             if (pickupDef.itemIndex == JunkContent.Items.AACannon.itemIndex || pickupDef.itemIndex == JunkContent.Items.SkullCounter.itemIndex)
             {
                 PickupPickerController.Option[] commandOptions = new PickupPickerController.Option[11];
@@ -230,23 +258,29 @@ namespace ArtifactDissimilarity
             }
             orig(self, pickupIndex);
         }
-
+        */
         private static void Stage_onServerStageComplete(Stage obj)
         {
             SetupItemOverrides();
         }
 
-        public static bool IsDropTableEligibleForReplacing(PickupDropTable dt)
+        public static bool IsDropTableEligibleForReplacing(PickupDropTable dt, out bool isTemp)
         {
+            isTemp = false;
             if (dt is DoppelgangerDropTable || dt is ArenaMonsterItemDropTable)
             {
                 return false;
             }
             else if (dt is BasicPickupDropTable) //Needs to be the lowest
             {
+
                 if ((dt as BasicPickupDropTable).bannedItemTags.Contains(ItemTag.AIBlacklist))
                 {
                     return false;
+                }
+                if ((dt as BasicPickupDropTable).requiredItemTags.Contains(ItemTag.CanBeTemporary))
+                {
+                    isTemp = true;
                 }
                 else if (dt.name.StartsWith("dtDupli"))
                 {
@@ -260,23 +294,23 @@ namespace ArtifactDissimilarity
             return true;
         }
 
-        public static PickupIndex OverrideDrop_GenerateDrop(On.RoR2.PickupDropTable.orig_GenerateDrop orig, PickupDropTable self, Xoroshiro128Plus rng)
+        public static PickupIndex LEGACY_OverrideDrop_GenerateDrop(On.RoR2.PickupDropTable.orig_GenerateDrop orig, PickupDropTable self, Xoroshiro128Plus rng)
         {
-            if (IsDropTableEligibleForReplacing(self))
+            if (IsDropTableEligibleForReplacing(self, out _))
             {
-                return GetNewPickupIndex(orig(self, rng));
+                return GetNewPickupIndex(orig(self, rng), false);
             }
             return orig(self, rng);
         }
 
-        private static PickupIndex[] OverrideDropsArray_GenerateUniqueDrops(On.RoR2.PickupDropTable.orig_GenerateUniqueDrops orig, PickupDropTable self, int maxDrops, Xoroshiro128Plus rng)
+        private static PickupIndex[] LEGACY_OverrideDropsArray_GenerateUniqueDrops(On.RoR2.PickupDropTable.orig_GenerateUniqueDrops orig, PickupDropTable self, int maxDrops, Xoroshiro128Plus rng)
         {
-            if (IsDropTableEligibleForReplacing(self))
+            if (IsDropTableEligibleForReplacing(self, out _))
             {
                 PickupIndex[] temp = orig(self, maxDrops, rng);
                 for (int i = 0; i < temp.Length; i++)
                 {
-                    temp[i] = GetNewPickupIndex(temp[i]);
+                    temp[i] = GetNewPickupIndex(temp[i], false);
                 }
                 return temp;
             }
@@ -293,7 +327,7 @@ namespace ArtifactDissimilarity
                 for (int j = ptr.cards.Length - 1; j >= 0; j--)
                 {
                     DirectorCard obj = ptr.cards[j];
-                    if (obj.spawnCard.name.StartsWith("iscCate"))
+                    if (obj.GetSpawnCard().name.StartsWith("iscCate"))
                     {
                         ArrayUtils.ArrayRemoveAtAndResize<DirectorCard>(ref ptr.cards, j, 1);
                     }
@@ -323,6 +357,7 @@ namespace ArtifactDissimilarity
             pickupsArrayOverride = new PickupIndex[ItemTierCatalog.itemTierDefs.Length + 4];
             pickupsArrayNoRepeats = new PickupIndex[ItemTierCatalog.itemTierDefs.Length + 4];
             pickupsArrayNoRepeats2 = new PickupIndex[ItemTierCatalog.itemTierDefs.Length + 4];
+            isTempBlacklistedPickup = new bool[ItemTierCatalog.itemTierDefs.Length + 4];
             SetupItemOverrides();
         }
 
@@ -354,7 +389,11 @@ namespace ArtifactDissimilarity
         public static void ChestBehavior_ItemDrop(On.RoR2.ChestBehavior.orig_ItemDrop orig, ChestBehavior self)
         {
             //Helps with IT or mid stage changes
-            self.dropPickup = GetNewPickupIndex(self.dropPickup);
+            self.currentPickup = new UniquePickup
+            {
+                pickupIndex = GetNewPickupIndex(self.currentPickup.pickupIndex, self.currentPickup.isTempItem),
+                decayValue = self.currentPickup.decayValue,
+            };
             orig(self);
         }
 
@@ -370,6 +409,7 @@ namespace ArtifactDissimilarity
                 pickupsArrayOverride = new PickupIndex[ItemTierCatalog.itemTierDefs.Length + 4];
                 pickupsArrayNoRepeats = new PickupIndex[ItemTierCatalog.itemTierDefs.Length + 4];
                 pickupsArrayNoRepeats2 = new PickupIndex[ItemTierCatalog.itemTierDefs.Length + 4];
+                isTempBlacklistedPickup = new bool[ItemTierCatalog.itemTierDefs.Length + 4];
                 Debug.LogWarning("does this code even still run");
             }
 
@@ -422,7 +462,7 @@ namespace ArtifactDissimilarity
         }
 
 
-        public static PickupIndex GetNewPickupIndex(PickupIndex original)
+        public static PickupIndex GetNewPickupIndex(PickupIndex original, bool temp)
         {
             if (original == PickupIndex.none)
             {
@@ -433,11 +473,15 @@ namespace ArtifactDissimilarity
                 return original;
             }
             PickupDef pickupDef = original.pickupDef;
-            if (pickupDef.itemIndex != ItemIndex.None && pickupDef.itemIndex != RoR2Content.Items.ArtifactKey.itemIndex)
+            if (pickupDef.itemIndex != ItemIndex.None)
             {
                 ItemDef itemDef = ItemCatalog.GetItemDef(pickupDef.itemIndex);
-                if (!itemDef.tags.Contains(ItemTag.Scrap))
+                if (!(itemDef.ContainsTag(ItemTag.Scrap) || itemDef.ContainsTag(ItemTag.ObjectiveRelated) || itemDef.ContainsTag(ItemTag.ObliterationRelated)))
                 {
+                    if (temp && isTempBlacklistedPickup[(int)itemDef.tier])
+                    {
+                        return original;
+                    }
                     return pickupsArrayOverride[(int)itemDef.tier];
                 }
             }
@@ -503,6 +547,16 @@ namespace ArtifactDissimilarity
             //2 Layers of repeat protection + Tag Repeat
             pickupsArrayNoRepeats2[Tier] = pickupsArrayNoRepeats[Tier];
             pickupsArrayNoRepeats[Tier] = pickupsArrayOverride[Tier];
+
+            if (tempDef.ContainsTag(ItemTag.CanBeTemporary))
+            {
+                isTempBlacklistedPickup[Tier] = false;
+            }
+            else
+            {
+                isTempBlacklistedPickup[Tier] = true;
+            }
+
             return tempDex;
         }
 
@@ -537,6 +591,79 @@ namespace ArtifactDissimilarity
             pickupsArrayNoRepeats[Tier] = pickupsArrayOverride[Tier];
             return tempDex;
         }
+
+    }
+
+    public class UnisonBackupStorage : MonoBehaviour
+    {
+        public void Set()
+        {
+            if (!Run.instance)
+            {
+                return;
+            }
+            availableTier1DropList.CopyFrom(Run.instance.availableTier1DropList);
+            availableTier2DropList.CopyFrom(Run.instance.availableTier2DropList);
+            availableTier3DropList.CopyFrom(Run.instance.availableTier3DropList);
+            availableBossDropList.CopyFrom(Run.instance.availableBossDropList);
+
+            availableVoidTier1DropList.CopyFrom(Run.instance.availableVoidTier1DropList);
+            availableVoidTier2DropList.CopyFrom(Run.instance.availableVoidTier2DropList);
+            availableVoidTier3DropList.CopyFrom(Run.instance.availableVoidTier3DropList);
+            availableVoidBossDropList.CopyFrom(Run.instance.availableVoidBossDropList);
+
+            availableLunarItemDropList.CopyFrom(Run.instance.availableLunarItemDropList);
+            availableFoodTierDropList.CopyFrom(Run.instance.availableFoodTierDropList);
+
+            availableEquipmentDropList.CopyFrom(Run.instance.availableEquipmentDropList);
+            availableLunarEquipmentDropList.CopyFrom(Run.instance.availableLunarEquipmentDropList);
+            availableLunarCombinedDropList.CopyFrom(Run.instance.availableLunarCombinedDropList);
+
+        }
+        public void UnSet()
+        {
+            if (!Run.instance)
+            {
+                return;
+            }
+            Run.instance.BuildDropTable();
+            //Probably unneeded, just do the vanilla regenerate
+
+            Run.instance.availableTier1DropList.CopyFrom(availableTier1DropList);
+            Run.instance.availableTier2DropList.CopyFrom(availableTier2DropList);
+            Run.instance.availableTier3DropList.CopyFrom(availableTier3DropList);
+            Run.instance.availableBossDropList.CopyFrom(availableBossDropList);
+
+            Run.instance.availableVoidTier1DropList.CopyFrom(availableVoidTier1DropList);
+            Run.instance.availableVoidTier2DropList.CopyFrom(availableVoidTier2DropList);
+            Run.instance.availableVoidTier3DropList.CopyFrom(availableVoidTier3DropList);
+            Run.instance.availableVoidBossDropList.CopyFrom(availableVoidBossDropList);
+
+            Run.instance.availableLunarItemDropList.CopyFrom(availableLunarItemDropList);
+            Run.instance.availableFoodTierDropList.CopyFrom(availableFoodTierDropList);
+
+            Run.instance.availableEquipmentDropList.CopyFrom(availableEquipmentDropList);
+            Run.instance.availableLunarEquipmentDropList.CopyFrom(availableLunarEquipmentDropList);
+            Run.instance.availableLunarCombinedDropList.CopyFrom(availableLunarCombinedDropList);
+        }
+
+        public List<PickupIndex> availableTier1DropList = new List<PickupIndex>();
+        public List<PickupIndex> availableTier2DropList = new List<PickupIndex>();
+        public List<PickupIndex> availableTier3DropList = new List<PickupIndex>();
+
+        public List<PickupIndex> availableLunarItemDropList = new List<PickupIndex>();
+        public List<PickupIndex> availableBossDropList = new List<PickupIndex>();
+
+        public List<PickupIndex> availableEquipmentDropList = new List<PickupIndex>();
+        public List<PickupIndex> availableLunarEquipmentDropList = new List<PickupIndex>();
+
+        public List<PickupIndex> availableLunarCombinedDropList = new List<PickupIndex>();
+
+        public List<PickupIndex> availableVoidTier1DropList = new List<PickupIndex>();
+        public List<PickupIndex> availableVoidTier2DropList = new List<PickupIndex>();
+        public List<PickupIndex> availableVoidTier3DropList = new List<PickupIndex>();
+        public List<PickupIndex> availableVoidBossDropList = new List<PickupIndex>();
+        public List<PickupIndex> availableFoodTierDropList = new List<PickupIndex>();
 
     }
 }

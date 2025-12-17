@@ -68,7 +68,7 @@ namespace TrueArtifacts.Aritfacts
 
         public static void On_Artifact_Enable()
         {
-            On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact += Override_Command_Options;
+            On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact_UniquePickup += Override_Command_Options;
             SceneDirector.onGenerateInteractableCardSelection += CommandArtifactManager.OnGenerateInteractableCardSelection;
             On.RoR2.Run.IsItemAvailable += Run_IsItemAvailable;
             On.RoR2.Run.IsEquipmentAvailable += Run_IsEquipmentAvailable;
@@ -88,7 +88,7 @@ namespace TrueArtifacts.Aritfacts
 
         public static void On_Artifact_Disable()
         {
-            On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact -= Override_Command_Options;
+            On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact_UniquePickup -= Override_Command_Options;
             SceneDirector.onGenerateInteractableCardSelection -= CommandArtifactManager.OnGenerateInteractableCardSelection;
             On.RoR2.Run.IsItemAvailable -= Run_IsItemAvailable;
             On.RoR2.Run.IsEquipmentAvailable -= Run_IsEquipmentAvailable;
@@ -191,13 +191,12 @@ namespace TrueArtifacts.Aritfacts
 
 
 
-        private static void Override_Command_Options(On.RoR2.PickupPickerController.orig_SetOptionsFromPickupForCommandArtifact orig, PickupPickerController self, PickupIndex pickupIndex)
+        private static void Override_Command_Options(On.RoR2.PickupPickerController.orig_SetOptionsFromPickupForCommandArtifact_UniquePickup orig, PickupPickerController self, UniquePickup pickupIndex)
         {
             //If item and if Equipment idk should different?
-            pickupIndex = PickupCatalog.FindPickupIndex(JunkContent.Items.SkullCounter.itemIndex);
+            pickupIndex.pickupIndex = PickupCatalog.FindPickupIndex(JunkContent.Items.SkullCounter.itemIndex);
             orig(self, pickupIndex);
-
-  
+ 
         }
 
         public class RainbowItemThing : MonoBehaviour

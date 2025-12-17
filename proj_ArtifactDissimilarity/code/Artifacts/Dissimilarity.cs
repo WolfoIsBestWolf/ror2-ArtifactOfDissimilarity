@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 
-namespace ArtifactDissimilarity
+namespace ArtifactDissimilarity.Aritfacts
 {
     public class Dissimilarity
     {
@@ -31,12 +31,13 @@ namespace ArtifactDissimilarity
         {
             On.RoR2.ClassicStageInfo.RebuildCards += ForceMixInteractables_ClassicStageInfo_RebuildCards;
             SceneDirector.onPrePopulateSceneServer += LunarTeleporterEvery5Stages;
-            WanderDissim_LunarSeer.PopulateSeerList();
+            DissimWander_LunarSeer.PopulateSeerList();
         }
 
         private static void LunarTeleporterEvery5Stages(SceneDirector obj)
         {
-            if (Run.instance.NetworkstageClearCount % Run.stagesPerLoop == Run.stagesPerLoop - 1)
+            //if (Run.instance.NetworkstageClearCount % Run.stagesPerLoop == Run.stagesPerLoop - 1)
+            if (Run.instance.NetworkstageClearCount % 5 == 5 - 1)
             {
                 obj.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
             }
@@ -129,23 +130,7 @@ namespace ArtifactDissimilarity
                 }
             }
 
-
-            /*
-            DirectorCard ADScrapper = new DirectorCard
-            {
-                spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscScrapper"),
-                selectionWeight = 120,
-            };
-            DirectorCard ADScrapperB = new DirectorCard
-            {
-                spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscScrapper"),
-                selectionWeight = 180,
-            };
-
-            //Smth about not having 2 scrappers or some shit
-            Kith.HelperSingleMixInteractable.CopyFrom(mixInteractablesCards);
-            mixInteractablesCards.AddCard(6, ADScrapper);  //5
-            Kith.HelperSingleMixInteractable.AddCard(1, ADScrapperB);  //1   */
+ 
         }
 
 
@@ -179,10 +164,8 @@ namespace ArtifactDissimilarity
             SoupGreenRedISC.forbiddenFlags = NodeFlags.NoChestSpawn;
             SoupGreenRedISC.directorCreditCost = 2;
             SoupGreenRedISC.occupyPosition = true;
-            SoupGreenRedISC.eliteRules = SpawnCard.EliteRules.Default;
             SoupGreenRedISC.orientToFloor = true;
-            SoupGreenRedISC.slightlyRandomizeOrientation = false;
-            SoupGreenRedISC.skipSpawnWhenSacrificeArtifactEnabled = false;
+
 
             InteractableSpawnCard SoupRedWhiteISC = ScriptableObject.CreateInstance<InteractableSpawnCard>();
             SoupRedWhiteISC.name = "iscSoupRedWhite";
@@ -194,10 +177,8 @@ namespace ArtifactDissimilarity
             SoupRedWhiteISC.forbiddenFlags = NodeFlags.NoChestSpawn;
             SoupRedWhiteISC.directorCreditCost = 1;
             SoupRedWhiteISC.occupyPosition = true;
-            SoupRedWhiteISC.eliteRules = SpawnCard.EliteRules.Default;
             SoupRedWhiteISC.orientToFloor = true;
-            SoupRedWhiteISC.slightlyRandomizeOrientation = false;
-            SoupRedWhiteISC.skipSpawnWhenSacrificeArtifactEnabled = false;
+
 
             GameObject LunarSeerObject = LegacyResourcesAPI.Load<GameObject>("Prefabs/networkedobjects/SeerStation");
             SeerStationController LunarSeerTele1 = LunarSeerObject.GetComponent<RoR2.SeerStationController>();
@@ -214,17 +195,15 @@ namespace ArtifactDissimilarity
             LunarSeerISC.forbiddenFlags = NodeFlags.NoChestSpawn;
             LunarSeerISC.directorCreditCost = 1;
             LunarSeerISC.occupyPosition = true;
-            LunarSeerISC.eliteRules = SpawnCard.EliteRules.Default;
             LunarSeerISC.orientToFloor = true;
-            LunarSeerISC.slightlyRandomizeOrientation = false;
-            LunarSeerISC.skipSpawnWhenSacrificeArtifactEnabled = false;
 
 
-            //Chests
+
+            #region CHEST
             DirectorCard ADChest1 = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscChest1"),
-                selectionWeight = 240,
+                selectionWeight = 200,
             };
             DirectorCard ADChest2 = new DirectorCard
             {
@@ -239,45 +218,44 @@ namespace ArtifactDissimilarity
             DirectorCard ADTripleShop = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscTripleShop"),
-                selectionWeight = 40,
+                selectionWeight = 80,
             };
             DirectorCard ADLunarChest = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarChest"),
-                selectionWeight = 15,
+                selectionWeight = 20,
             };
             DirectorCard ADCategoryChestDamage = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscCategoryChestDamage"),
-                selectionWeight = 25,
+                selectionWeight = 40,
             };
             DirectorCard ADCategoryChestHealing = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscCategoryChestHealing"),
-                selectionWeight = 25,
+                selectionWeight = 40,
             };
             DirectorCard ADCategoryChestUtility = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscCategoryChestUtility"),
-                selectionWeight = 25,
+                selectionWeight = 40,
             };
-            DirectorCard ADTripleShopLarge = new DirectorCard
+            DirectorCard iscTripleShopLarge = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscTripleShopLarge"),
-                selectionWeight = 40,
+                selectionWeight = 35, //40 late, 10 early
             };
-            DirectorCard ADCasinoChest = new DirectorCard
+            DirectorCard iscCasinoChest = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscCasinoChest"),
-                selectionWeight = 40,
+                selectionWeight = 30,
             };
-            DirectorCard ADTripleShopEquipment = new DirectorCard
+            DirectorCard iscTripleShopEquipment = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscTripleShopEquipment"),
-                selectionWeight = 20,
+                selectionWeight = 10,
             };
-
-
+ 
             //DLC Chests
             DirectorCard ADCategoryChest2Damage = new DirectorCard
             {
@@ -297,14 +275,20 @@ namespace ArtifactDissimilarity
             DirectorCard ADVoidChest = new DirectorCard
             {
                 spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidChest/iscVoidChest.asset").WaitForCompletion(),
-                selectionWeight = 40,
+                selectionWeight = 30,
             };
             DirectorCard ADVoidTriple = new DirectorCard
             {
                 spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidTriple/iscVoidTriple.asset").WaitForCompletion(),
-                selectionWeight = 20,
+                selectionWeight = 15,
             };
-
+            DirectorCard iscTemporaryItemsShop = new DirectorCard
+            {
+                spawnCardReference = new AssetReferenceT<SpawnCard>("6df786822d3105e4e820c69e1ef94d16"),
+                selectionWeight = 15, //5 to 20
+            };;
+            #endregion
+            #region Barrel
             //ChestsEnd
             //Barrel
             DirectorCard ADBarrel1 = new DirectorCard
@@ -318,121 +302,171 @@ namespace ArtifactDissimilarity
             DirectorCard ADBarrelVoidCoin = new DirectorCard
             {
                 spawnCard = iscVoidCoinBarrel,
-                selectionWeight = 50,
+                selectionWeight = 30,
             };
-            ADBarrelVoidCoin.spawnCard = iscVoidCoinBarrel;
-            DirectorCard ADScrapperB = new DirectorCard
-            {
-                spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscScrapper"),
-                selectionWeight = 15,
-            };
-            DirectorCard ADVoidCamp = new DirectorCard
-            {
-                spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidCamp/iscVoidCamp.asset").WaitForCompletion(),
-                selectionWeight = 25,
-            };
-
-
-            DirectorCard ADDummyRareBarrel = new DirectorCard
-            {
-                spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBarrel1"),
-                selectionWeight = 1,
-            };
-            //BarrelEnd
-            //Shrines
-            DirectorCard ADShrineCombat = new DirectorCard
+     
+            #endregion
+            #region Shrines
+            DirectorCard iscShrineCombat = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscShrineCombat"),
                 selectionWeight = 250,
             };
-            DirectorCard ADShrineBoss = new DirectorCard
+            DirectorCard iscShrineBoss = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscShrineBoss"),
-                selectionWeight = 250,
+                selectionWeight = 200,
             };
-            DirectorCard ADShrineChance = new DirectorCard
+            DirectorCard iscShrineChance = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscShrineChance"),
                 selectionWeight = 400,
             };
-            DirectorCard ADShrineBlood = new DirectorCard
+            DirectorCard iscShrineBlood = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscShrineBlood"),
                 selectionWeight = 200,
             };
-            DirectorCard ADShrineHealing = new DirectorCard
+            DirectorCard iscShrineHealing = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscShrineHealing"),
                 selectionWeight = 200,
             };
-            DirectorCard ADShrineRestack = new DirectorCard
+            DirectorCard iscShrineRestack = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscShrineRestack"),
                 selectionWeight = 50,
             };
-            DirectorCard ADShrineCleanse = new DirectorCard
+            DirectorCard iscShrineCleanse = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscShrineCleanse"),
                 selectionWeight = 100,
+                minimumStageCompletions = 1
             };
-            DirectorCard ADShrineShaping = new DirectorCard
+            DirectorCard iscShrineColossusAccess = new DirectorCard
             {
                 spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineColossusAccess.asset").WaitForCompletion(),
                 selectionWeight = 50,
+                minimumStageCompletions = 1
             };
-            //ShrinesEnd
-            //Drones
-            DirectorCard ADBrokenDrone1 = new DirectorCard
+            #endregion
+            #region Drones
+            DirectorCard iscBrokenDroneGunner = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBrokenDrone1"),
-                selectionWeight = 21,
+                selectionWeight = 70,
             };
-            DirectorCard ADBrokenDrone2 = new DirectorCard
+            DirectorCard iscBrokenDroneHealing = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBrokenDrone2"),
-                selectionWeight = 21,
+                selectionWeight = 70,
             };
-            DirectorCard ADBrokenEmergencyDrone = new DirectorCard
+            DirectorCard iscBrokenTurret1 = new DirectorCard
+            {
+                spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBrokenTurret1"),
+                selectionWeight = 35,
+            };
+            DirectorCard iscBrokenEmergencyDrone = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBrokenEmergencyDrone"),
-                selectionWeight = 14,
+                selectionWeight = 25,
             };
-            DirectorCard ADBrokenEquipmentDrone = new DirectorCard
+            DirectorCard iscBrokenEquipmentDrone = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBrokenEquipmentDrone"),
-                selectionWeight = 14,
+                selectionWeight = 25,
             };
-            DirectorCard ADBrokenFlameDrone = new DirectorCard
+            DirectorCard iscBrokenFlameDrone = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBrokenFlameDrone"),
-                selectionWeight = 14,
+                selectionWeight = 25,
+            };
+            DirectorCard iscBrokenMissileDrone = new DirectorCard
+            {
+                spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBrokenMissileDrone"),
+                selectionWeight = 60,
             };
             DirectorCard ADBrokenMegaDrone = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBrokenMegaDrone"),
-                selectionWeight = 3,
+                selectionWeight = 10,
+                minimumStageCompletions = 1
             };
-            DirectorCard ADBrokenMissileDrone = new DirectorCard
+          
+         
+            DirectorCard iscBrokenHaulerDrone = new DirectorCard
             {
-                spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBrokenMissileDrone"),
-                selectionWeight = 14,
+                spawnCardReference = new AssetReferenceT<SpawnCard>("d304fff1f19d4184bb1f9444df3c0837"),
+                selectionWeight = 40,
             };
-            DirectorCard ADBrokenTurret1 = new DirectorCard
+            DirectorCard iscBrokenJunkDrone = new DirectorCard
             {
-                spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscBrokenTurret1"),
-                selectionWeight = 14,
+                spawnCardReference = new AssetReferenceT<SpawnCard>("d8aad1d9c0616c644869900039f7e3f3"),
+                selectionWeight = 25,
             };
-            //DronesEnd
-            //Rare
+ 
+            DirectorCard iscBrokenJailerDrone = new DirectorCard
+            {
+                spawnCardReference = new AssetReferenceT<SpawnCard>("4e0d52fe3545f474b9076987b6ac92ec"),
+                selectionWeight = 25,
+            };
+            DirectorCard iscBrokenRechargeDrone = new DirectorCard
+            {
+                spawnCardReference = new AssetReferenceT<SpawnCard>("5b6dafbe8f6447e49a151e62961f9f77"),
+                selectionWeight = 30,
+            };
+            DirectorCard iscBrokenCleanupDrone = new DirectorCard
+            {
+                spawnCardReference = new AssetReferenceT<SpawnCard>("f92a522e57b907d4b8585b495e706636"),
+                selectionWeight = 30,
+            };
+            DirectorCard iscBrokenCopycatDrone = new DirectorCard
+            {
+                spawnCardReference = new AssetReferenceT<SpawnCard>("f6970c1e4b273ea4ca332eb714b8801d"),
+                selectionWeight = 15,
+                minimumStageCompletions = 1
+            };
+            DirectorCard iscBrokenBombardmentDrone = new DirectorCard
+            {
+                spawnCardReference = new AssetReferenceT<SpawnCard>("384bcd7226702fd45a431a2795ff3d01"),
+                selectionWeight = 15,
+                minimumStageCompletions = 1
+            };
+          
+            DirectorCard iscTripleDroneShop = new DirectorCard
+            {
+                spawnCardReference = new AssetReferenceT<SpawnCard>("5a86990b032424e48b4b8456f7d684c9"),
+                selectionWeight = 50,
+            };
+
+            #endregion
+            #region MISC
+             
+            DirectorCard iscShrineHalcyonite = new DirectorCard
+            {
+                spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineHalcyonite.asset").WaitForCompletion(),
+                selectionWeight = 23,
+                minimumStageCompletions = 1
+            };
+            DirectorCard iscVoidCamp = new DirectorCard
+            {
+                spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidCamp/iscVoidCamp.asset").WaitForCompletion(),
+                selectionWeight = 25,
+                minimumStageCompletions = 1
+            };
+            #endregion
+            #region Rare
             DirectorCard ADGoldChest = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscGoldChest"),
                 selectionWeight = 6,
+                minimumStageCompletions = 2
             };
             DirectorCard ADShrineGoldshoresAccess = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscShrineGoldshoresAccess"),
                 selectionWeight = 5,
+                minimumStageCompletions = 1
             };
             DirectorCard ADLunarSeer = new DirectorCard
             {
@@ -449,15 +483,8 @@ namespace ArtifactDissimilarity
                 spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC1/VoidSuppressor/iscVoidSuppressor.asset").WaitForCompletion(),
                 selectionWeight = 23,
             };
-            DirectorCard AdShrineHalcyonite = new DirectorCard
-            {
-                spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineHalcyonite.asset").WaitForCompletion(),
-                selectionWeight = 23,
-                minimumStageCompletions = 1
-            };
-
-            //RareEnd
-            //Duplicators
+            #endregion
+            #region Duplicators
             DirectorCard ADDuplicator = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscDuplicator"),
@@ -466,19 +493,21 @@ namespace ArtifactDissimilarity
             DirectorCard ADDuplicatorLarge = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscDuplicatorLarge"),
-                selectionWeight = 80,
+                selectionWeight = 60,
             };
             DirectorCard ADDuplicatorMilitary = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscDuplicatorMilitary"),
-                selectionWeight = 30,
+                selectionWeight = 20,
+                minimumStageCompletions = 2
             };
-            DirectorCard ADDuplicatorWild = new DirectorCard
+            DirectorCard iscDuplicatorWild = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscDuplicatorWild"),
-                selectionWeight = 30,
+                selectionWeight = 20,
+                minimumStageCompletions = 1
             };
-            DirectorCard ADScrapper = new DirectorCard
+            DirectorCard iscScrapper = new DirectorCard
             {
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscScrapper"),
                 selectionWeight = 120,
@@ -486,34 +515,54 @@ namespace ArtifactDissimilarity
             DirectorCard ADSoupWhiteGreen = new DirectorCard
             {
                 spawnCard = SoupWhiteGreenISC,
-                selectionWeight = 75,
+                selectionWeight = 70,
             };
             DirectorCard ADSoupGreenRed = new DirectorCard
             {
                 spawnCard = SoupGreenRedISC,
-                selectionWeight = 45,
+                selectionWeight = 50,
+                minimumStageCompletions = 2
             };
             DirectorCard ADSoupRedWhite = new DirectorCard
             {
                 spawnCard = SoupRedWhiteISC,
-                selectionWeight = 25,
+                selectionWeight = 30,
+                minimumStageCompletions = 2
             };
-            //DuplicatorsEnd
+            DirectorCard iscDroneCombinerStation = new DirectorCard
+            {
+                spawnCardReference = new AssetReferenceT<SpawnCard>("2eaec01927ea16245822dcb50080cba3"),
+                selectionWeight = 40,
+                minimumStageCompletions = 1
+            };
+            DirectorCard iscDroneScrapper = new DirectorCard
+            {
+                spawnCardReference = new AssetReferenceT<SpawnCard>("d7e78d150bd132744934165e6471f5f6"),
+                selectionWeight = 80,
+            };
+            #endregion
 
+
+            //0 Chest
+            //1 Barrel
+            //2 Shrine
+            //3 Drones
+            //4 MiscDLC
+            //5 Rare
+            //6 Duplicate
 
             mixInteractablesCards.AddCategory("Chests", 45); //0
             mixInteractablesCards.AddCategory("Barrels", 10); //1
             mixInteractablesCards.AddCategory("Shrines", 10); //2
             mixInteractablesCards.AddCategory("Drones", 14); //3
-            mixInteractablesCards.AddCategory("Misc", 2); //4
-            mixInteractablesCards.AddCategory("Rare", 0.4f); //5
+            mixInteractablesCards.AddCategory("Misc", 1.5f); //4
+            mixInteractablesCards.AddCategory("Rare", 0.5f); //5
             mixInteractablesCards.AddCategory("Duplicator", 8f); //6
-            mixInteractablesCards.AddCategory("Void Stuff", 1f); //7
-            mixInteractablesCards.AddCategory("Storm Stuff", 1f); //8
-
 
             //Cut to 6?
             mixInteractablesCards.AddCard(0, ADChest1);  //15
+            mixInteractablesCards.AddCard(0, ADChest1);  //15
+            mixInteractablesCards.AddCard(0, ADChest2);  //30
             mixInteractablesCards.AddCard(0, ADChest2);  //30
             mixInteractablesCards.AddCard(0, ADCategoryChestDamage);  //15
             mixInteractablesCards.AddCard(0, ADCategoryChestHealing);  //15
@@ -521,9 +570,9 @@ namespace ArtifactDissimilarity
             mixInteractablesCards.AddCard(0, ADEquipmentBarrel);  //1
             mixInteractablesCards.AddCard(0, ADLunarChest);  //25
             mixInteractablesCards.AddCard(0, ADTripleShop);  //20
-            mixInteractablesCards.AddCard(0, ADTripleShopLarge);  //40
-            mixInteractablesCards.AddCard(0, ADTripleShopEquipment);  //2
-            mixInteractablesCards.AddCard(0, ADCasinoChest);  //20
+            mixInteractablesCards.AddCard(0, iscTripleShopLarge);  //40
+            mixInteractablesCards.AddCard(0, iscTripleShopEquipment);  //2
+            mixInteractablesCards.AddCard(0, iscCasinoChest);  //20
             //mixInteractablesCards.AddCard(0, ADChest1Stealthed);  //10
 
             mixInteractablesCards.AddCard(0, ADCategoryChest2Damage);  //20
@@ -531,49 +580,65 @@ namespace ArtifactDissimilarity
             mixInteractablesCards.AddCard(0, ADCategoryChest2Utility);  //20
             mixInteractablesCards.AddCard(0, ADVoidChest);  //20
             mixInteractablesCards.AddCard(0, ADVoidTriple);  //20
+            mixInteractablesCards.AddCard(0, iscTemporaryItemsShop);  //20
 
             //Singular Barrel
             mixInteractablesCards.AddCard(1, ADBarrel1);  //1     
+            mixInteractablesCards.AddCard(1, ADBarrel1);  //1     
+            mixInteractablesCards.AddCard(1, ADBarrel1);  //1     
             mixInteractablesCards.AddCard(1, ADBarrelVoidCoin);  //1   
-            mixInteractablesCards.AddCard(1, ADScrapperB);  //1     
-            mixInteractablesCards.AddCard(1, ADVoidCamp);  //1     
+        
             //Cut to 3?
-            mixInteractablesCards.AddCard(2, ADShrineBlood);  //20
-            mixInteractablesCards.AddCard(2, ADShrineBoss);  //20
-            mixInteractablesCards.AddCard(2, ADShrineBoss);  //20
-            mixInteractablesCards.AddCard(2, ADShrineChance);  //20
-            mixInteractablesCards.AddCard(2, ADShrineCleanse);  //5
-            mixInteractablesCards.AddCard(2, ADShrineCombat);  //20
-            mixInteractablesCards.AddCard(2, ADShrineHealing);  //15
-            mixInteractablesCards.AddCard(2, ADShrineRestack);  //30
-            mixInteractablesCards.AddCard(2, ADShrineShaping);  //30
+            mixInteractablesCards.AddCard(2, iscShrineBlood);  //20
+            mixInteractablesCards.AddCard(2, iscShrineBoss);  //20
+            mixInteractablesCards.AddCard(2, iscShrineBoss);  //20
+            mixInteractablesCards.AddCard(2, iscShrineChance);  //20
+            mixInteractablesCards.AddCard(2, iscShrineCleanse);  //5
+            mixInteractablesCards.AddCard(2, iscShrineCombat);  //20
+            mixInteractablesCards.AddCard(2, iscShrineHealing);  //15
+            mixInteractablesCards.AddCard(2, iscShrineRestack);  //30
+            mixInteractablesCards.AddCard(2, iscShrineColossusAccess);  //30
 
             //Cut to 3?
-            mixInteractablesCards.AddCard(3, ADBrokenDrone1);  //15
-            mixInteractablesCards.AddCard(3, ADBrokenDrone2);  //15
-            mixInteractablesCards.AddCard(3, ADBrokenEmergencyDrone);  //30
-            mixInteractablesCards.AddCard(3, ADBrokenEquipmentDrone);  //15
-            mixInteractablesCards.AddCard(3, ADBrokenFlameDrone);  //30
+            mixInteractablesCards.AddCard(3, iscBrokenDroneGunner);  //15
+            mixInteractablesCards.AddCard(3, iscBrokenDroneHealing);  //15
+            mixInteractablesCards.AddCard(3, iscBrokenEmergencyDrone);  //30
+            mixInteractablesCards.AddCard(3, iscBrokenEquipmentDrone);  //15
+            mixInteractablesCards.AddCard(3, iscBrokenFlameDrone);  //30
             mixInteractablesCards.AddCard(3, ADBrokenMegaDrone);  //40
-            mixInteractablesCards.AddCard(3, ADBrokenMissileDrone);  //20
-            mixInteractablesCards.AddCard(3, ADBrokenTurret1);  //10
-            //Unused
-            //Misc
-            //Cut to 1?
+            mixInteractablesCards.AddCard(3, iscBrokenMissileDrone);  //20
+            mixInteractablesCards.AddCard(3, iscBrokenTurret1);  //10
 
+            mixInteractablesCards.AddCard(3, iscBrokenJunkDrone);
+            mixInteractablesCards.AddCard(3, iscBrokenHaulerDrone);
+            mixInteractablesCards.AddCard(3, iscBrokenJailerDrone);
+            mixInteractablesCards.AddCard(3, iscBrokenCleanupDrone);
+            mixInteractablesCards.AddCard(3, iscBrokenRechargeDrone);
+            mixInteractablesCards.AddCard(3, iscBrokenBombardmentDrone);
+            mixInteractablesCards.AddCard(3, iscBrokenCopycatDrone);
+            mixInteractablesCards.AddCard(3, iscTripleDroneShop);
+
+        
+            //Cut to 1?
+            mixInteractablesCards.AddCard(4, iscVoidCamp);  //10
+            mixInteractablesCards.AddCard(4, iscShrineHalcyonite);  //10
+            mixInteractablesCards.AddCard(4, iscDroneCombinerStation);  //10
+            //
             mixInteractablesCards.AddCard(5, ADChest1Stealthed);  //10
             mixInteractablesCards.AddCard(5, ADGoldChest);  //50
             mixInteractablesCards.AddCard(5, ADShrineGoldshoresAccess);  //1
-            mixInteractablesCards.AddCard(5, ADVoidSuppressor);  //1
+            //mixInteractablesCards.AddCard(5, ADVoidSuppressor);  //1
             mixInteractablesCards.AddCard(5, ADLunarSeer);  //1
-            mixInteractablesCards.AddCard(5, AdShrineHalcyonite);  //1
+     
 
             //Cut to 4?
-            mixInteractablesCards.AddCard(6, ADScrapper);  //5
+            mixInteractablesCards.AddCard(6, iscScrapper);  //5
+            mixInteractablesCards.AddCard(6, iscScrapper);  //5
+            mixInteractablesCards.AddCard(6, iscDroneScrapper);  //5
             mixInteractablesCards.AddCard(6, ADDuplicator);  //5
             mixInteractablesCards.AddCard(6, ADDuplicatorLarge);  //10
             mixInteractablesCards.AddCard(6, ADDuplicatorMilitary);  //15
-            mixInteractablesCards.AddCard(6, ADDuplicatorWild);  //10
+            mixInteractablesCards.AddCard(6, iscDuplicatorWild);  //10
             mixInteractablesCards.AddCard(6, ADSoupWhiteGreen);  //10
             mixInteractablesCards.AddCard(6, ADSoupGreenRed);  //10
             mixInteractablesCards.AddCard(6, ADSoupRedWhite);  //5
@@ -583,7 +648,7 @@ namespace ArtifactDissimilarity
 
         }
 
-       
+
 
         public static void MakeTrimmerMixInteractablesDCCS()
         {
@@ -591,21 +656,34 @@ namespace ArtifactDissimilarity
             {
                 return;
             }
-            
 
-            //Debug.Log("Artifact of Dissimilarity: MixInteractableApplier");
-            if (ClassicStageInfo.instance.sceneDirectorInteractibleCredits != 0)
-            {
-                ClassicStageInfo.instance.sceneDirectorInteractibleCredits += 4;
-            }
+
+         
             TrimmedmixInteractablesCards.Clear();
             TrimmedmixInteractablesCards.CopyFrom(mixInteractablesCards);
 
+            int drone = random.Next(1, 14);//Drones range from 3.5 to 18
+            if (drone <= 5)
+            {
+                TrimmedmixInteractablesCards.categories[3].selectionWeight = 7f; 
+            }
+            else if (drone <= 10)
+            {
+                TrimmedmixInteractablesCards.categories[3].selectionWeight = 14f;
+            }
+            else if (drone == 11)
+            {
+                TrimmedmixInteractablesCards.categories[3].selectionWeight = 18f;
+            }
+            else
+            {
+                TrimmedmixInteractablesCards.categories[3].selectionWeight = 3.5f;
+            }
+ 
             //Chests
             //Barrels + Void Camp
-            TrimmedmixInteractablesCards.categories[2].selectionWeight = random.Next(7, 13); //Shrines range from 7 to 10 in vanilla
-            TrimmedmixInteractablesCards.categories[3].selectionWeight = random.Next(3, 15); //Drones either 3,4.5, 11 or 14
-            //Misc Nothing ig
+            TrimmedmixInteractablesCards.categories[2].selectionWeight = random.Next(7, 12); //Shrines range from 7 to 10 in vanilla
+             //Misc Nothing ig
             //Rare
             //TrimmedmixInteractablesCards.categories[6].selectionWeight = random.Next(7, 10); //Duplicator is 8 in vanilla
 
@@ -616,17 +694,13 @@ namespace ArtifactDissimilarity
 
             if (Run.instance && Run.instance.stageClearCount == 0)
             {
-                DirectorCard AltPathAccess = new DirectorCard
+                TrimmedmixInteractablesCards.AddCard(4, new DirectorCard
                 {
                     spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineHalcyoniteTier1.asset").WaitForCompletion(),
                     selectionWeight = 200,
-                };
-                TrimmedmixInteractablesCards.AddCard(2, AltPathAccess);
+                });
             }
-
-           
-
-
+ 
         }
 
 

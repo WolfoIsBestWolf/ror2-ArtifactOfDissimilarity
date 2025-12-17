@@ -4,19 +4,22 @@
 		"ARTIFACT_MIRROR_KIN_NAME": "Mirrored Artifact of Kin",
 		"ARTIFACT_MIRROR_KIN_DESC": "A family event will occur on every stage.",
 		
+		"ARTIFACT_MIRROR_GLASS_NAMER": "Artifact of Damocles",
 		"ARTIFACT_MIRROR_GLASS_NAME": "Mirrored Artifact of Glass",
 		"ARTIFACT_MIRROR_GLASS_DESC": "Items spawn an additional copy of themselves, but players have half health.",
 
-		"ARTIFACT_MIRROR_SWARMS_NAME": "Mirrored Artifact of Swarms",
-		"ARTIFACT_MIRROR_SWARMS_DESC": "Players are doubled, but have half health.\nStop your double by holding [Interact]",
-		"DOUBLE_PREFIX": "{0}'s Double",
 
+		"ARTIFACT_FUCKED_UP_GESTURE_NAMER": "Jester of the Damned",
+		"ARTIFACT_FUCKED_UP_GESTURE_DESC": "Skills are used automatically if off cooldown.",
+		
+
+		
 		"ARTIFACT_MIRROR_SACRIFICE_NAME": "Mirrored Artifact of Sacrifice",
 		"ARTIFACT_MIRROR_SACRIFICE_DESC": "Almost exclusively chests spawn.",
 
+		"ARTIFACT_MIRROR_HONOR_NAMER": "Artifact of Weight",
 		"ARTIFACT_MIRROR_HONOR_NAME": "Mirrored Artifact of Honor",
 		"ARTIFACT_MIRROR_HONOR_DESC": "Difficulty is doubled. Increases maximum monster level.",
-	
 
 
 
@@ -91,9 +94,7 @@
 		"ARTIFACT_TRUE_SPITE_NAME": "True Artifact of Spite",
 		"ARTIFACT_TRUE_SPITE_DESC": "Enemies drop multiple exploding OGM-72 'DIABLO' Strike on death.",
 	
-		"ARTIFACT_MIRROR_ENIGMA_NAME": "Mirrored Artifact of Enigma",
-		"ARTIFACT_MIRROR_ENIGMA_DESC": "Items have a chance to be replaced with one of a random tier.",
- 
+	
 		"ARTIFACT_MIRROR_FRAILTY_NAME": "Mirrored Artifact of Frailty",
 		"ARTIFACT_MIRROR_FRAILTY_DESC": "Gravity is doubled.",
  

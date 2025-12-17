@@ -88,10 +88,7 @@ namespace TrueArtifacts.Aritfacts
             if (currentItemIterator != Run.instance.stageClearCount)
             {
                 currentItemIterator = Run.instance.stageClearCount;
-                monsterTeamInventory.itemAcquisitionOrder.Clear();
-                int[] array = monsterTeamInventory.itemStacks;
-                int num = 0;
-                ArrayUtils.SetAll<int>(array, num);
+                monsterTeamInventory.CleanInventory();
                 foreach (PlayerCharacterMasterController player in PlayerCharacterMasterController.instances)
                 {
                     if (player && player.master && player.master.inventory)

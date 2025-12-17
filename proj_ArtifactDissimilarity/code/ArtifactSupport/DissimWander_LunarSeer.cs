@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 
 namespace ArtifactDissimilarity
 {
-    public class WanderDissim_LunarSeer
+    public class DissimWander_LunarSeer
     {
 
 
@@ -55,22 +55,23 @@ namespace ArtifactDissimilarity
         {
             MakeSeerMaterials();
             On.RoR2.SeerStationController.OnStartClient += SeerDestinationRandomizerDissimWander;
- 
-            On.RoR2.SeerStationController.SetRunNextStageToTarget += (orig, self) =>
-            {
-                orig(self);
 
-                if (self.explicitTargetSceneExitController && self.explicitTargetSceneExitController.name.StartsWith("LunarTeleporter"))
-                {
-                    Chat.SendBroadcastChat(new Chat.SimpleChatMessage
-                    {
-                        baseToken = "LUNAR_TELEPORTER_ALIGN_DREAM"
-                    });
-                }
-            };
+            On.RoR2.SeerStationController.SetRunNextStageToTarget += SeerStationController_SetRunNextStageToTarget;
 
         }
- 
+
+        private static void SeerStationController_SetRunNextStageToTarget(On.RoR2.SeerStationController.orig_SetRunNextStageToTarget orig, SeerStationController self)
+        {
+            orig(self);
+
+            if (self.explicitTargetSceneExitController && self.explicitTargetSceneExitController.name.StartsWith("LunarTeleporter"))
+            {
+                Chat.SendBroadcastChat(new Chat.SimpleChatMessage
+                {
+                    baseToken = "LUNAR_TELEPORTER_ALIGN_DREAM"
+                });
+            }
+        }
 
         public static void MakeSeerMaterials()
         {
@@ -92,15 +93,7 @@ namespace ArtifactDissimilarity
             SceneDef Bazaar = LegacyResourcesAPI.Load<SceneDef>("scenedefs/bazaar");
             SceneDef Limbo = LegacyResourcesAPI.Load<SceneDef>("scenedefs/limbo");
             SceneDef MysterySpace = LegacyResourcesAPI.Load<SceneDef>("scenedefs/mysteryspace");
-            SceneDef MenuLobby = LegacyResourcesAPI.Load<SceneDef>("scenedefs/lobby");
-            SceneDef itgolemplains = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/itgolemplains/itgolemplains.asset").WaitForCompletion();
-            SceneDef itgoolake = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/itgoolake/itgoolake.asset").WaitForCompletion();
-            SceneDef itancientloft = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/itancientloft/itancientloft.asset").WaitForCompletion();
-            SceneDef itfrozenwall = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/itfrozenwall/itfrozenwall.asset").WaitForCompletion();
-            SceneDef itdampcave = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/itdampcave/itdampcave.asset").WaitForCompletion();
-            SceneDef itskymeadow = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/itskymeadow/itskymeadow.asset").WaitForCompletion();
-            SceneDef itmoon = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/itmoon/itmoon.asset").WaitForCompletion();
-
+           
             //SceneDef SnowyForest = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/snowyforest/snowyforest.asset").WaitForCompletion();
             SceneDef AncientLoft = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/ancientloft/ancientloft.asset").WaitForCompletion();
             //SceneDef SulfurPools = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/sulfurpools/sulfurpools.asset").WaitForCompletion();
@@ -113,9 +106,7 @@ namespace ArtifactDissimilarity
             SceneDef artifactworld03 = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC2/artifactworld03/artifactworld03.asset").WaitForCompletion();
 
             scenesSeerDestinations = new List<SceneDef> { artifactworld01, artifactworld02, artifactworld03, Moon2, Gold, Arena, MysterySpace, ArtifactWorld, VoidStage, meridian };
-
-            //LegacyResourcesAPI.Load<SceneDef>("scenedefs/moon").portalSelectionMessageString = "<style=cWorldEvent>You are having a nightmare</style>";
-
+ 
             Material PortalMaterialArena = Object.Instantiate(Plains.portalMaterial);
             Material PortalMaterialArtifactWorld = Object.Instantiate(Plains.portalMaterial);
             Material PortalMaterialBazaar = Object.Instantiate(Plains.portalMaterial);
@@ -123,22 +114,13 @@ namespace ArtifactDissimilarity
             Material PortalMaterialMysterySpace = Object.Instantiate(Plains.portalMaterial);
             Material PortalMaterialMenuLobby = Object.Instantiate(Plains.portalMaterial);
             Material PortalMaterialVoidRaid = Object.Instantiate(Plains.portalMaterial);
-
-            Material PortalMaterialITGolemPlains = Object.Instantiate(Plains.portalMaterial);
-            Material PortalMaterialITGooLake = Object.Instantiate(Sand.portalMaterial);
-            Material PortalMaterialITAncientLoft = Object.Instantiate(AncientLoft.portalMaterial);
-            Material PortalMaterialITFrozenWall = Object.Instantiate(Snow.portalMaterial);
-            Material PortalMaterialITDampCave = Object.Instantiate(Depths.portalMaterial);
-            Material PortalMaterialITSkyMeadow = Object.Instantiate(SkyMeadow.portalMaterial);
-            Material PortalMaterialITMoon = Object.Instantiate(Moon2.portalMaterial);
-
+ 
 
             Moon2.portalMaterial.SetFloat("_Boost", 1);
             Moon2.portalMaterial.mainTextureScale = new Vector2(1f, 0.5f);
             meridian.portalMaterial.SetFloat("_Boost", 1);
 
-
-
+ 
             PortalMaterialArena.mainTexture = Arena.previewTexture;
             Arena.portalMaterial = PortalMaterialArena;
             Arena.portalSelectionMessageString = "BAZAAR_SEER_ARENA";
@@ -168,35 +150,7 @@ namespace ArtifactDissimilarity
             VoidRaid.portalSelectionMessageString = "BAZAAR_SEER_VOIDLING";
 
 
-            Color ITBazaarPreview = new Color(0.15f, 0.15f, 1f, 1f);
-            Color ITBazaarPreviewBlue = new Color(0.5f, 0.5f, 1f, 1f);
-            PortalMaterialITGolemPlains.SetColor("_TintColor", new Color(0.8f, 0.2f, 1f, 1f));
-            itgolemplains.portalMaterial = PortalMaterialITGolemPlains;
-            itgolemplains.portalSelectionMessageString = "BAZAAR_SEER_GOLEMPLAINS";
-
-            PortalMaterialITGooLake.SetColor("_TintColor", ITBazaarPreview); //
-            itgoolake.portalMaterial = PortalMaterialITGooLake;
-            itgoolake.portalSelectionMessageString = "BAZAAR_SEER_GOOLAKE";
-
-            PortalMaterialITAncientLoft.SetColor("_TintColor", ITBazaarPreview); //
-            itancientloft.portalMaterial = PortalMaterialITAncientLoft;
-            itancientloft.portalSelectionMessageString = "BAZAAR_SEER_ANCIENTLOFT";
-
-            PortalMaterialITFrozenWall.SetColor("_TintColor", new Color(0.5f, 0.5f, 1f, 1f));
-            itfrozenwall.portalMaterial = PortalMaterialITFrozenWall;
-            itfrozenwall.portalSelectionMessageString = "BAZAAR_SEER_FROZENWALL";
-
-            PortalMaterialITDampCave.SetColor("_TintColor", new Color(0f, 1.5f, 1.5f, 1f));
-            itdampcave.portalMaterial = PortalMaterialITDampCave;
-            itdampcave.portalSelectionMessageString = "BAZAAR_SEER_DAMPCAVESIMPLE";
-
-            PortalMaterialITSkyMeadow.SetColor("_TintColor", new Color(0.6f, 0.6f, 0.1f, 1));
-            itskymeadow.portalMaterial = PortalMaterialITSkyMeadow;
-            itskymeadow.portalSelectionMessageString = "BAZAAR_SEER_SKYMEADOW";
-
-            PortalMaterialITMoon.SetColor("_TintColor", new Color(0.5f, 0.2f, 0.7f, 1));
-            itmoon.portalMaterial = PortalMaterialITMoon;
-            itmoon.portalSelectionMessageString = "BAZAAR_SEER_MOON";
+ 
         }
 
         public static void SeerDestinationRandomizerDissimWander(On.RoR2.SeerStationController.orig_OnStartClient orig, SeerStationController self)
@@ -215,19 +169,11 @@ namespace ArtifactDissimilarity
                 {
                     self.explicitTargetSceneExitController = TeleporterInteraction.instance.sceneExitController;
                 }
-                if (Run.instance.GetComponent<InfiniteTowerRun>())
+                int index = Run.instance.nextStageRng.RangeInt(0, scenesSeerDestinations.Count);
+                self.SetTargetScene(scenesSeerDestinations[index]);
+                if (WConfig.DebugPrint.Value == true)
                 {
-                    int index = Run.instance.nextStageRng.RangeInt(0, Wander.InfiniteTowerSceneDefs.Length);
-                    self.SetTargetScene(Wander.InfiniteTowerSceneDefs[index]);
-                }
-                else
-                {
-                    int index = Run.instance.nextStageRng.RangeInt(0, scenesSeerDestinations.Count);
-                    self.SetTargetScene(scenesSeerDestinations[index]);
-                    if (WConfig.DebugPrint.Value == true)
-                    {
-                        Debug.Log("Lunar Seer going to " + scenesSeerDestinations[index] + " spawned");
-                    }
+                    Debug.Log("Lunar Seer going to " + scenesSeerDestinations[index] + " spawned");
                 }
                 self.gameObject.GetComponent<PurchaseInteraction>().SetAvailable(true);
             }
@@ -257,6 +203,6 @@ namespace ArtifactDissimilarity
                 while (self.IsExpansionEnabled(self.nextStageScene.requiredExpansion));
             }
         }
- 
+
     }
 }

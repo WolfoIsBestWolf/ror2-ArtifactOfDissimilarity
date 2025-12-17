@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 
-namespace ArtifactDissimilarity
+namespace ArtifactDissimilarity.Aritfacts
 {
     public class Transpose
     {
         public static void OnArtifactEnable()
         {
-            On.RoR2.CharacterMaster.Respawn += Transpose.RandomizeLoadoutRespawnMethod;
+            On.RoR2.CharacterMaster.Respawn_Vector3_Quaternion_bool += Transpose.RandomizeLoadoutRespawnMethod;
             On.RoR2.CharacterMaster.PickRandomSurvivorBodyPrefab += Transpose.Transpose_Metamorphosis;
             if (WConfig.TransposeRerollHeresy.Value == true)
             {
@@ -29,7 +29,7 @@ namespace ArtifactDissimilarity
         }
         public static void OnArtifactDisable()
         {
-            On.RoR2.CharacterMaster.Respawn -= Transpose.RandomizeLoadoutRespawnMethod;
+            On.RoR2.CharacterMaster.Respawn_Vector3_Quaternion_bool -= Transpose.RandomizeLoadoutRespawnMethod;
             On.RoR2.CharacterMaster.PickRandomSurvivorBodyPrefab -= Transpose.Transpose_Metamorphosis;
             if (WConfig.TransposeRerollHeresy.Value == true)
             {
@@ -40,10 +40,11 @@ namespace ArtifactDissimilarity
                 playerCharacterMasterController.networkUser.CopyLoadoutToMaster();
                 playerCharacterMasterController.StopAllCoroutines();
                 playerCharacterMasterController.StartCoroutine(Main.DelayedRespawn(playerCharacterMasterController, 0.1f));
-            };
+            }
+            ;
         }
 
-        public static CharacterBody RandomizeLoadoutRespawnMethod(On.RoR2.CharacterMaster.orig_Respawn orig, CharacterMaster self, Vector3 footPosition, Quaternion rotation, bool midStageRevive)
+        public static CharacterBody RandomizeLoadoutRespawnMethod(On.RoR2.CharacterMaster.orig_Respawn_Vector3_Quaternion_bool orig, CharacterMaster self, Vector3 footPosition, Quaternion rotation, bool midStageRevive)
         {
             if (self.playerCharacterMasterController)
             {

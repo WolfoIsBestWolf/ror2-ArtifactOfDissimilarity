@@ -24,24 +24,19 @@ namespace ArtifactDissimilarity.Aritfacts
 
         public static void OnArtifactEnable()
         {
-            if (NetworkServer.active)
-            {
-                MakePickupIndexLists();
-                SceneDirector.onPrePopulateSceneServer += RandomizeOnStageStart;
-                SceneDirector.onGenerateInteractableCardSelection += RemoveInteractables_Remodeling;
-            }
+            MakePickupIndexLists();
+            SceneDirector.onPrePopulateSceneServer += RandomizeOnStageStart;
+            SceneDirector.onGenerateInteractableCardSelection += RemoveInteractables_Remodeling;
             Debug.Log("Added Remodeling");
         }
 
         public static void OnArtifactDisable()
         {
-            if (NetworkServer.active)
-            {
-                SceneDirector.onPrePopulateSceneServer -= RandomizeOnStageStart;
-                SceneDirector.onGenerateInteractableCardSelection -= RemoveInteractables_Remodeling;
-            }
+            SceneDirector.onPrePopulateSceneServer -= RandomizeOnStageStart;
+            SceneDirector.onGenerateInteractableCardSelection -= RemoveInteractables_Remodeling;
             itemPickupLists = null;
-            equipmentPickupLists = null;
+            equipmentPickupLists = null; 
+            Debug.Log("Removed Remodeling");
         }
 
 
@@ -365,7 +360,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 #region Compile Temp Item Stack Sizes
                 for (var i = 0; i < srcItemStacksTEMP.Length; i++)
                 {
-                    Debug.Log($"{i} | {srcItemStacksTEMP[i]}");
+                    //Debug.Log($"{i} | {srcItemStacksTEMP[i]}");
                     if (srcItemStacksTEMP[i] > 0)
                     {
                         ItemDef itemDef = ItemCatalog.GetItemDef((ItemIndex)i);

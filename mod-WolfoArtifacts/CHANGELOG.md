@@ -1,6 +1,9 @@
 
 ### Changelog:
 ```
+v3.5.2
+Fixed Remodelling and Unison not getting disabled on run end due to a network check.
+
 v3.5.1
 
 Fixed Flamboyance sometimes generating dynamic weights improperly, leading to no items at all.

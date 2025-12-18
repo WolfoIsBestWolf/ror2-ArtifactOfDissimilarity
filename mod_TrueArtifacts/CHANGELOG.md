@@ -1,6 +1,9 @@
 
 ### Changelog:
 ```
+v1.1.2
+Fixed True Command breaking with some modded item tiers.
+
 v1.1.0
 Updated for Alloyed Collective.
 

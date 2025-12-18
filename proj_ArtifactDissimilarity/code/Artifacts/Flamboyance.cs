@@ -40,6 +40,7 @@ namespace ArtifactDissimilarity.Aritfacts
             On.RoR2.PickupDropTable.GenerateUniqueDrops -= OLD_PickupDropTable_GenerateUniqueDrops;
             On.RoR2.PickupDropTable.GeneratePickup -= PickupDropTable_GeneratePickup;
             On.RoR2.PickupDropTable.GenerateDistinctPickups -= PickupDropTable_GenerateDistinctPickups;
+            Debug.Log("Removed Flamboyance");
         }
         public static void On_Artifact_Enable()
         {
@@ -50,6 +51,7 @@ namespace ArtifactDissimilarity.Aritfacts
             dtAnyTier.didWeights = false;
             dtAnyTier.doNotGenerate = false;
             dtAnyTier.Regenerate(Run.instance);
+            Debug.Log("Added Flamboyance");
         }
 
         private static void PickupDropTable_GenerateDistinctPickups(On.RoR2.PickupDropTable.orig_GenerateDistinctPickups orig, PickupDropTable self, System.Collections.Generic.List<UniquePickup> dest, int desiredCount, Xoroshiro128Plus rng, bool allowLoop)

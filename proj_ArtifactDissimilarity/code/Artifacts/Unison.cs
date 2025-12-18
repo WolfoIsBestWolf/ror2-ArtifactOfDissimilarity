@@ -21,20 +21,18 @@ namespace ArtifactDissimilarity.Aritfacts
 
         public static void OnArtifactDisable()
         {
-            if (!NetworkServer.active)
-            {
-                return;
-            }
+           
             On.RoR2.PickupDropTable.GenerateDrop -= LEGACY_OverrideDrop_GenerateDrop;
             On.RoR2.PickupDropTable.GeneratePickup -= PickupDropTable_GeneratePickup;
             On.RoR2.PickupDropTable.GenerateUniqueDrops -= LEGACY_OverrideDropsArray_GenerateUniqueDrops;
             On.RoR2.PickupDropTable.GenerateDistinctPickups -= PickupDropTable_GenerateDistinctPickups;
             On.RoR2.ChestBehavior.ItemDrop -= ChestBehavior_ItemDrop; //??
-            //On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact_UniquePickup -= Unison_Command;
+ 
             Run.onRunStartGlobal -= Run_onRunStartGlobal;
             Stage.onServerStageComplete -= Stage_onServerStageComplete;
             SceneDirector.onGenerateInteractableCardSelection -= MorePrintersAndCredits;
             On.EntityStates.InfiniteTowerSafeWard.Travelling.OnExit -= NewItemOnCrabTravel;
+            Debug.Log("Removed Unison");
         }
 
         public static void OnArtifactEnable()
@@ -49,7 +47,7 @@ namespace ArtifactDissimilarity.Aritfacts
             On.RoR2.PickupDropTable.GenerateUniqueDrops += LEGACY_OverrideDropsArray_GenerateUniqueDrops;
             On.RoR2.PickupDropTable.GenerateDistinctPickups += PickupDropTable_GenerateDistinctPickups;
             On.RoR2.ChestBehavior.ItemDrop += ChestBehavior_ItemDrop; //??
-            //On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact_UniquePickup += Unison_Command;
+ 
             //Generate new
             Run.onRunStartGlobal += Run_onRunStartGlobal;
             Stage.onServerStageComplete += Stage_onServerStageComplete;
@@ -61,6 +59,7 @@ namespace ArtifactDissimilarity.Aritfacts
             {
                 Run_onRunStartGlobal(Run.instance);
             }
+            Debug.Log("Added Unison");
         }
 
         private static void PickupDropTable_GenerateDistinctPickups(On.RoR2.PickupDropTable.orig_GenerateDistinctPickups orig, PickupDropTable self, List<UniquePickup> dest, int desiredCount, Xoroshiro128Plus rng, bool allowLoop)

@@ -41,7 +41,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 playerCharacterMasterController.StopAllCoroutines();
                 playerCharacterMasterController.StartCoroutine(Main.DelayedRespawn(playerCharacterMasterController, 0.1f));
             }
-            ;
+            Debug.Log("Removed Transpose");
         }
 
         public static CharacterBody RandomizeLoadoutRespawnMethod(On.RoR2.CharacterMaster.orig_Respawn_Vector3_Quaternion_bool orig, CharacterMaster self, Vector3 footPosition, Quaternion rotation, bool midStageRevive)

@@ -14,7 +14,6 @@ namespace TrueArtifacts.Aritfacts
         //Somehow do rainbow lights and effects or smth
         public static void Start()
         {
-            On.RoR2.PickupDropletController.CreatePickupDroplet_CreatePickupInfo_Vector3_Vector3 += PickupDropletController_CreatePickupDroplet_CreatePickupInfo_Vector3_Vector3;
             On.RoR2.PickupTransmutationManager.RebuildPickupGroups += AddEliteEquipmentsToCommand;
 
             LegacyResourcesAPI.Load<GameObject>("Prefabs/NetworkedObjects/CommandCube").AddComponent<RainbowItemThing>();
@@ -68,9 +67,12 @@ namespace TrueArtifacts.Aritfacts
 
         public static void On_Artifact_Enable()
         {
+            On.RoR2.PickupDropletController.CreatePickupDroplet_CreatePickupInfo_Vector3_Vector3 += PickupDropletController_CreatePickupDroplet_CreatePickupInfo_Vector3_Vector3;
             On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact_UniquePickup += Override_Command_Options;
+
             SceneDirector.onGenerateInteractableCardSelection += CommandArtifactManager.OnGenerateInteractableCardSelection;
-            On.RoR2.Run.IsItemAvailable += Run_IsItemAvailable;
+
+            On.RoR2.Run.IsPickupAvailable += Run_IsPickupAvailable;
             On.RoR2.Run.IsEquipmentAvailable += Run_IsEquipmentAvailable;
             FirstTimeOverrideJunk();
 
@@ -86,9 +88,25 @@ namespace TrueArtifacts.Aritfacts
             }
         }
 
+        private static bool Run_IsPickupAvailable(On.RoR2.Run.orig_IsPickupAvailable orig, Run self, PickupIndex pickupIndex)
+        {
+            PickupDef pickupDef = PickupCatalog.GetPickupDef(pickupIndex);
+            if (pickupDef.itemIndex != ItemIndex.None)
+            {
+                ItemDef itemDef = ItemCatalog.GetItemDef(pickupDef.itemIndex);
+                if (itemDef && (itemDef.tier >= ItemTier.FoodTier || itemDef.tier < ItemTier.Tier1))
+                {
+                    return true;
+                }
+            }
+            return orig(self, pickupIndex);
+        }
+
         public static void On_Artifact_Disable()
         {
+            On.RoR2.PickupDropletController.CreatePickupDroplet_CreatePickupInfo_Vector3_Vector3 -= PickupDropletController_CreatePickupDroplet_CreatePickupInfo_Vector3_Vector3;
             On.RoR2.PickupPickerController.SetOptionsFromPickupForCommandArtifact_UniquePickup -= Override_Command_Options;
+
             SceneDirector.onGenerateInteractableCardSelection -= CommandArtifactManager.OnGenerateInteractableCardSelection;
             On.RoR2.Run.IsItemAvailable -= Run_IsItemAvailable;
             On.RoR2.Run.IsEquipmentAvailable -= Run_IsEquipmentAvailable;
@@ -111,7 +129,8 @@ namespace TrueArtifacts.Aritfacts
         private static bool Run_IsItemAvailable(On.RoR2.Run.orig_IsItemAvailable orig, Run self, ItemIndex itemIndex)
         {
             ItemDef itemDef = ItemCatalog.GetItemDef(itemIndex);
-            if (itemDef && itemDef.tier > ItemTier.VoidBoss)
+            Debug.Log((int)itemDef.tier);
+            if (itemDef && (itemDef.tier >= ItemTier.FoodTier || itemDef.tier < ItemTier.Tier1))
             {
                 return true;
             }
@@ -122,7 +141,7 @@ namespace TrueArtifacts.Aritfacts
         public static void FirstTimeOverrideJunk()
         {
             int skull = PickupCatalog.FindPickupIndex(JunkContent.Items.SkullCounter.itemIndex).value;
-            if (PickupTransmutationManager.pickupGroupMap[skull] != null)
+            if (PickupTransmutationManager.pickupGroupMap[skull] != null && PickupTransmutationManager.pickupGroupMap[skull].Length == 1)
             {
                 return;
             }
@@ -142,25 +161,28 @@ namespace TrueArtifacts.Aritfacts
             }
             foreach (ItemDef def in ItemCatalog.allItemDefs)
             {
-                //Debug.Log(def.tier);
-                AllItem[(int)def.tier].Add(PickupCatalog.itemIndexToPickupIndex[(int)def.itemIndex]);
+                if (def.tier != ItemTier.NoTier)
+                {
+                    if (AllItem.Count > (int)def.tier)
+                    { 
+                        AllItem[(int)def.tier].Add(PickupCatalog.FindPickupIndex(def.itemIndex)); 
+                    }
+                    else
+                    {
+                        AllItem[5].Add(PickupCatalog.FindPickupIndex(def.itemIndex));
+                    }
+                }
             }
-           
+
+            var a = AllItem[(int)ItemTier.Lunar];
+            AllItem[(int)ItemTier.Lunar] = AllItem[(int)ItemTier.Boss];
+            AllItem[(int)ItemTier.Boss] = a;
+
+          
             List<PickupIndex> AllItem2 = new List<PickupIndex>();
             for (int i = 0; i < AllItem.Count; i++)
             {
-                if (i == (int)ItemTier.Boss)
-                {
-                    AllItem2.AddRange(AllItem[(int)ItemTier.Lunar]);
-                }
-                else if (i == (int)ItemTier.Lunar)
-                {
-                    AllItem2.AddRange(AllItem[(int)ItemTier.Boss]);
-                }
-                else if(i != (int)ItemTier.NoTier)
-                {
-                    AllItem2.AddRange(AllItem[i]);
-                }
+                AllItem2.AddRange(AllItem[i]);
             }
             PickupIndex[] AllOfThe22m = AllItem2.ToArray();
 
@@ -179,7 +201,7 @@ namespace TrueArtifacts.Aritfacts
             AllOfThe22m = AllOfThe22m.Add(PickupTransmutationManager.itemVoidTier3Group);
             AllOfThe22m = AllOfThe22m.Add(PickupTransmutationManager.itemVoidBossGroup);*/
             AllOfThe22m = AllOfThe22m.Add(PickupTransmutationManager.equipmentNormalGroup);
-            AllOfThe22m = AllOfThe22m.Add(PickupCatalog.equipmentIndexToPickupIndex[(int)RoR2Content.Equipment.QuestVolatileBattery.equipmentIndex]);
+            AllOfThe22m = AllOfThe22m.Add(PickupCatalog.FindPickupIndex(RoR2Content.Equipment.QuestVolatileBattery.equipmentIndex));
             AllOfThe22m = AllOfThe22m.Add(PickupTransmutationManager.equipmentLunarGroup);
             if (PickupTransmutationManager.equipmentBossGroup.Length > 0)
             {
@@ -228,7 +250,7 @@ namespace TrueArtifacts.Aritfacts
                             {
                                 light.gameObject.SetActive(false);
                             }
-                            if (transf.GetChild(i).childCount > 1)
+                            if (transf.GetChild(i).childCount > 2)
                             {
                                 transf.GetChild(i).GetChild(2).gameObject.SetActive(false);
                             }

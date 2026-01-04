@@ -14,10 +14,10 @@ namespace TrueArtifacts.Aritfacts
             SpawnCard.onSpawnedServerGlobal += OnSpawnCardOnSpawnedServerGlobal;
             //TeamCatalog.teamDefs[2].softCharacterLimit *= 2;
             //TeamCatalog.teamDefs[4].softCharacterLimit *= 2;
-            
+
         }
 
- 
+
         public static void On_Artifact_Disable()
         {
             SpawnCard.onSpawnedServerGlobal -= OnSpawnCardOnSpawnedServerGlobal;

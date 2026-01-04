@@ -1,6 +1,5 @@
-﻿using RoR2;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
+﻿using MonoMod.Cil;
+using RoR2;
 using System;
 using UnityEngine;
 

@@ -1,6 +1,5 @@
 using RoR2;
 using RoR2.Navigation;
-using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
@@ -130,7 +129,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 }
             }
 
- 
+
         }
 
 
@@ -255,7 +254,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 spawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscTripleShopEquipment"),
                 selectionWeight = 10,
             };
- 
+
             //DLC Chests
             DirectorCard ADCategoryChest2Damage = new DirectorCard
             {
@@ -286,7 +285,7 @@ namespace ArtifactDissimilarity.Aritfacts
             {
                 spawnCardReference = new AssetReferenceT<SpawnCard>("6df786822d3105e4e820c69e1ef94d16"),
                 selectionWeight = 15, //5 to 20
-            };;
+            }; ;
             #endregion
             #region Barrel
             //ChestsEnd
@@ -304,7 +303,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 spawnCard = iscVoidCoinBarrel,
                 selectionWeight = 30,
             };
-     
+
             #endregion
             #region Shrines
             DirectorCard iscShrineCombat = new DirectorCard
@@ -392,8 +391,8 @@ namespace ArtifactDissimilarity.Aritfacts
                 selectionWeight = 10,
                 minimumStageCompletions = 1
             };
-          
-         
+
+
             DirectorCard iscBrokenHaulerDrone = new DirectorCard
             {
                 spawnCardReference = new AssetReferenceT<SpawnCard>("d304fff1f19d4184bb1f9444df3c0837"),
@@ -404,7 +403,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 spawnCardReference = new AssetReferenceT<SpawnCard>("d8aad1d9c0616c644869900039f7e3f3"),
                 selectionWeight = 25,
             };
- 
+
             DirectorCard iscBrokenJailerDrone = new DirectorCard
             {
                 spawnCardReference = new AssetReferenceT<SpawnCard>("4e0d52fe3545f474b9076987b6ac92ec"),
@@ -432,7 +431,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 selectionWeight = 15,
                 minimumStageCompletions = 1
             };
-          
+
             DirectorCard iscTripleDroneShop = new DirectorCard
             {
                 spawnCardReference = new AssetReferenceT<SpawnCard>("5a86990b032424e48b4b8456f7d684c9"),
@@ -441,7 +440,7 @@ namespace ArtifactDissimilarity.Aritfacts
 
             #endregion
             #region MISC
-             
+
             DirectorCard iscShrineHalcyonite = new DirectorCard
             {
                 spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC2/iscShrineHalcyonite.asset").WaitForCompletion(),
@@ -587,7 +586,7 @@ namespace ArtifactDissimilarity.Aritfacts
             mixInteractablesCards.AddCard(1, ADBarrel1);  //1     
             mixInteractablesCards.AddCard(1, ADBarrel1);  //1     
             mixInteractablesCards.AddCard(1, ADBarrelVoidCoin);  //1   
-        
+
             //Cut to 3?
             mixInteractablesCards.AddCard(2, iscShrineBlood);  //20
             mixInteractablesCards.AddCard(2, iscShrineBoss);  //20
@@ -618,7 +617,7 @@ namespace ArtifactDissimilarity.Aritfacts
             mixInteractablesCards.AddCard(3, iscBrokenCopycatDrone);
             mixInteractablesCards.AddCard(3, iscTripleDroneShop);
 
-        
+
             //Cut to 1?
             mixInteractablesCards.AddCard(4, iscVoidCamp);  //10
             mixInteractablesCards.AddCard(4, iscShrineHalcyonite);  //10
@@ -629,7 +628,7 @@ namespace ArtifactDissimilarity.Aritfacts
             mixInteractablesCards.AddCard(5, ADShrineGoldshoresAccess);  //1
             //mixInteractablesCards.AddCard(5, ADVoidSuppressor);  //1
             mixInteractablesCards.AddCard(5, ADLunarSeer);  //1
-     
+
 
             //Cut to 4?
             mixInteractablesCards.AddCard(6, iscScrapper);  //5
@@ -658,14 +657,14 @@ namespace ArtifactDissimilarity.Aritfacts
             }
 
 
-         
+
             TrimmedmixInteractablesCards.Clear();
             TrimmedmixInteractablesCards.CopyFrom(mixInteractablesCards);
 
             int drone = random.Next(1, 14);//Drones range from 3.5 to 18
             if (drone <= 5)
             {
-                TrimmedmixInteractablesCards.categories[3].selectionWeight = 7f; 
+                TrimmedmixInteractablesCards.categories[3].selectionWeight = 7f;
             }
             else if (drone <= 10)
             {
@@ -679,13 +678,13 @@ namespace ArtifactDissimilarity.Aritfacts
             {
                 TrimmedmixInteractablesCards.categories[3].selectionWeight = 3.5f;
             }
- 
+
             //Chests
             //Barrels + Void Camp
             TrimmedmixInteractablesCards.categories[2].selectionWeight = random.Next(7, 12); //Shrines range from 7 to 10 in vanilla
-             //Misc Nothing ig
-            //Rare
-            //TrimmedmixInteractablesCards.categories[6].selectionWeight = random.Next(7, 10); //Duplicator is 8 in vanilla
+                                                                                             //Misc Nothing ig
+                                                                                             //Rare
+                                                                                             //TrimmedmixInteractablesCards.categories[6].selectionWeight = random.Next(7, 10); //Duplicator is 8 in vanilla
 
             Filters.Mix_ApplyCardRemovingFilters(TrimmedmixInteractablesCards);
             Filters.MixInteractables_Trimmer_Direct(TrimmedmixInteractablesCards);
@@ -700,7 +699,7 @@ namespace ArtifactDissimilarity.Aritfacts
                     selectionWeight = 200,
                 });
             }
- 
+
         }
 
 

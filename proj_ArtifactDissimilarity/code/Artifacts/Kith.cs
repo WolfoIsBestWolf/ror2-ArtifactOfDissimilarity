@@ -1,8 +1,7 @@
-using HG;
 using RoR2;
 using System;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ArtifactDissimilarity.Aritfacts
 {

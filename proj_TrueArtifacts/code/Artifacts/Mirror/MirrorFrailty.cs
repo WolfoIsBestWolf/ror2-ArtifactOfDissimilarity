@@ -1,7 +1,4 @@
 ﻿using RoR2;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using System;
 using UnityEngine;
 
 namespace TrueArtifacts.Aritfacts
@@ -25,12 +22,12 @@ namespace TrueArtifacts.Aritfacts
 
         private static void JumpVolume_OnTriggerStay(On.RoR2.JumpVolume.orig_OnTriggerStay orig, JumpVolume self, Collider other)
         {
-            orig(self,other);
+            orig(self, other);
             CharacterMotor component = other.GetComponent<CharacterMotor>();
             if (component && component.hasEffectiveAuthority && !component.doNotTriggerJumpVolumes)
             {
                 Debug.Log(component);
-                component.velocity = self.jumpVelocity*1.4f;
+                component.velocity = self.jumpVelocity * 1.4f;
             }
         }
 
@@ -40,7 +37,7 @@ namespace TrueArtifacts.Aritfacts
             orig(self);
         }
 
-     }
+    }
 
 }
 

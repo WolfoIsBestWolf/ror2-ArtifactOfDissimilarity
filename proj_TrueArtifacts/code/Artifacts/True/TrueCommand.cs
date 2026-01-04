@@ -1,11 +1,8 @@
-﻿using System;
-using UnityEngine;
-using RoR2;
+﻿using RoR2;
 using RoR2.Artifacts;
-using System.Collections.Generic;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using RoR2.UI;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace TrueArtifacts.Aritfacts
 {
@@ -155,7 +152,7 @@ namespace TrueArtifacts.Aritfacts
             Debug.Log(ItemTierCatalog.itemTierDefs.Length);
             Debug.Log(ItemTierCatalog.itemTierToDef.Count);*/
             //It's like one item tier short for whatever reasons
-            for (int i = 0; i < ItemTierCatalog.allItemTierDefs.Length+2; i++) 
+            for (int i = 0; i < ItemTierCatalog.allItemTierDefs.Length + 2; i++)
             {
                 AllItem.Add(new List<PickupIndex>());
             }
@@ -164,8 +161,8 @@ namespace TrueArtifacts.Aritfacts
                 if (def.tier != ItemTier.NoTier)
                 {
                     if (AllItem.Count > (int)def.tier)
-                    { 
-                        AllItem[(int)def.tier].Add(PickupCatalog.FindPickupIndex(def.itemIndex)); 
+                    {
+                        AllItem[(int)def.tier].Add(PickupCatalog.FindPickupIndex(def.itemIndex));
                     }
                     else
                     {
@@ -178,7 +175,7 @@ namespace TrueArtifacts.Aritfacts
             AllItem[(int)ItemTier.Lunar] = AllItem[(int)ItemTier.Boss];
             AllItem[(int)ItemTier.Boss] = a;
 
-          
+
             List<PickupIndex> AllItem2 = new List<PickupIndex>();
             for (int i = 0; i < AllItem.Count; i++)
             {
@@ -207,7 +204,7 @@ namespace TrueArtifacts.Aritfacts
             {
                 AllOfThe22m = AllOfThe22m.Add(PickupTransmutationManager.equipmentBossGroup);
             }
- 
+
             PickupTransmutationManager.pickupGroupMap[skull] = AllOfThe22m;
         }
 
@@ -218,7 +215,7 @@ namespace TrueArtifacts.Aritfacts
             //If item and if Equipment idk should different?
             pickupIndex.pickupIndex = PickupCatalog.FindPickupIndex(JunkContent.Items.SkullCounter.itemIndex);
             orig(self, pickupIndex);
- 
+
         }
 
         public class RainbowItemThing : MonoBehaviour
@@ -270,14 +267,14 @@ namespace TrueArtifacts.Aritfacts
 
                         this.GetComponent<GenericDisplayNameProvider>().SetDisplayToken("ARTIFACT_COMMAND_CUBE_RAINBOW");
                     }
-                
+
                 }
                 else
                 {
                     Destroy(this);
                 }
             }
- 
+
             public void FixedUpdate()
             {
                 progress += 0.01f;

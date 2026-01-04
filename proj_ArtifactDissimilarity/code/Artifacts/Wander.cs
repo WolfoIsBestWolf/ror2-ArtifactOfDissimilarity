@@ -3,8 +3,6 @@ using RoR2;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.Networking;
 
 namespace ArtifactDissimilarity.Aritfacts
 {
@@ -18,7 +16,7 @@ namespace ArtifactDissimilarity.Aritfacts
             On.RoR2.Run.PickNextStageScene -= Wander_PickStage;
             On.RoR2.TeleporterInteraction.Start -= MoreMysterySpacePortal;
             SceneDirector.onPrePopulateSceneServer -= MoreLunarTeleporter;
-          
+
             previouslyVisitedSceneDef.Clear();
         }
 
@@ -27,7 +25,7 @@ namespace ArtifactDissimilarity.Aritfacts
             On.RoR2.Run.PickNextStageScene += Wander_PickStage;
             On.RoR2.TeleporterInteraction.Start += MoreMysterySpacePortal;
             SceneDirector.onPrePopulateSceneServer += MoreLunarTeleporter;
-         
+
             DissimWander_LunarSeer.PopulateSeerList();
             Debug.Log("Added Wander");
         }

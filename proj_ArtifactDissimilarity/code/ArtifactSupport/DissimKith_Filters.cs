@@ -1,8 +1,8 @@
+using ArtifactDissimilarity.Aritfacts;
 using RoR2;
 using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using ArtifactDissimilarity.Aritfacts;
 
 namespace ArtifactDissimilarity
 {
@@ -90,10 +90,10 @@ namespace ArtifactDissimilarity
                 debugString += "-----------------";
                 Debug.Log(debugString);
             }
-            
+
         }
 
-     
+
 
         public static void SingleInteractable_Trimmer(DirectorCardCategorySelection interactableCategories)
         {
@@ -166,7 +166,7 @@ namespace ArtifactDissimilarity
             return !Kith.blacklistedForRepeat.Contains(card.GetSpawnCard());
         }
 
- 
+
         public static bool NoMoreScrapper(DirectorCard card)
         {
             GameObject prefab = card.GetSpawnCard().prefab;

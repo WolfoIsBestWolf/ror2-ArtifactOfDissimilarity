@@ -11,7 +11,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using UnityEngine.UIElements;
 
 namespace ArtifactDissimilarity.Aritfacts
 {
@@ -25,9 +24,9 @@ namespace ArtifactDissimilarity.Aritfacts
             GameObject commandoMaster = Addressables.LoadAssetAsync<GameObject>(key: "f146e1c7699e35b43b70e119b46875e8").WaitForCompletion();
             DoublesCloneMaster = PrefabAPI.InstantiateClone(commandoMaster, "DoublesMaster", false);
 
-           
+
             var skills = DoublesCloneMaster.GetComponents<AISkillDriver>();
-            for (int i = 0; i < skills.Length;i++)
+            for (int i = 0; i < skills.Length; i++)
             {
                 GameObject.Destroy(skills[i]);
             }
@@ -41,7 +40,7 @@ namespace ArtifactDissimilarity.Aritfacts
 
             SpecificHooks();
         }
- 
+
         public static GameObject DoublesCloneMaster;
 
 
@@ -67,7 +66,7 @@ namespace ArtifactDissimilarity.Aritfacts
             On.RoR2.SkillLocator.ResetSkills += SkillLocator_ResetSkills;
             On.JunkPickup.OnTriggerStay += SyncDrifterJunk;
             IL.EntityStates.Seeker.Meditate.Update += SyncMeditate;
- 
+
             RoR2Content.Items.CutHp.hidden = true;
             DLC3Content.Items.Junk.tags = DLC3Content.Items.Junk.tags.Remove(ItemTag.CannotCopy);
         }
@@ -103,19 +102,19 @@ namespace ArtifactDissimilarity.Aritfacts
                 Debug.LogWarning("IL Failed: SyncMeditate");
             }
         }
- 
-      
+
+
         private static void Transform_Clones_ForDebug(On.RoR2.CharacterMaster.orig_TransformBody_string_bool orig, CharacterMaster self, string bodyName, bool og)
         {
-            orig(self,bodyName, og);
-            foreach(ArtifactDoubles_MasterNetwork clone in ArtifactDoubles_MasterNetwork.instances)
+            orig(self, bodyName, og);
+            foreach (ArtifactDoubles_MasterNetwork clone in ArtifactDoubles_MasterNetwork.instances)
             {
                 if (clone.originMaster == self && clone.targetMaster)
                 {
                     orig(clone.targetMaster, bodyName, og);
                 }
-            } 
-                
+            }
+
         }
 
         private static void SkillLocator_ResetSkills(On.RoR2.SkillLocator.orig_ResetSkills orig, SkillLocator self)
@@ -154,7 +153,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 var.preEqualizedMoveSpeed = self.moveSpeed;
                 var.preEqualizedAcceleration = self.acceleration;
                 if (var.otherLink)
-                { 
+                {
                     //Debug.Log(self.moveSpeed + " Other " +var.otherBody.moveSpeed);
                     if (var.otherBody.moveSpeed != self.moveSpeed && var.otherBody._isSprinting == self._isSprinting)
                     {
@@ -254,7 +253,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 z *= -1;
             }
             Vector3 corePosition = new Vector3(core.x + x, core.y, core.z + z);
- 
+
 
             DirectorPlacementRule directorPlacementRule = new DirectorPlacementRule
             {
@@ -277,7 +276,7 @@ namespace ArtifactDissimilarity.Aritfacts
 
             UnityEngine.Object.Destroy(spawnCard);
         }
- 
+
 
 
 
@@ -310,7 +309,7 @@ namespace ArtifactDissimilarity.Aritfacts
             public Inventory targetInventory;
             public Inventory originInventory;
             public CharacterMaster _targetMaster;
-            public CharacterMaster targetMaster  
+            public CharacterMaster targetMaster
             {
                 get { return _targetMaster; }
                 set
@@ -320,12 +319,12 @@ namespace ArtifactDissimilarity.Aritfacts
                         return;
                     }
                     _targetMaster = value;
-                   
+
                 }
             }
 
             public CharacterBody originBody;
-            public CharacterBody _targetBody;        
+            public CharacterBody _targetBody;
             public CharacterBody targetBody
             {
                 get { return _targetBody; }
@@ -336,7 +335,7 @@ namespace ArtifactDissimilarity.Aritfacts
                         return;
                     }
                     _targetBody = value;
-                   
+
                 }
             }
             //targetMaster connection add to client owned objects
@@ -352,7 +351,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 if ((b & 1U) > 0U)
                 {
                     writer.Write(_originMaster.gameObject);
-                }            
+                }
                 return b > 0U;
             }
             public override void OnDeserialize(NetworkReader reader, bool initialState)
@@ -366,7 +365,7 @@ namespace ArtifactDissimilarity.Aritfacts
                     if (obj)
                         originMaster = obj.GetComponent<CharacterMaster>();
                 }
-        
+
             }
 
 
@@ -384,14 +383,14 @@ namespace ArtifactDissimilarity.Aritfacts
 
             public void SetupMaster(CharacterMaster master)
             {
-              
+
                 if (!master)
                 {
                     Debug.LogError("ArtifactDoubles_Networked: NO MASTER");
                     return;
                 }
-           
-             
+
+
                 targetMaster.originalBodyPrefab = master.originalBodyPrefab;
                 originInventory = master.GetComponent<Inventory>();
                 if (NetworkServer.active)
@@ -400,10 +399,10 @@ namespace ArtifactDissimilarity.Aritfacts
                     originInventory.onInventoryChanged += OriginInventory_onInventoryChanged;
                     originInventory.HandleInventoryChanged();
                 }
-  
+
                 master.onBodyStart += OriginMaster_onBodyStart;
                 OriginMaster_onBodyStart(master.GetBody());
- 
+
                 if (master.playerCharacterMasterController.networkUser.isLocalPlayer)
                 {
                     ArtifactDoubles_MovementController var = targetMaster.gameObject.EnsureComponent<ArtifactDoubles_MovementController>();
@@ -437,7 +436,7 @@ namespace ArtifactDissimilarity.Aritfacts
                         obj.GetComponent<CharacterNetworkTransform>().hasEffectiveAuthority = false;
                     }
 
-                    obj.baseNameToken = Language.GetStringFormatted("DOUBLE_PREFIX",originMaster.playerCharacterMasterController.GetDisplayName());
+                    obj.baseNameToken = Language.GetStringFormatted("DOUBLE_PREFIX", originMaster.playerCharacterMasterController.GetDisplayName());
 
                     SharedBodySetup();
                 }
@@ -467,9 +466,9 @@ namespace ArtifactDissimilarity.Aritfacts
                             }
                             voidSync.originVoidSurv = voidOrigin;
                         }
- 
+
                     }
-        
+
                     targetBody.healthComponent.godMode = originBody.healthComponent.godMode;
 
                     if (targetBody.TryGetComponent<InteractionDriver>(out var drive))
@@ -504,7 +503,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 }
                 RespawnIfInfestedDeath(targetBody);
             }
-      
+
             private void OriginInventory_onInventoryChanged()
             {
                 if (targetInventory)
@@ -526,7 +525,7 @@ namespace ArtifactDissimilarity.Aritfacts
                     //CleanTempItems();
                     CopyTempItemsFrom();
                     targetInventory.CopyEquipmentFrom(originInventory, true);
-                    
+
                     if (originInventory.activeEquipmentSet.Length > 0)
                     {
                         targetInventory.SetActiveEquipmentSet(originInventory.activeEquipmentSet[0]);
@@ -544,7 +543,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 targetInventory.tempItemsStorage.tempItemStacks.Clear();
                 targetInventory.tempItemsStorage.decayToZeroTimeStamps.Clear();
                 targetInventory.tempItemsStorage.SyncStacksToDecay();
-              
+
             }
             public void CopyTempItemsFrom()
             {
@@ -558,7 +557,7 @@ namespace ArtifactDissimilarity.Aritfacts
                         originInventory.tempItemsStorage.GetNonZeroIndices(list);
                         foreach (ItemIndex itemIndex in list)
                         {
-                            targetInventory.GiveItemTemp(itemIndex, ourFilter(itemIndex) ? originInventory.tempItemsStorage.GetItemRawValue(itemIndex) : 0);                  
+                            targetInventory.GiveItemTemp(itemIndex, ourFilter(itemIndex) ? originInventory.tempItemsStorage.GetItemRawValue(itemIndex) : 0);
                         }
                     }
                 }
@@ -619,15 +618,15 @@ namespace ArtifactDissimilarity.Aritfacts
             public void OnEnable()
             {
                 instances.Add(this);
-                
+
                 helperPrefab = LegacyResourcesAPI.Load<GameObject>("SpawnCards/HelperPrefab");
-           
+
             }
 
             public void SetupMaster(CharacterMaster master)
             {
                 targetMaster = this.GetComponent<CharacterMaster>();
-               
+
                 targetMaster.onBodyStart += TargetMaster_onBodyStart;
                 originMaster.onBodyStart += OriginMaster_onBodyStart;
 
@@ -642,7 +641,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 Debug.Log("OriginMaster_onBodyStart " + obj);
                 if (obj)
                 {
-                  
+
                     originBody = obj;
                     originInputs = originBody.inputBank;
                     originMotor = originBody.characterMotor;
@@ -675,7 +674,7 @@ namespace ArtifactDissimilarity.Aritfacts
                     targetBodyIdentifier.originCollider = originBody.GetComponent<Collider>();
                     targetBodyIdentifier.otherLink = originBodyIdentifier;
 
-        
+
                     ChefController chefTarget = targetBody.GetComponent<ChefController>();
                     if (chefTarget)
                     {
@@ -688,12 +687,12 @@ namespace ArtifactDissimilarity.Aritfacts
                         chefSync.originCHEF = chefOrigin;
                     }
 
-       
+
                 }
             }
 
             private void TargetMaster_onBodyStart(CharacterBody obj)
-            {        
+            {
                 if (obj)
                 {
                     Debug.Log("TargetMaster_onBodyStart " + obj);
@@ -715,7 +714,7 @@ namespace ArtifactDissimilarity.Aritfacts
             private HurtBox currentTarget;
 
 
-           
+
             public void SetupTargetSearch()
             {
                 targetFinder.teamMaskFilter = TeamMask.GetUnprotectedTeams(TeamIndex.Player);
@@ -724,7 +723,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 targetFinder.maxAngleFilter = 8f; //10 on equip, 30 on huntress
                 //targetFinder.maxDistanceFilter = 40;
                 targetFinder.viewer = this.originBody;
-       
+
             }
 
             private Ray GetAimRay()
@@ -811,25 +810,25 @@ namespace ArtifactDissimilarity.Aritfacts
                         {
                             this.teleportAttemptTimer = 1f;
 
-                   
+
                             float x = UnityEngine.Random.Range(1f, 3f);
                             float z = UnityEngine.Random.Range(1f, 3f);
                             if (UnityEngine.Random.Range(0, 2) == 1)
                             {
-                               x *= -1;
+                                x *= -1;
                             }
                             if (UnityEngine.Random.Range(0, 2) == 1)
                             {
                                 z *= -1;
                             }
-                            Vector3 corePosition = new Vector3(originBody.corePosition.x+x, originBody.corePosition.y, originBody.corePosition.z+z);
+                            Vector3 corePosition = new Vector3(originBody.corePosition.x + x, originBody.corePosition.y, originBody.corePosition.z + z);
                             if (originMotor)
                             {
                                 Vector3 additionalDistance = originMotor.velocity / 10;
                                 additionalDistance.y = 0;
                                 corePosition += additionalDistance;
                             }
-                      
+
 
                             TeleportHelper.TeleportBody(targetBody, corePosition, false);
                             GameObject teleportEffectPrefab = Run.instance.GetTeleportEffectPrefab(targetBody.gameObject);
@@ -838,7 +837,7 @@ namespace ArtifactDissimilarity.Aritfacts
                                 EffectManager.SimpleEffect(teleportEffectPrefab, corePosition, Quaternion.identity, true);
 
                             }
-                            targetBody.AddTimedBuff(JunkContent.Buffs.IgnoreFallDamage,3f);
+                            targetBody.AddTimedBuff(JunkContent.Buffs.IgnoreFallDamage, 3f);
 
                             if (originMotor != null)
                             {
@@ -864,7 +863,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 if (originInputs)
                 {
                     if (stopMovementTimer > 0.12f)
-                    {         
+                    {
                         targetInput.jump.PushState(false);
                         targetInput.moveVector = Vector3.zeroVector;
                     }
@@ -890,7 +889,7 @@ namespace ArtifactDissimilarity.Aritfacts
             }
 
         }
- 
+
         public class ArtifactDoubles_BodyLinker : MonoBehaviour
         {
             public CharacterBody thisBody;
@@ -899,11 +898,11 @@ namespace ArtifactDissimilarity.Aritfacts
 
 
             public ArtifactDoubles_BodyLinker otherLink;
- 
+
             public float preEqualizedMoveSpeed;
             public float preEqualizedAcceleration;
 
-  
+
             public void OnEnable()
             {
                 thisBody = this.GetComponent<CharacterBody>();
@@ -912,7 +911,7 @@ namespace ArtifactDissimilarity.Aritfacts
             {
                 if (otherLink)
                 {
-                   
+
                 }
             }
         }

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UIElements;
 
 
 namespace ArtifactDissimilarity.Aritfacts
@@ -21,13 +20,13 @@ namespace ArtifactDissimilarity.Aritfacts
 
         public static void OnArtifactDisable()
         {
-           
+
             On.RoR2.PickupDropTable.GenerateDrop -= LEGACY_OverrideDrop_GenerateDrop;
             On.RoR2.PickupDropTable.GeneratePickup -= PickupDropTable_GeneratePickup;
             On.RoR2.PickupDropTable.GenerateUniqueDrops -= LEGACY_OverrideDropsArray_GenerateUniqueDrops;
             On.RoR2.PickupDropTable.GenerateDistinctPickups -= PickupDropTable_GenerateDistinctPickups;
             On.RoR2.ChestBehavior.ItemDrop -= ChestBehavior_ItemDrop; //??
- 
+
             Run.onRunStartGlobal -= Run_onRunStartGlobal;
             Stage.onServerStageComplete -= Stage_onServerStageComplete;
             SceneDirector.onGenerateInteractableCardSelection -= MorePrintersAndCredits;
@@ -47,7 +46,7 @@ namespace ArtifactDissimilarity.Aritfacts
             On.RoR2.PickupDropTable.GenerateUniqueDrops += LEGACY_OverrideDropsArray_GenerateUniqueDrops;
             On.RoR2.PickupDropTable.GenerateDistinctPickups += PickupDropTable_GenerateDistinctPickups;
             On.RoR2.ChestBehavior.ItemDrop += ChestBehavior_ItemDrop; //??
- 
+
             //Generate new
             Run.onRunStartGlobal += Run_onRunStartGlobal;
             Stage.onServerStageComplete += Stage_onServerStageComplete;
@@ -494,7 +493,7 @@ namespace ArtifactDissimilarity.Aritfacts
                 }
             }
             else if (pickupDef.equipmentIndex != EquipmentIndex.None)
-            {              
+            {
                 if (pickupDef.isLunar)
                 {
                     return pickupsArrayOverride[ItemTierCatalog.itemTierDefs.Length + 1];

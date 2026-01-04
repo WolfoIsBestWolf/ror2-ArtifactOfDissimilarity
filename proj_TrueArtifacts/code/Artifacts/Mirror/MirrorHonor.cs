@@ -1,11 +1,6 @@
 ﻿using RoR2;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
 using System;
 using UnityEngine;
-using UnityEngine.Networking;
-using EntityStates.ShrineHalcyonite;
-using UnityEngine.AddressableAssets;
 
 namespace TrueArtifacts.Aritfacts
 {
@@ -21,7 +16,7 @@ namespace TrueArtifacts.Aritfacts
             }*/
             On.RoR2.Run.RecalculateDifficultyCoefficent += Run_RecalculateDifficultyCoefficent;
             On.RoR2.InfiniteTowerRun.RecalculateDifficultyCoefficentInternal += InfiniteTowerRun_RecalculateDifficultyCoefficentInternal;
-            MaxLevel = Math.Max((Run.ambientLevelCap+1)*2, MaxLevel);
+            MaxLevel = Math.Max((Run.ambientLevelCap + 1) * 2, MaxLevel);
             if (MaxLevel < 1000)
             {
                 MaxLevel = 999;

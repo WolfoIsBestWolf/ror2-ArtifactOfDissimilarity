@@ -1,7 +1,6 @@
-﻿using UnityEngine.Networking;
+﻿using R2API;
 using RoR2;
-using RoR2.Artifacts;
-using R2API;
+using UnityEngine.Networking;
 
 namespace TrueArtifacts.Aritfacts
 {

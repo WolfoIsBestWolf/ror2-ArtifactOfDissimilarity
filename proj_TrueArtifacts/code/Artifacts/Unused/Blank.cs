@@ -1,10 +1,4 @@
-﻿using RoR2;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using System;
-using UnityEngine;
-
-namespace TrueArtifacts.Aritfacts
+﻿namespace TrueArtifacts.Aritfacts
 {
     public class Blank
     {
@@ -17,7 +11,7 @@ namespace TrueArtifacts.Aritfacts
         public static void On_Artifact_Enable()
         {
         }
-       
+
 
     }
 

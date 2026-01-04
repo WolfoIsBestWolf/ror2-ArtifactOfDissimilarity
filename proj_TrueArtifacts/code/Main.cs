@@ -2,8 +2,8 @@
 using R2API;
 using R2API.Utils;
 using RoR2;
-using UnityEngine;
 using TrueArtifacts.Aritfacts;
+using UnityEngine;
 
 namespace TrueArtifacts
 {
@@ -13,22 +13,22 @@ namespace TrueArtifacts
 
     public class Main : BaseUnityPlugin
     {
-        public static ArtifactDef Mirror_Kin = ScriptableObject.CreateInstance<ArtifactDef>();
+        //public static ArtifactDef Mirror_Kin = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Mirror_Glass = ScriptableObject.CreateInstance<ArtifactDef>();
         //public static ArtifactDef Mirror_Swarms = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Mirror_Sacrifice = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Mirror_Honor = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Mirror_Frailty = ScriptableObject.CreateInstance<ArtifactDef>();
-       // public static ArtifactDef Mirror_Enigma = ScriptableObject.CreateInstance<ArtifactDef>();
+        // public static ArtifactDef Mirror_Enigma = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef Mirror_Spite = ScriptableObject.CreateInstance<ArtifactDef>();
 
         public static ArtifactDef True_Command = ScriptableObject.CreateInstance<ArtifactDef>();
-        public static ArtifactDef True_Dissonance = ScriptableObject.CreateInstance<ArtifactDef>();
+        //public static ArtifactDef True_Dissonance = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef True_Swarms = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef True_Frailty = ScriptableObject.CreateInstance<ArtifactDef>();
         public static ArtifactDef True_Evolution = ScriptableObject.CreateInstance<ArtifactDef>();
 
-        
+
         public void Awake()
         {
             Assets.Init(Info);
@@ -46,7 +46,7 @@ namespace TrueArtifacts
 
             ArtifactCatalog.availability.CallWhenAvailable(CallLate);
 
-         
+
             //Alt Enigma : Maybe like Tainted Isaac recycling : Leans to close to potentials tbh
             //Alt Devotion : Some different mob, maybe Imps?
             //Alt Frailty : Gravity is Doubled. Fucks up every jump pad so not feasible
@@ -79,11 +79,11 @@ namespace TrueArtifacts
 
         public static void CallLate()
         {
-            MirrorKin.MakeDCCSPool();
+            //MirrorKin.MakeDCCSPool();
 
 
-            Mirror_Kin.unlockableDef = RoR2Content.Artifacts.Swarms.unlockableDef;
-            Mirror_Kin.pickupModelPrefab = RoR2Content.Artifacts.Swarms.pickupModelPrefab;
+            //Mirror_Kin.unlockableDef = RoR2Content.Artifacts.Swarms.unlockableDef;
+            //Mirror_Kin.pickupModelPrefab = RoR2Content.Artifacts.Swarms.pickupModelPrefab;
 
             Mirror_Glass.unlockableDef = RoR2Content.Artifacts.Glass.unlockableDef;
             Mirror_Glass.pickupModelPrefab = RoR2Content.Artifacts.Glass.pickupModelPrefab;
@@ -107,11 +107,11 @@ namespace TrueArtifacts
             True_Command.unlockableDef = RoR2Content.Artifacts.Command.unlockableDef;
             True_Command.pickupModelPrefab = RoR2Content.Artifacts.Command.pickupModelPrefab;
 
-            True_Dissonance.unlockableDef = RoR2Content.Artifacts.MixEnemy.unlockableDef;
-            True_Dissonance.pickupModelPrefab = RoR2Content.Artifacts.MixEnemy.pickupModelPrefab;
+            //True_Dissonance.unlockableDef = RoR2Content.Artifacts.MixEnemy.unlockableDef;
+            //True_Dissonance.pickupModelPrefab = RoR2Content.Artifacts.MixEnemy.pickupModelPrefab;
 
-            True_Dissonance.unlockableDef = RoR2Content.Artifacts.MixEnemy.unlockableDef;
-            True_Dissonance.pickupModelPrefab = RoR2Content.Artifacts.MixEnemy.pickupModelPrefab;
+            //True_Dissonance.unlockableDef = RoR2Content.Artifacts.MixEnemy.unlockableDef;
+            //True_Dissonance.pickupModelPrefab = RoR2Content.Artifacts.MixEnemy.pickupModelPrefab;
 
             True_Swarms.unlockableDef = RoR2Content.Artifacts.Swarms.unlockableDef;
             True_Swarms.pickupModelPrefab = RoR2Content.Artifacts.Swarms.pickupModelPrefab;
@@ -142,16 +142,16 @@ namespace TrueArtifacts
             Vector2 vector = new Vector2(0, 0);
 
             #region Mirror Kin
-            Texture2D Mirror_Kin_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/Mirror_Kin_On.png");
+            /*Texture2D Mirror_Kin_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/Mirror_Kin_On.png");
             Texture2D Mirror_Kin_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/Mirror_Kin_Off.png");
             Mirror_Kin_On.filterMode = FilterMode.Trilinear;
             Mirror_Kin_Off.filterMode = FilterMode.Trilinear;
 
-            Mirror_Kin.cachedName = ZMirror+ "SingleMonsterTypeMirrorKin";
+            Mirror_Kin.cachedName = ZMirror + "SingleMonsterTypeMirrorKin";
             Mirror_Kin.nameToken = "ARTIFACT_MIRROR_KIN_NAME";
             Mirror_Kin.descriptionToken = "ARTIFACT_MIRROR_KIN_DESC";
             Mirror_Kin.smallIconSelectedSprite = Sprite.Create(Mirror_Kin_On, rec, vector); ;
-            Mirror_Kin.smallIconDeselectedSprite = Sprite.Create(Mirror_Kin_Off, rec, vector);
+            Mirror_Kin.smallIconDeselectedSprite = Sprite.Create(Mirror_Kin_Off, rec, vector);*/
             //ContentAddition.AddArtifactDef(Mirror_Kin);
             #endregion
 
@@ -185,6 +185,7 @@ namespace TrueArtifacts
             #endregion
 
             #region True Dissonance
+            /*
             Texture2D True_Dissonance_On = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/True_Dissonance_On.png");
             Texture2D True_Dissonance_Off = Assets.Bundle.LoadAsset<Texture2D>("Assets/TrueArtifacts/True_Dissonance_Off.png");
             True_Dissonance_On.filterMode = FilterMode.Trilinear;
@@ -195,6 +196,7 @@ namespace TrueArtifacts
             True_Dissonance.descriptionToken = "ARTIFACT_TRUE_DISSONANCE_DESC";
             True_Dissonance.smallIconSelectedSprite = Sprite.Create(True_Dissonance_On, rec, vector); ;
             True_Dissonance.smallIconDeselectedSprite = Sprite.Create(True_Dissonance_Off, rec, vector);
+            */
             //ContentAddition.AddArtifactDef(True_Dissonance);
             #endregion
 

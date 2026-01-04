@@ -1,4 +1,5 @@
-﻿using RoR2;
+﻿/*
+using RoR2;
 using RoR2.ExpansionManagement;
 using System.Collections.Generic;
 using UnityEngine;
@@ -303,7 +304,7 @@ namespace TrueArtifacts.Aritfacts
                     {
                         listDCCS.Add(A.dccs);
                     }
-                }              
+                }
             }
             return listDCCS;
         }
@@ -353,7 +354,7 @@ namespace TrueArtifacts.Aritfacts
                 //Debug.Log(DCCS);
                 for (int I2 = 0; I2 < allFamilies[I1].categories.Length; I2++)
                 {
-                    var CAT = DCCS.categories[I2];            
+                    var CAT = DCCS.categories[I2];
                     foreach (DirectorCard card in CAT.cards)
                     {
                         //Debug.Log(card.spawnCard);
@@ -391,8 +392,8 @@ namespace TrueArtifacts.Aritfacts
                 TrueDissonance.MakeDCCS();
             }
 
- 
-            Xoroshiro128Plus RNG = new Xoroshiro128Plus(ClassicStageInfo.instance.seedServer);        
+
+            Xoroshiro128Plus RNG = new Xoroshiro128Plus(ClassicStageInfo.instance.seedServer);
             int I0 = RNG.RangeInt(0, TrueDissonance.dccsMixEnemyTRUE.categories[0].cards.Length);
             int I1 = RNG.RangeInt(0, TrueDissonance.dccsMixEnemyTRUE.categories[1].cards.Length);
             int I2 = RNG.RangeInt(0, TrueDissonance.dccsMixEnemyTRUE.categories[2].cards.Length);
@@ -424,7 +425,7 @@ namespace TrueArtifacts.Aritfacts
             else
             {
                 //Disso is taken care of in a different place
-                bool Dissonance = RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.MixEnemy);         
+                bool Dissonance = RunArtifactManager.instance && RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.MixEnemy);
                 if (!Dissonance)
                 {
                     if (forcedMonsterCategory == null)
@@ -463,10 +464,10 @@ namespace TrueArtifacts.Aritfacts
                     ClassicStageInfo.monsterFamilyChance = storage;
                 }
             }
-            
- 
+
+
             if (WConfig.MirrorKinDisplay.Value)
-            {            
+            {
                 if (RunArtifactManager.instance && !RunArtifactManager.instance.IsArtifactEnabled(RoR2Content.Artifacts.singleMonsterTypeArtifactDef))
                 {
                     var chatMessage = new SendMirrorKinTracker();
@@ -548,14 +549,14 @@ namespace TrueArtifacts.Aritfacts
                     else
                     {
                         tracker.Enemy4 = BodyIndex.None;
-                    }            
+                    }
                 }
-              
+
             }
             RoR2.UI.EnemyInfoPanel.MarkDirty();
             return null;
         }
- 
+
         public override void Serialize(NetworkWriter writer)
         {
             base.Serialize(writer);
@@ -582,3 +583,4 @@ namespace TrueArtifacts.Aritfacts
 
 
 
+*/

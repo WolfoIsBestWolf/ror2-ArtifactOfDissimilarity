@@ -1,14 +1,13 @@
-﻿using BepInEx;
+﻿using ArtifactDissimilarity.Aritfacts;
+using BepInEx;
 using R2API;
 using R2API.ScriptableObjects;
 using R2API.Utils;
 using RoR2;
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using ArtifactDissimilarity.Aritfacts;
 
 namespace ArtifactDissimilarity
 {
@@ -129,7 +128,7 @@ namespace ArtifactDissimilarity
         {
             UnlockableDef AlwaysLocked = ScriptableObject.CreateInstance<UnlockableDef>();
             AlwaysLocked.cachedName = "NoMoreArtifact";
-  
+
             #region Dissimilarity (Dissonance Interactable)
             Dissimilarity_Def.cachedName = "MixInteractable";
             Dissimilarity_Def.nameToken = "ARTIFACT_MIX_INTERACTABLE_NAME";

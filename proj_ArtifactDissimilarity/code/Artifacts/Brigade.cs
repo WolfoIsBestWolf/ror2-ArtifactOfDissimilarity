@@ -1,10 +1,7 @@
-using R2API.Utils;
 using RoR2;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.Networking;
 
 namespace ArtifactDissimilarity.Aritfacts
@@ -204,7 +201,7 @@ namespace ArtifactDissimilarity.Aritfacts
             }
 
             Debug.Log("Artifact of Brigade: This stages only Elite " + chosenEliteDef.name);
- 
+
             float CostMultiplier = 6;
             if (chosenEliteDef.healthBoostCoefficient > 8)
             {

@@ -4,7 +4,7 @@ using UnityEngine.AddressableAssets;
 
 
 namespace TrueArtifacts.Aritfacts
-{  
+{
     public class TrueDissonance
     {
         private static CombatDirector.EliteTierDef[] eliteTiersBackup;
@@ -64,11 +64,11 @@ namespace TrueArtifacts.Aritfacts
                 }
             }
 
-            CombatDirector.eliteTiers =  NewEliteTiers.Add(Tier1ForLunar, Tier2ForLunar, LunarVoidNormal);
+            CombatDirector.eliteTiers = NewEliteTiers.Add(Tier1ForLunar, Tier2ForLunar, LunarVoidNormal);
         }
 
-       
-        
+
+
 
         private static void Infest_OnEnter(On.EntityStates.VoidInfestor.Infest.orig_OnEnter orig, EntityStates.VoidInfestor.Infest self)
         {
@@ -213,7 +213,7 @@ namespace TrueArtifacts.Aritfacts
         {
             public new float selectionWeight;
         }
-     }
+    }
 
 }
 

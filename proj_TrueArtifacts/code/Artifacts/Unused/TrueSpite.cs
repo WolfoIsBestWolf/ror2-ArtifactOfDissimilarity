@@ -1,18 +1,15 @@
 ﻿using RoR2;
 using RoR2.Projectile;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Networking;
 
 
 namespace TrueArtifacts.Aritfacts
 {
     public class TrueSpite
     {
-        
+
         public static void On_Artifact_Enable()
         {
             if (!DiabloStrike)

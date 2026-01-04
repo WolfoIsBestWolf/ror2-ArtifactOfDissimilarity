@@ -1,19 +1,15 @@
-﻿using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using RoR2;
+﻿using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UIElements;
-using WolfoLibrary;
 
 namespace ArtifactDissimilarity.Aritfacts
 {
     public class Flamboyance
     {
         public static FlamboyanceDropTable dtAnyTier = ScriptableObject.CreateInstance<FlamboyanceDropTable>();
- 
+
         public static void Start()
         {
             dtAnyTier.name = "dtFlamboyanceAnyTier";
@@ -59,7 +55,7 @@ namespace ArtifactDissimilarity.Aritfacts
             orig(self, dest, desiredCount, rng, allowLoop);
             bool replaced = false;
             for (int i = 0; i < dest.Count; i++)
-            { 
+            {
                 if (rng.nextNormalizedFloat < FlamboyanceDropTable.replacementChance)
                 {
                     if (!replaced)
@@ -76,7 +72,7 @@ namespace ArtifactDissimilarity.Aritfacts
         {
             if (Roll(self, rng))
             {
-                MatchTagsToDropTable(self); 
+                MatchTagsToDropTable(self);
                 if (WConfig.DebugPrint.Value)
                 {
                     var a = orig(dtAnyTier, rng);
@@ -135,7 +131,7 @@ namespace ArtifactDissimilarity.Aritfacts
             }
         }
 
- 
+
         public static bool Roll(PickupDropTable dt, Xoroshiro128Plus rng)
         {
             if (WConfig.DebugPrint.Value)
@@ -182,30 +178,30 @@ namespace ArtifactDissimilarity.Aritfacts
 
         private static PickupIndex[] OLD_PickupDropTable_GenerateUniqueDrops(On.RoR2.PickupDropTable.orig_GenerateUniqueDrops orig, PickupDropTable self, int maxDrops, Xoroshiro128Plus rng)
         {
-            if (Roll(self,rng))
+            if (Roll(self, rng))
             {
                 MatchTagsToDropTable(self);
                 return orig(dtAnyTier, maxDrops, rng);
             }
-            return orig(self,maxDrops,rng);
+            return orig(self, maxDrops, rng);
         }
 
         private static PickupIndex OLD_PickupDropTable_GenerateDrop(On.RoR2.PickupDropTable.orig_GenerateDrop orig, PickupDropTable self, Xoroshiro128Plus rng)
         {
- 
+
             if (Roll(self, rng))
             {
                 MatchTagsToDropTable(self);
-                
+
                 return orig(dtAnyTier, rng);
             }
-            return orig(self,rng);
+            return orig(self, rng);
         }
     }
 
     public class FlamboyanceDropTable : BasicPickupDropTable
     {
-        
+
         public float bossEquipmentWeight;
         public float full_equipmentWeight;
         public float full_equipmentWeightLunar;
@@ -264,7 +260,7 @@ namespace ArtifactDissimilarity.Aritfacts
                     availableEliteList.Add(pickup);
                 }
             }
- 
+
             didWeights = true;
             tier1Weight = 100f / Math.Max(15, run.availableTier1DropList.Count);
             tier2Weight = 100f / Math.Max(15, run.availableTier2DropList.Count);
@@ -273,7 +269,7 @@ namespace ArtifactDissimilarity.Aritfacts
             bossWeight = 100f / Math.Max(15, run.availableBossDropList.Count);
 
 
-            voidTier1Weight = 100f / Math.Max(15,run.availableVoidTier1DropList.Count + run.availableVoidTier2DropList.Count + run.availableVoidTier3DropList.Count + run.availableVoidBossDropList.Count);
+            voidTier1Weight = 100f / Math.Max(15, run.availableVoidTier1DropList.Count + run.availableVoidTier2DropList.Count + run.availableVoidTier3DropList.Count + run.availableVoidBossDropList.Count);
             voidTier2Weight = voidTier1Weight;
             voidTier3Weight = voidTier1Weight;
             voidBossWeight = voidTier1Weight;
@@ -283,7 +279,7 @@ namespace ArtifactDissimilarity.Aritfacts
             full_equipmentWeightLunar = 50f / Math.Max(15, run.availableLunarEquipmentDropList.Count);
             full_equipmentWeightBoss = 50f / Math.Max(15, availableEliteList.Count);
 
-           
+
         }
 
         public List<PickupIndex> availableEliteList = new List<PickupIndex>();

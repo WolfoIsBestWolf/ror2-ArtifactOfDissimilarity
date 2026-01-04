@@ -1,17 +1,5 @@
-﻿using HG;
-using MonoMod.Cil;
-using Newtonsoft.Json.Utilities;
-using R2API;
-using RoR2;
-using RoR2.CharacterAI;
-using RoR2.Networking;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using RoR2;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.Networking;
-using UnityEngine.UIElements;
 
 namespace ArtifactDissimilarity.Aritfacts
 {

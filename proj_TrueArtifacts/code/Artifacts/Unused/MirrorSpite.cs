@@ -1,9 +1,6 @@
 ﻿using RoR2;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using System;
-using UnityEngine;
 using RoR2.Projectile;
+using UnityEngine;
 using UnityEngine.AddressableAssets;
 
 namespace TrueArtifacts.Aritfacts
@@ -12,7 +9,7 @@ namespace TrueArtifacts.Aritfacts
     {
 
         private static GameObject projectilePrefab;
-       
+
         public static void Start()
         {
             //Molotov 
@@ -20,7 +17,7 @@ namespace TrueArtifacts.Aritfacts
         }
         public static void On_Artifact_Disable()
         {
-           
+
             GlobalEventManager.onCharacterDeathGlobal -= GlobalEventManager_onCharacterDeathGlobal;
         }
         public static void On_Artifact_Enable()

@@ -93,7 +93,7 @@ namespace ArtifactDissimilarity
             SceneDef Bazaar = LegacyResourcesAPI.Load<SceneDef>("scenedefs/bazaar");
             SceneDef Limbo = LegacyResourcesAPI.Load<SceneDef>("scenedefs/limbo");
             SceneDef MysterySpace = LegacyResourcesAPI.Load<SceneDef>("scenedefs/mysteryspace");
-           
+
             //SceneDef SnowyForest = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/snowyforest/snowyforest.asset").WaitForCompletion();
             SceneDef AncientLoft = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/ancientloft/ancientloft.asset").WaitForCompletion();
             //SceneDef SulfurPools = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC1/sulfurpools/sulfurpools.asset").WaitForCompletion();
@@ -106,7 +106,7 @@ namespace ArtifactDissimilarity
             SceneDef artifactworld03 = Addressables.LoadAssetAsync<SceneDef>(key: "RoR2/DLC2/artifactworld03/artifactworld03.asset").WaitForCompletion();
 
             scenesSeerDestinations = new List<SceneDef> { artifactworld01, artifactworld02, artifactworld03, Moon2, Gold, Arena, MysterySpace, ArtifactWorld, VoidStage, meridian };
- 
+
             Material PortalMaterialArena = Object.Instantiate(Plains.portalMaterial);
             Material PortalMaterialArtifactWorld = Object.Instantiate(Plains.portalMaterial);
             Material PortalMaterialBazaar = Object.Instantiate(Plains.portalMaterial);
@@ -114,13 +114,13 @@ namespace ArtifactDissimilarity
             Material PortalMaterialMysterySpace = Object.Instantiate(Plains.portalMaterial);
             Material PortalMaterialMenuLobby = Object.Instantiate(Plains.portalMaterial);
             Material PortalMaterialVoidRaid = Object.Instantiate(Plains.portalMaterial);
- 
+
 
             Moon2.portalMaterial.SetFloat("_Boost", 1);
             Moon2.portalMaterial.mainTextureScale = new Vector2(1f, 0.5f);
             meridian.portalMaterial.SetFloat("_Boost", 1);
 
- 
+
             PortalMaterialArena.mainTexture = Arena.previewTexture;
             Arena.portalMaterial = PortalMaterialArena;
             Arena.portalSelectionMessageString = "BAZAAR_SEER_ARENA";
@@ -150,7 +150,7 @@ namespace ArtifactDissimilarity
             VoidRaid.portalSelectionMessageString = "BAZAAR_SEER_VOIDLING";
 
 
- 
+
         }
 
         public static void SeerDestinationRandomizerDissimWander(On.RoR2.SeerStationController.orig_OnStartClient orig, SeerStationController self)

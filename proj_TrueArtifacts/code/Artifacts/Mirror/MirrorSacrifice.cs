@@ -1,11 +1,8 @@
 ﻿using RoR2;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
 using System;
 using UnityEngine;
-using UnityEngine.Networking;
-using EntityStates.ShrineHalcyonite;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Networking;
 
 namespace TrueArtifacts.Aritfacts
 {

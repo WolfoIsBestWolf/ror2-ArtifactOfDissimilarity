@@ -1,9 +1,5 @@
 ﻿using RoR2;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace TrueArtifacts.Aritfacts
 {
@@ -20,7 +16,7 @@ namespace TrueArtifacts.Aritfacts
             On.RoR2.HealthComponent.TakeDamage += HealthComponent_TakeDamage;
             On.RoR2.HealthComponent.Awake += HealthComponent_Awake;
             On.RoR2.HealthComponent.OnDestroy += HealthComponent_OnDestroy;
- 
+
         }
 
         private static void HealthComponent_OnDestroy(On.RoR2.HealthComponent.orig_OnDestroy orig, HealthComponent self)
@@ -31,13 +27,13 @@ namespace TrueArtifacts.Aritfacts
                 if (self.body.master && self.body.master.playerCharacterMasterController)
                 {
                     playerHP.Remove(self);
-                }         
+                }
             }
             else
             {
                 playerHP.Remove(self);
             }
-            
+
         }
 
         private static void HealthComponent_Awake(On.RoR2.HealthComponent.orig_Awake orig, HealthComponent self)
@@ -48,7 +44,7 @@ namespace TrueArtifacts.Aritfacts
                 playerHP.Add(self);
             }
         }
-       
+
 
         private static void GatherHealthComponents(CharacterBody obj)
         {
@@ -75,7 +71,7 @@ namespace TrueArtifacts.Aritfacts
             {
                 orig(self, damageInfo);
             }
-            
+
         }
     }
 

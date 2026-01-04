@@ -1,13 +1,9 @@
-using Newtonsoft.Json.Utilities;
 using RoR2;
 using RoR2.Artifacts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.Networking;
- 
+
 
 namespace ArtifactDissimilarity.Aritfacts
 {
@@ -35,7 +31,7 @@ namespace ArtifactDissimilarity.Aritfacts
             SceneDirector.onPrePopulateSceneServer -= RandomizeOnStageStart;
             SceneDirector.onGenerateInteractableCardSelection -= RemoveInteractables_Remodeling;
             itemPickupLists = null;
-            equipmentPickupLists = null; 
+            equipmentPickupLists = null;
             Debug.Log("Removed Remodeling");
         }
 

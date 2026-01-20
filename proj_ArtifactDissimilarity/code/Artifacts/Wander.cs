@@ -32,7 +32,9 @@ namespace ArtifactDissimilarity.Aritfacts
 
         private static void MoreLunarTeleporter(SceneDirector obj)
         {
-            if (Run.instance.NetworkstageClearCount >= 4 && Run.instance.NetworkstageClearCount % 2 == 0)
+            bool stage5 = (Run.instance.NetworkstageClearCount+1) % 5 == 0;
+            bool randomChanceStarting4 = Run.instance.NetworkstageClearCount >= 3 && Random.RandomRangeInt(0, 5) == 0;
+            if (stage5 || randomChanceStarting4)
             {
                 obj.teleporterSpawnCard = LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarTeleporter");
             }
@@ -40,19 +42,19 @@ namespace ArtifactDissimilarity.Aritfacts
         private static void MoreMysterySpacePortal(On.RoR2.TeleporterInteraction.orig_Start orig, TeleporterInteraction self)
         {
             orig(self);
-            if (Run.instance.NetworkstageClearCount >= 4 && Run.instance.NetworkstageClearCount % 3 == 0)
+            if (Run.instance.NetworkstageClearCount >= 3) //Stage 4
             {
-                self.shouldAttemptToSpawnMSPortal = true;
+                self.shouldAttemptToSpawnMSPortal = Random.RandomRangeInt(0, 5) == 0; //20% chance to appear any time
                 var portalSpawners = self.GetComponents<PortalSpawner>();
                 foreach (var portalSpawner in portalSpawners)
                 {
-                    if (portalSpawner.previewChildName == "VoidPortalIndicator" ||
-                        portalSpawner.previewChildName == "StormPortalIndicator"
-                        )
+                    if (portalSpawner.previewChildName == "VoidPortalIndicator")
                     {
                         portalSpawner.minStagesCleared = 0;
-                        portalSpawner.spawnChance = 1;
-                        portalSpawner.validStages = new string[0];
+                        if (portalSpawner.spawnChance < 0.2f)
+                        {
+                            portalSpawner.spawnChance = 0.2f;
+                        }
                     }
                 }
             }
@@ -82,28 +84,10 @@ namespace ArtifactDissimilarity.Aritfacts
             SceneDef[] array = SceneCatalog.allStageSceneDefs.Where(new System.Func<SceneDef, bool>(ValidForWander)).ToArray<SceneDef>();
             self.nextStageScene = self.nextStageRng.NextElementUniform<SceneDef>(array);
             previouslyVisitedSceneDef.Add(self.nextStageScene);
+
+            self.Network_loopClearCount = self.stageClearCount / 5;
         }
-
-
-        public static void WanderSetup(bool isEnable)
-        {
-
-            if (isEnable)
-            {
-                if (!(Run.instance is InfiniteTowerRun))
-                {
-                    Run.instance.ruleBook.GetRuleChoice(RuleBook.stageOrderRule).extraData = StageOrder.Random;
-                }
-            }
-            else
-            {
-                if (!(Run.instance is InfiniteTowerRun))
-                {
-                    Run.instance.ruleBook.GetRuleChoice(RuleBook.stageOrderRule).extraData = StageOrder.Normal;
-                }
-            }
-
-        }
+ 
 
 
     }

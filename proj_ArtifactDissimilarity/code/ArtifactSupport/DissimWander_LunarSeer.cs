@@ -1,9 +1,9 @@
 using RoR2;
-//using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using static ArtifactDissimilarity.Defs;
 
 namespace ArtifactDissimilarity
 {
@@ -162,7 +162,7 @@ namespace ArtifactDissimilarity
                 return;
             }
 
-            if (RunArtifactManager.instance.IsArtifactEnabled(Main.Wander_Def) || RunArtifactManager.instance.IsArtifactEnabled(Main.Dissimilarity_Def) && BazaarController.instance == null)
+            if (RunArtifactManager.instance.IsArtifactEnabled(Wander_Def) || RunArtifactManager.instance.IsArtifactEnabled(Dissimilarity_Def) && BazaarController.instance == null)
             {
                 //There's probably a way to get the Teleporter Instance in a better way
                 if (TeleporterInteraction.instance)

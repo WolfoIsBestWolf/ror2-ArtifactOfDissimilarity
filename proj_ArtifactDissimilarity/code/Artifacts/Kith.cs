@@ -2,6 +2,7 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace ArtifactDissimilarity.Aritfacts
 {
@@ -9,11 +10,14 @@ namespace ArtifactDissimilarity.Aritfacts
     {
         public static readonly System.Random random = new System.Random();
 
-        public static SpawnCard KithNoRepeat;
-        public static DirectorCardCategorySelection tempSaftey;
-        //This DCCS is entirely unneeded by now but oh well
-        public static DirectorCardCategorySelection dccsSingleInteractable = ScriptableObject.CreateInstance<DirectorCardCategorySelection>();
+        public static SpawnCard KithNoRepeatChest;
         public static List<SpawnCard> blacklistedForRepeat = new List<SpawnCard>();
+
+        public static DirectorCardCategorySelection dccsTemp;
+ 
+
+        public static DirectorCardCategorySelection dccsSingleInteractable = ScriptableObject.CreateInstance<DirectorCardCategorySelection>();
+      
 
         public static void Start()
         {
@@ -21,42 +25,51 @@ namespace ArtifactDissimilarity.Aritfacts
         }
         public static void OnArtifactEnable()
         {
+            On.RoR2.DirectorCardCategorySelection.GenerateDirectorCardWeightedSelection += Handle_SingleInteractable;
             SceneDirector.onGenerateInteractableCardSelection += ModifyCards;
             if (blacklistedForRepeat.Count == 0)
             {
-                blacklistedForRepeat.Add(LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscEquipmentBarrel"));
-                blacklistedForRepeat.Add(LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscTripleShopEquipment"));
-                blacklistedForRepeat.Add(LegacyResourcesAPI.Load<InteractableSpawnCard>("spawncards/interactablespawncard/iscLunarChest"));
+                blacklistedForRepeat.Add(Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/EquipmentBarrel/iscEquipmentBarrel.asset").WaitForCompletion());
+                blacklistedForRepeat.Add(Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/TripleShopEquipment/iscTripleShopEquipment.asset").WaitForCompletion());
+                blacklistedForRepeat.Add(Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/LunarChest/iscLunarChest.asset").WaitForCompletion());
+                blacklistedForRepeat.Add(Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/DLC3/TemporaryItemsDistributor/iscTemporaryItemsShop.asset").WaitForCompletion());
             }
-            Kith.KithNoRepeat = null;
+            KithNoRepeatChest = blacklistedForRepeat[0];
         }
         public static void OnArtifactDisable()
         {
             SceneDirector.onGenerateInteractableCardSelection -= ModifyCards;
+            On.RoR2.DirectorCardCategorySelection.GenerateDirectorCardWeightedSelection -= Handle_SingleInteractable;
         }
 
 
 
         private static void ModifyCards(SceneDirector self, DirectorCardCategorySelection dccs)
         {
-            //It would be very ideal to TRimm this AFTER every normal artifact trims and removes certainl interactables,
-            On.RoR2.DirectorCardCategorySelection.GenerateDirectorCardWeightedSelection += Handle_SingleInteractable;
-            if (self.interactableCredit != 0)
-            {
-                self.interactableCredit += 15;
-            }
-
-
-            dccs.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.NoMoreRadioTower));
-            if (KithNoRepeat != null && blacklistedForRepeat.Contains(KithNoRepeat))
-            {
-                dccs.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.Kith_DoNotRepeatLunarEquipmentOnly));
-            }
-            else if (Run.instance && Run.instance.stageClearCount == 0)
+ 
+            dccs.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.FilterOutUnavailableCards));
+            if (KithNoRepeatChest != null && blacklistedForRepeat.Contains(KithNoRepeatChest) ||
+                Run.instance && Run.instance.stageClearCount == 0)
             {
                 dccs.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.Kith_DoNotRepeatLunarEquipmentOnly));
             }
 
+            if (WConfig.KithNoMinimumStageCompletion.Value)
+            {
+                for (int i = 0; i < dccs.categories.Length; i++)
+                {
+                    ref DirectorCardCategorySelection.Category ptr = ref dccs.categories[i];
+                    for (int j = ptr.cards.Length - 1; j >= 0; j--)
+                    {
+                        DirectorCard card = ptr.cards[j];
+                        if (card.minimumStageCompletions > 1)
+                        {
+                            card.minimumStageCompletions--;
+                        }
+                    }
+                }
+            }
+           
             //For safetey so the director can always spend credits on something
             DirectorCard ADBarrel1 = new DirectorCard
             {
@@ -66,25 +79,22 @@ namespace ArtifactDissimilarity.Aritfacts
             int barrel = dccs.AddCategory("SafeteyBarrel", 0.1f);
             dccs.AddCard(barrel, ADBarrel1);
 
-            tempSaftey = dccs;
+            dccsTemp = dccs;
             dccsSingleInteractable.CopyFrom(dccs);
-            if (dccsSingleInteractable.categories[0].cards.Length > 0)
+ 
+            int chest = dccsSingleInteractable.FindCategoryIndexByName("Chests");
+            if (chest != -1 && dccsSingleInteractable.categories[chest].cards.Length > 0)
             {
-                Kith.KithNoRepeat = dccsSingleInteractable.categories[0].cards[0].spawnCard;
+                KithNoRepeatChest = dccsSingleInteractable.categories[chest].cards[0].spawnCard;
             }
         }
 
 
         private static WeightedSelection<DirectorCard> Handle_SingleInteractable(On.RoR2.DirectorCardCategorySelection.orig_GenerateDirectorCardWeightedSelection orig, DirectorCardCategorySelection self)
         {
-            On.RoR2.DirectorCardCategorySelection.GenerateDirectorCardWeightedSelection -= Handle_SingleInteractable;
-            if (self == tempSaftey)
-            {
+            if (self == dccsTemp)
+            { 
                 Filters.SingleInteractable_Trimmer(self);
-                if (WConfig.KithNoMinimumStageCompletion.Value == true)
-                {
-                    self.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.RemoveMinimumStageCompletionTrimmer));
-                }
             }
             return orig(self);
         }

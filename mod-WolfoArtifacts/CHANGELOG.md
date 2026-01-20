@@ -1,6 +1,14 @@
 
 ### Changelog:
 ```
+v3.5.3
+Fixed Kith not allowing things to spawn on stage 1.
+Fixed Kith not blocking repeating non-item chests properly.
+Fixed Kith not filtering out cards that cant be spawned yet or due to dlc restrictions.
+Fixed oudated Wander description.
+Fixed Wander not incrementing loop clear count properly.
+
+
 v3.5.2
 Fixed Remodelling and Unison not getting disabled on run end due to a network check.
 

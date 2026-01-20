@@ -122,9 +122,9 @@ namespace ArtifactDissimilarity
 
             KithNoMinimumStageCompletion = configFile.Bind(
                 "Kith",
-                "Remove the minimum stage completion of vanilla interactables",
+                "Kith allow interactables earlier.",
                 true,
-                "Normally certain interactables can only spawn after a certain stage, this doesn't prevent them from being chosen with Kith. Making it so they can always spawn might make the early game more varied."
+                "Allows interactables to spawn a stage earlier than usual."
             );
 
             TransposeRerollHeresy = configFile.Bind(

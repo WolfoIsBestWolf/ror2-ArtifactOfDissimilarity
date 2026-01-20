@@ -128,7 +128,8 @@ But also some other more general artifacts like Spiriting.
 				<br>
 				Stages will not be repeated.<br>
 				Lunar Seers in Bazaar will be of any stage.<br>
-				Every other stage starting at stage 5 will have a Primordial Teleporter, Celestial & Void & Green orb.<br>
+				Every 5th stage will have a Primordial Teleporter<br>
+				Every stage after the 3rd has a chance for a Primordial Teleporter, Celestial or Void orb.
 				For better control on where to finish the run.
 				<br>
 				Unavailable in Simulacrum.

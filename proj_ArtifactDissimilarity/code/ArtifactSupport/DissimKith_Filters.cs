@@ -1,5 +1,7 @@
 using ArtifactDissimilarity.Aritfacts;
 using RoR2;
+using RoR2.ExpansionManagement;
+using RoR2.ContentManagement;
 using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -51,7 +53,7 @@ namespace ArtifactDissimilarity
                 Trimmer_DesiredLength(ref interactableCategories.categories[2].cards, rng.RangeInt(2, 4));
                 Trimmer_DesiredLength(ref interactableCategories.categories[3].cards, rng.RangeInt(2, 4));
                 Dissimilarity.TrimmedmixInteractablesCards.categories[1].selectionWeight = 0;
-                Dissimilarity.TrimmedmixInteractablesCards.categories[2].selectionWeight = Dissimilarity.random.Next(1, 6);
+                Dissimilarity.TrimmedmixInteractablesCards.categories[2].selectionWeight = UnityEngine.Random.RandomRangeInt(1, 6);
                 Dissimilarity.TrimmedmixInteractablesCards.categories[3].selectionWeight = 0;
             }
             else
@@ -62,7 +64,7 @@ namespace ArtifactDissimilarity
             }
             Trimmer_DesiredLength(ref interactableCategories.categories[4].cards, 1); //DLC Stuff
             Trimmer_DesiredLength(ref interactableCategories.categories[5].cards, 2); //Rare Junk
-            if (RunArtifactManager.instance.IsArtifactEnabled(Main.Remodeling_Def))
+            if (RunArtifactManager.instance.IsArtifactEnabled(Defs.Remodeling_Def))
             {
                 interactableCategories.categories[6].selectionWeight /= 2;
                 Trimmer_DesiredLength(ref interactableCategories.categories[6].cards, 3);
@@ -80,7 +82,7 @@ namespace ArtifactDissimilarity
                 for (int i = 0; i < interactableCategories.categories.Length; i++)
                 {
                     ref DirectorCardCategorySelection.Category ptr = ref interactableCategories.categories[i];
-                    debugString += $"--{ptr.name} wt:{ptr.selectionWeight}--";
+                    debugString += $"--{ptr.name} wt:{ptr.selectionWeight}--\n";
                     for (int j = ptr.cards.Length - 1; j >= 0; j--)
                     {
                         debugString += ptr.cards[j].GetSpawnCard().prefab.name;
@@ -102,8 +104,7 @@ namespace ArtifactDissimilarity
             {
                 Trimmer_DesiredLength(ref categories[i].cards, 1);
             }
-
-            Debug.Log("Artifact of Kith: Generated Trimmed SingleInteractable selection");
+ 
             if (WConfig.DebugPrint.Value == true)
             {
                 string debugString = "-----------------\n";
@@ -119,21 +120,43 @@ namespace ArtifactDissimilarity
                 }
                 debugString += "-----------------";
                 Debug.Log(debugString);
-            }
-            ;
+            };
         }
 
-        public static bool NoMoreRadioTower(DirectorCard card)
+        public static bool FilterOutUnavailableCards(DirectorCard card)
         {
-            GameObject prefab = card.GetSpawnCard().prefab;
-            if (prefab.GetComponent<RadiotowerTerminal>() || card.selectionWeight == 0)
+            if (card.selectionWeight == 0)
             {
                 return false;
             }
-            card.selectionWeight = 1;
+            if (!card.IsAvailable())
+            {
+                return false;
+            }
             return true;
         }
-
+        public static bool FilterOutDLCRequirement(DirectorCard card)
+        {
+            SpawnCard spawnCard = card.GetSpawnCard();
+            if (Run.instance && spawnCard && spawnCard.prefab)
+            {
+                ExpansionRequirementComponent component = spawnCard.prefab.GetComponent<ExpansionRequirementComponent>();
+ 
+                bool dlcEnabled = !component || Run.instance.IsExpansionEnabled(component.requiredExpansion);
+                bool dlc2Enabled = true;
+                IDirectorAvailability[] components = card.spawnCard.prefab.GetComponents<IDirectorAvailability>();
+                for (int i = 0; i < components.Length; i++)
+                {
+                    if (!components[i].IsAvailable())
+                    {
+                        dlc2Enabled = false;
+                        break;
+                    }
+                }
+                return dlcEnabled && dlc2Enabled;
+            }
+            return true;
+        }
 
         public static bool SimulacrumTrimmer(DirectorCard card)
         {
@@ -147,32 +170,16 @@ namespace ArtifactDissimilarity
             return true;
         }
 
-        public static bool RemoveMinimumStageCompletionTrimmer(DirectorCard card)
-        {
-            //Debug.LogWarning(card.minimumStageCompletions);
-            if (card.minimumStageCompletions <= 3)
-            {
-                card.minimumStageCompletions = 1;
-            }
-            else if (card.minimumStageCompletions >= 4)
-            {
-                card.minimumStageCompletions = 2;
-            }
-            return true;
-        }
-
+      
         public static bool Kith_DoNotRepeatLunarEquipmentOnly(DirectorCard card)
         {
             return !Kith.blacklistedForRepeat.Contains(card.GetSpawnCard());
         }
-
-
-        public static bool NoMoreScrapper(DirectorCard card)
+        public static bool RemoveUnavailable(DirectorCard card)
         {
-            GameObject prefab = card.GetSpawnCard().prefab;
-            return !prefab.GetComponent<ScrapperController>();
+            return !card.IsAvailable();
         }
-
+ 
         public static bool NoMorePrinters(DirectorCard card)
         {
             GameObject prefab = card.GetSpawnCard().prefab;
@@ -182,13 +189,13 @@ namespace ArtifactDissimilarity
         public static bool ArtifactWorldPredicate(DirectorCard card)
         {
             GameObject prefab = card.GetSpawnCard().prefab;
-            return !(prefab.name.Equals("DuplicatorWild") | prefab.GetComponent<OutsideInteractableLocker>() | prefab.GetComponent<ShrineCombatBehavior>() | prefab.GetComponent<ScrapperController>());
+            return !(prefab.GetComponent<OutsideInteractableLocker>() || prefab.GetComponent<ShrineCombatBehavior>() || prefab.GetComponent<ScrapperController>());
         }
 
         public static bool RemoveInteractablesThatNeedTeleporter(DirectorCard card)
         {
             GameObject prefab = card.GetSpawnCard().prefab;
-            return !(prefab.GetComponent<ShrineBossBehavior>() | prefab.GetComponent<PortalStatueBehavior>() | prefab.GetComponent<SeerStationController>());
+            return !(prefab.GetComponent<ShrineBossBehavior>() || prefab.GetComponent<PortalStatueBehavior>() || prefab.GetComponent<SeerStationController>());
         }
 
 
@@ -196,11 +203,11 @@ namespace ArtifactDissimilarity
 
         public static void Mix_ApplyCardRemovingFilters(DirectorCardCategorySelection DCCSInput)
         {
+            DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(FilterOutUnavailableCards));
             if (Run.instance is InfiniteTowerRun)
             {
-                DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.RemoveInteractablesThatNeedTeleporter));
-                DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.SimulacrumTrimmer));
-                //Debug.Log("Artifact of Kith + Command");
+                DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(RemoveInteractablesThatNeedTeleporter));
+                DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(SimulacrumTrimmer));
             }
             else if (!SceneInfo.instance)
             {
@@ -208,12 +215,12 @@ namespace ArtifactDissimilarity
             }
             else if (SceneInfo.instance.sceneDef.baseSceneName.StartsWith("artifactworld"))
             {
-                DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.RemoveInteractablesThatNeedTeleporter));
-                DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.ArtifactWorldPredicate));
+                DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(RemoveInteractablesThatNeedTeleporter));
+                DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(ArtifactWorldPredicate));
             }
             else if (SceneInfo.instance.sceneDef.baseSceneName == "voidstage")
             {
-                DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(Filters.RemoveInteractablesThatNeedTeleporter));
+                DCCSInput.RemoveCardsThatFailFilter(new Predicate<DirectorCard>(RemoveInteractablesThatNeedTeleporter));
             }
 
         }
@@ -238,32 +245,32 @@ namespace ArtifactDissimilarity
                         case "iscShrineBlood":
                         case "iscShrineBloodSnowy":
                         case "iscShrineBloodSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBlood/iscShrineBloodSnowy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBlood/iscShrineBloodSnowy.asset").WaitForCompletion();
                             break;
                         case "iscShrineBoss":
                         case "iscShrineBossSnowy":
                         case "iscShrineBossSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBoss/iscShrineBossSnowy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBoss/iscShrineBossSnowy.asset").WaitForCompletion();
                             break;
                         case "iscShrineChance":
                         case "iscShrineChanceSnowy":
                         case "iscShrineChanceSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineChance/iscShrineChanceSnowy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineChance/iscShrineChanceSnowy.asset").WaitForCompletion();
                             break;
                         case "iscShrineCleanse":
                         case "iscShrineCleanseSnowy":
                         case "iscShrineCleanseSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCleanse/iscShrineCleanseSnowy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCleanse/iscShrineCleanseSnowy.asset").WaitForCompletion();
                             break;
                         case "iscShrineCombat":
                         case "iscShrineCombatSnowy":
                         case "iscShrineCombatSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCombat/iscShrineCombatSnowy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCombat/iscShrineCombatSnowy.asset").WaitForCompletion();
                             break;
                         case "iscShrineRestack":
                         case "iscShrineRestackSnowy":
                         case "iscShrineRestackSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineRestack/iscShrineRestackSnowy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineRestack/iscShrineRestackSnowy.asset").WaitForCompletion();
                             break;
                     }
                 }
@@ -282,32 +289,32 @@ namespace ArtifactDissimilarity
                         case "iscShrineBlood":
                         case "iscShrineBloodSnowy":
                         case "iscShrineBloodSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBlood/iscShrineBloodSandy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBlood/iscShrineBloodSandy.asset").WaitForCompletion();
                             break;
                         case "iscShrineBoss":
                         case "iscShrineBossSnowy":
                         case "iscShrineBossSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBoss/iscShrineBossSandy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBoss/iscShrineBossSandy.asset").WaitForCompletion();
                             break;
                         case "iscShrineChance":
                         case "iscShrineChanceSnowy":
                         case "iscShrineChanceSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineChance/iscShrineChanceSandy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineChance/iscShrineChanceSandy.asset").WaitForCompletion();
                             break;
                         case "iscShrineCleanse":
                         case "iscShrineCleanseSnowy":
                         case "iscShrineCleanseSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCleanse/iscShrineCleanseSandy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCleanse/iscShrineCleanseSandy.asset").WaitForCompletion();
                             break;
                         case "iscShrineCombat":
                         case "iscShrineCombatSnowy":
                         case "iscShrineCombatSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCombat/iscShrineCombatSandy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCombat/iscShrineCombatSandy.asset").WaitForCompletion();
                             break;
                         case "iscShrineRestack":
                         case "iscShrineRestackSnowy":
                         case "iscShrineRestackSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineRestack/iscShrineRestackSandy.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineRestack/iscShrineRestackSandy.asset").WaitForCompletion();
                             break;
                     }
                 }
@@ -321,32 +328,32 @@ namespace ArtifactDissimilarity
                         case "iscShrineBlood":
                         case "iscShrineBloodSnowy":
                         case "iscShrineBloodSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBlood/iscShrineBlood.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBlood/iscShrineBlood.asset").WaitForCompletion();
                             break;
                         case "iscShrineBoss":
                         case "iscShrineBossSnowy":
                         case "iscShrineBossSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBoss/iscShrineBoss.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineBoss/iscShrineBoss.asset").WaitForCompletion();
                             break;
                         case "iscShrineChance":
                         case "iscShrineChanceSnowy":
                         case "iscShrineChanceSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineChance/iscShrineChance.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineChance/iscShrineChance.asset").WaitForCompletion();
                             break;
                         case "iscShrineCleanse":
                         case "iscShrineCleanseSnowy":
                         case "iscShrineCleanseSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCleanse/iscShrineCleanse.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCleanse/iscShrineCleanse.asset").WaitForCompletion();
                             break;
                         case "iscShrineCombat":
                         case "iscShrineCombatSnowy":
                         case "iscShrineCombatSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCombat/iscShrineCombat.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineCombat/iscShrineCombat.asset").WaitForCompletion();
                             break;
                         case "iscShrineRestack":
                         case "iscShrineRestackSnowy":
                         case "iscShrineRestackSandy":
-                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineRestack/iscShrineRestack.asset").WaitForCompletion(); ;
+                            directorCard.spawnCard = Addressables.LoadAssetAsync<SpawnCard>(key: "RoR2/Base/ShrineRestack/iscShrineRestack.asset").WaitForCompletion();
                             break;
                     }
                 }

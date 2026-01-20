@@ -6,10 +6,8 @@ using UnityEngine.AddressableAssets;
 
 namespace ArtifactDissimilarity.Aritfacts
 {
-    public class Dissimilarity
+    public partial class Dissimilarity
     {
-        public static readonly System.Random random = new System.Random();
-
         public static DirectorCardCategorySelection mixInteractablesCards = ScriptableObject.CreateInstance<DirectorCardCategorySelection>();
         public static DirectorCardCategorySelection TrimmedmixInteractablesCards = ScriptableObject.CreateInstance<DirectorCardCategorySelection>();
 
@@ -45,7 +43,7 @@ namespace ArtifactDissimilarity.Aritfacts
         private static void ForceMixInteractables_ClassicStageInfo_RebuildCards(On.RoR2.ClassicStageInfo.orig_RebuildCards orig, ClassicStageInfo self, DirectorCardCategorySelection forcedMonsterCategory, DirectorCardCategorySelection forcedInteractableCategory)
         {
             MakeTrimmerMixInteractablesDCCS();
-
+            
             orig(self, forcedInteractableCategory, TrimmedmixInteractablesCards);
         }
 
@@ -76,23 +74,6 @@ namespace ArtifactDissimilarity.Aritfacts
                             spawnCard = ISCList[i],
                             selectionWeight = 50,
                         };
-                        //mixInteractablesCards.AddCard(2, AD_MysticsItems_ShrineLegendary);  //
-                        break;
-                    case "iscTripleShopRed":
-                        DirectorCard ADRedMultiShop = new DirectorCard
-                        {
-                            spawnCard = ISCList[i],
-                            selectionWeight = 11,
-                        };
-                        mixInteractablesCards.AddCard(5, ADRedMultiShop);  //30
-                        break;
-                    case "midcDroneTable":
-                        DirectorCard midcDroneTable = new DirectorCard
-                        {
-                            spawnCard = ISCList[i],
-                            selectionWeight = 100,
-                        };
-                        mixInteractablesCards.AddCard(6, midcDroneTable);  //30
                         break;
                     case "msidcCloneDrone":
                         DirectorCard msidcCloneDrone = new DirectorCard
@@ -285,7 +266,7 @@ namespace ArtifactDissimilarity.Aritfacts
             {
                 spawnCardReference = new AssetReferenceT<SpawnCard>("6df786822d3105e4e820c69e1ef94d16"),
                 selectionWeight = 15, //5 to 20
-            }; ;
+            };
             #endregion
             #region Barrel
             //ChestsEnd
@@ -429,7 +410,7 @@ namespace ArtifactDissimilarity.Aritfacts
             {
                 spawnCardReference = new AssetReferenceT<SpawnCard>("384bcd7226702fd45a431a2795ff3d01"),
                 selectionWeight = 15,
-                minimumStageCompletions = 1
+                minimumStageCompletions = 0
             };
 
             DirectorCard iscTripleDroneShop = new DirectorCard
@@ -661,7 +642,7 @@ namespace ArtifactDissimilarity.Aritfacts
             TrimmedmixInteractablesCards.Clear();
             TrimmedmixInteractablesCards.CopyFrom(mixInteractablesCards);
 
-            int drone = random.Next(1, 14);//Drones range from 3.5 to 18
+            int drone = Random.RandomRangeInt(1, 14);//Drones range from 3.5 to 18
             if (drone <= 5)
             {
                 TrimmedmixInteractablesCards.categories[3].selectionWeight = 7f;
@@ -681,7 +662,7 @@ namespace ArtifactDissimilarity.Aritfacts
 
             //Chests
             //Barrels + Void Camp
-            TrimmedmixInteractablesCards.categories[2].selectionWeight = random.Next(7, 12); //Shrines range from 7 to 10 in vanilla
+            TrimmedmixInteractablesCards.categories[2].selectionWeight = Random.RandomRangeInt(7, 12); //Shrines range from 7 to 10 in vanilla
                                                                                              //Misc Nothing ig
                                                                                              //Rare
                                                                                              //TrimmedmixInteractablesCards.categories[6].selectionWeight = random.Next(7, 10); //Duplicator is 8 in vanilla

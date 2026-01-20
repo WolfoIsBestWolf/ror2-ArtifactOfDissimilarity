@@ -86,7 +86,7 @@ namespace ArtifactDissimilarity.Aritfacts
                     }
                 }
             }
-            int skinIndex = Main.random.Next(0, RoR2.SkinCatalog.GetBodySkinCount(characterBody.bodyIndex));
+            int skinIndex = Random.RandomRangeInt(0, RoR2.SkinCatalog.GetBodySkinCount(characterBody.bodyIndex));
             newloadout.bodyLoadoutManager.SetSkinIndex(characterBody.bodyIndex, (uint)skinIndex);
             master.SetLoadoutServer(newloadout);
 
@@ -138,8 +138,8 @@ namespace ArtifactDissimilarity.Aritfacts
 
                 for (int i = 0; i < 4; i++)
                 {
-                    int randomItem = Main.random.Next(HeresyItemList.Count);
-                    int randomCount = Main.random.Next(HeresyItemCounts.Count);
+                    int randomItem = Random.RandomRangeInt(0,HeresyItemList.Count);
+                    int randomCount = Random.RandomRangeInt(0,HeresyItemCounts.Count);
 
                     inv.GiveItem(HeresyItemList[randomItem], HeresyItemCounts[randomCount]);
                     HeresyItemList.Remove(HeresyItemList[randomItem]);

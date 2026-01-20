@@ -8,7 +8,7 @@
 
  
 		"ARTIFACT_RANDOM_STAGEORDER_NAME": "Artifact of Wander",
-		"ARTIFACT_RANDOM_STAGEORDER_DESC": "Stages progress in a random order.\nSimulacrum: stages are in order.",
+		"ARTIFACT_RANDOM_STAGEORDER_DESC": "Stages progress in a random order. Portals may appear outside their usual environments.",
 	
 				"BAZAAR_SEER_ARENA": "<style=cWorldEvent>You dream of imprisonment.</style>",
 		"BAZAAR_SEER_ARTIFACTWORLD": "<style=cWorldEvent>You dream of sacred treasures.</style>",

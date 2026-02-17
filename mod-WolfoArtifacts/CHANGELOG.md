@@ -1,6 +1,10 @@
 
 ### Changelog:
 ```
+v3.5.4
+Added Chinese Language support by JunJun5406
+
+
 v3.5.3
 Fixed Kith not allowing things to spawn on stage 1.
 Fixed Kith not blocking repeating non-item chests properly.

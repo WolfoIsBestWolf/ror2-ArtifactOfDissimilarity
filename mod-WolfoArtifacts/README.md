@@ -184,6 +184,9 @@ Flamboyance can give you game breaking printers.
 ### Codes
 ![Image of Artifact Codes](https://raw.githubusercontent.com/WolfoIsBestWolf/ror2-ArtifactOfDissimilarity/refs/heads/main/modPageImages/WolfoArtifactCodes.png) 
 
+### Special Thanks
+
+- Chinese Language support by JunJun5406 (v3.5.4)
 
 ##
 Report bugs to @Wolfo.wolfo in the Risk of Rain 2 discord or RoR2 Modding discord.\

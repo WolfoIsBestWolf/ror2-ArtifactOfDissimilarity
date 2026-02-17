@@ -1,0 +1,67 @@
+{
+	"strings":
+	{
+		"ARTIFACT_MIX_INTERACTABLE_NAME": "殊异神器",
+		"ARTIFACT_MIX_INTERACTABLE_DESC": "互动物件可生成在原本不会出现的场景中。",
+
+		"LUNAR_TELEPORTER_ALIGN_DREAM": "<style=cWorldEvent>原始传送门与你的梦境同步……</style>",
+		"LUNAR_TELEPORTER_ALIGN_NOTDREAM": "<style=cWorldEvent>原始传送门不再与你的梦境同步……</style>",
+
+		"ARTIFACT_RANDOM_STAGEORDER_NAME": "漫游神器",
+		"ARTIFACT_RANDOM_STAGEORDER_DESC": "关卡将以随机顺序推进。传送门可能出现在原本不会出现的场景。",
+
+		"BAZAAR_SEER_ARENA": "<style=cWorldEvent>你梦见了禁锢。</style>",
+		"BAZAAR_SEER_ARTIFACTWORLD": "<style=cWorldEvent>你梦见了圣物。</style>",
+		"BAZAAR_SEER_SHOP": "<style=cWorldEvent>你梦见了挥霍。</style>",
+		"BAZAAR_SEER_LIMBO": "<style=cWorldEvent>你梦见了安宁。</style>",
+		"BAZAAR_SEER_MS": "<style=cWorldEvent>你梦见了逝去的休憩。</style>",
+		"BAZAAR_SEER_VOIDLING": "<style=cWorldEvent>你梦见了深不可测的深渊。</style>",
+
+		"ARTIFACT_SINGLE_INTERACTABLE_NAME": "友邻神器",
+		"ARTIFACT_SINGLE_INTERACTABLE_DESC": "每关只会生成一类宝箱、祭坛、无人机和复制机。",
+		"ARTIFACT_SINGLE_INTERACTABLE_DESC_OLD": "每关的各类互动物件只会生成一种。",
+
+		"ARTIFACT_THREE_MONSTERS_NAME": "群潮神器",
+		"ARTIFACT_THREE_MONSTERS_DESC": "每关只会生成一种小型、中型和大型怪物。",
+
+		"ARTIFACT_SINGLE_ELITE_NAME": "劲旅神器",
+		"ARTIFACT_SINGLE_ELITE_DESC": "每关的所有精英怪物均为同一种。",
+		"ANNOUNCE_BRIGADE_ELITE": "<style=cWorldEvent>所有精英怪物将变为 {0}</style>",
+
+		"ITWAVE_ARTIFACT_SINGLE_ELITE_NAME": "第{0}波 - 劲旅增幅",
+		"ITWAVE_ARTIFACT_SINGLE_ELITE_DESC": "所有精英怪物均为同一种。",
+
+		"ARTIFACT_SINGLE_ITEM_NAME": "合一神器",
+		"ARTIFACT_SINGLE_ITEM_DESC": "每个关卡的所有品质道具只会出现一种。\n打印机不受影响。",
+		"ITREROLL_UNISON_WHITE": "<style=cWorldEvent>[警告] 正在模拟新的合一 <color=#FFFFFF>白色</color> 物品。</style>",
+		"ITREROLL_UNISON_GREEN": "<style=cWorldEvent>[警告] 正在模拟新的合一 <color=#77FF17>绿色</color> 物品。</style>",
+
+		"ARTIFACT_REROLL_ITEMS_NAME": "重塑神器",
+		"ARTIFACT_REROLL_ITEMS_DESC": "每关重新随机所有物品与装备。",
+
+		"ARTIFACT_REROLL_DRONES_NAME": "硬件神器",
+		"ARTIFACT_REROLL_DRONES_DESC": "每关重新随机所有无人机。初始携带1架普通无人机。",
+
+		"ARTIFACT_REROLL_SKILLS_NAME": "易位神器",
+		"ARTIFACT_REROLL_SKILLS_DESC": "每关随机刷新你的技能装运。",
+
+		"ITWAVE_ARTIFACT_REROLL_SKILLS_NAME": "第{0}波 - 易位增幅",
+		"ITWAVE_ARTIFACT_REROLL_SKILLS_DESC": "每关使用随机技能装运。",
+
+		"ARTIFACT_BLIND_ITEMS_NAME": "晦影神器",
+		"ARTIFACT_BLIND_ITEMS_DESC": "物品外观将被遮蔽。",
+
+		"ARTIFACT_SPEED_ONLOWHEALTH_NAME": "魂灵神器",
+		"ARTIFACT_SPEED_ONLOWHEALTH_DESC": "所有角色生命值越低，移动与攻击速度越快。",
+
+		"ITWAVE_ARTIFACT_SPEED_ONLOWHEALTH_NAME": "第{0}层 - 魂灵增幅",
+		"ITWAVE_ARTIFACT_SPEED_ONLOWHEALTH_DESC": "角色生命值越低，移动与攻击速度越快。",
+
+		"ARTIFACT_DOUBLEPLAYER_NAME": "双身神器",
+		"ARTIFACT_DOUBLEPLAYER_DESC": "玩家数量翻倍，但生命值减半。\n长按 <style=cStack>[互动键]</style> 停止你的分身。",
+		"DOUBLE_PREFIX": "{0}的分身",
+
+		"ARTIFACT_RANDOMLYANYTIER_NAME": "华彩神器",
+		"ARTIFACT_RANDOMLYANYTIER_DESC": "物品有概率被随机品质的其他物品替代。"
+	}
+}
